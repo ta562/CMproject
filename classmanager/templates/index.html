@@ -1,0 +1,101 @@
+{% extends './base.html' %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>ダッシュボード</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> ホーム</a></li>
+            <li class="active">ダッシュボード</li>
+        </ol>
+    </section>
+    
+    <!-- Main content -->
+    <section class="content">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-aqua" >
+                    <div class="inner">
+                        <h4>指導評価の管理画面</h4>
+                        <p>授業の様子を確認 保護者へ配信</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-android-share"></i>
+                    </div>
+                    <a href="{% url 'classmanager:assessmentlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h4>教室の管理画面</h4>
+                        <p>教室の登録 編集</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-document"></i>
+                    </div>
+                    <a href="{% url 'classmanager:classroomlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h4>講師の管理画面</h4>
+                        <p>講師の登録 編集</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-document"></i>
+                    </div>
+                    <a href="{% url 'classmanager:teacherlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h4>生徒の管理画面</h4>
+                        <p>生徒の登録 編集</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-document"></i>
+                    </div>
+                    <a href="{% url 'classmanager:studentlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h4>授業の管理画面</h4>
+                        <p>授業の登録 編集</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-document"></i>
+                    </div>
+                    <a href="{% url 'classmanager:lessonlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+            <!-- Left col -->
+            <section class="col-lg-7 connectedSortable">
+
+            </section>
+            <!-- /.Left col -->
+            <!-- right col (We are only adding the ID to make the widgets sortable)-->
+            <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+{% endblock content %}

@@ -1,0 +1,208 @@
+{% extends './base.html' %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+
+    
+<style>
+.content-wrapper{
+  
+}
+.content{
+    
+}
+.assessment_box{
+    
+}
+.assessment_table{
+    border: 5px solid #fafafa;
+  padding: 1em;
+    width: 100%;
+  text-align: center;
+  background-color: #ffffff;
+  
+}
+td{
+    
+}
+.assessment_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.assessment_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 150px;
+   
+}
+.red_td{
+    background-color: #f7e7db;
+}
+.blue_td{
+    background-color: #d9eef3;
+}
+.assessment_check{
+    width: 25px;
+    min-width: 25px;
+}
+.assessment_status{
+    width: 80px;
+    min-width: 80px;
+}
+.assessment_time , .assessment_operation{
+    width: 80px;
+    min-width: 80px;
+}
+.assessment_text{
+    width: 70%;
+    min-width: 100px;
+    position: relative;
+    text-align: left;
+}
+
+.teacher_text{
+    width: 60%;
+    margin: 5px;
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 0;      
+}
+.teacher_text textarea,.manager_text textarea{
+  width: 80%;
+  height: 85px;
+}
+.manager_text{
+    width: 50%;
+    margin: 5px;
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 50%;      
+}
+.approval_button{
+    position:absolute;
+    top: 60%;
+    right: 1%;
+    width: 7%;
+}
+.detail_button{
+    position:absolute;
+    top: 20%;
+    right: 1%;
+    width: 7%;
+}
+.lesson_data{
+    position:absolute;
+    top: 5%;
+    left: 1%;
+    width: 100%;
+}
+
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">      
+        <h1>教室登録</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>教室</a></li>
+            <li class="active">教室登録</li>
+        </ol>
+    </section>
+    <section class="content">
+       <div class="assessment_box">
+            <table class="assessment_table">
+                <thead>
+                <tr >
+                    <td class="assessment_th assessment_check">
+                        <input type="checkbox">
+                    </td>
+                    <td class="assessment_th assessment_status">
+                        処理
+                    </td>
+                    <td class="assessment_th"> 
+                        日付
+                    </td>
+                    <td class="assessment_th"> 
+                        時限
+                    </td>
+                    <td class="assessment_th"> 
+                        教室
+                    </td>
+                    <td class="assessment_th"> 
+                        内容
+                    </td>
+                </tr>
+            </thead>
+                <tr>
+                    <td class="assessment_td assessment_check">
+                        <input type="checkbox">
+                    </td>
+                    <td class="assessment_td red_td assessment_status">
+                        未処理
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        2024-6-30
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        12:00~13:00
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        南教室<br>田中
+                    </td>
+                    <td class="assessment_td assessment_text">
+                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
+                        <div class="teacher_text" >
+                            <div>教師から保護者へのメッセージ</div>
+                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
+                        </div>
+                        <div class="manager_text">
+                            <div>管理者から次回へのメッセージ</div>
+                            <textarea>問題ありません</textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
+                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="assessment_td assessment_check">
+                        <input type="checkbox">
+                    </td>
+                    <td class="assessment_td blue_td assessment_status">
+                        処理済
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        2024-6-30
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        12:00~13:00
+                    </td>
+                    <td class="assessment_td assessment_time"> 
+                        南教室<br>田中
+                    </td>
+                    <td class="assessment_td assessment_text">
+                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
+                        <div class="teacher_text" >
+                            <div>教師から保護者へのメッセージ</div>
+                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
+                        </div>
+                        <div class="manager_text">
+                            <div>管理者から次回へのメッセージ</div>
+                            <textarea>問題ありません</textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
+                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+ 
+     
+
+        <!-- /.row (main row) -->
+    </section>
+</div>
+{% endblock content %}
