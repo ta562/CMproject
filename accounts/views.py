@@ -93,7 +93,7 @@ class LoginView(LoginView):
 
     def form_valid(self, form):
         """Security check complete. Log the user in."""
-        auth_login(self.request, form.get_user())
+        auth_login(self.request, form.get_user(), 'accounts.backends.ManagerAuthBackend')
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
