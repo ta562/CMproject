@@ -7,8 +7,10 @@ from .models import ManagerUser
 # UserModel = get_user_model()
 UserModel = ManagerUser
 
+
 class ManagerAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
+        print(request.path+'manager')
         if request.path != '/login':
             return
         if username is None:
@@ -22,5 +24,5 @@ class ManagerAuthBackend(ModelBackend):
             # difference between an existing and a nonexistent user (#20760).
             UserModel().set_password(password)
         else:
-            if user.check_password(password) and self.user_can_authenticate(user):
+            if user.check_password(password):
                 return user

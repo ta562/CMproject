@@ -92,7 +92,7 @@ AUTH_USER_MODEL = 'accounts.ManagerUser'
 
 AUTHENTICATION_BACKENDS = [
     'accounts.backends.ManagerAuthBackend',
-    'accountsclassroom.backends.ClassroomAuthBackend', 
+    'accountsclassroom.backends.ClassroomAuthBackend'
     
 ]
 
