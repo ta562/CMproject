@@ -1,0 +1,331 @@
+{% extends './base.html' %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+
+    
+<style>
+.content-wrapper{
+  
+}
+.content{
+    
+}
+.form{
+    border: 5px solid #fafafa;
+  padding: 1em;
+    width: 100%;
+  text-align: center;
+  background-color: #ffffff;
+}
+.student_box{
+    
+}
+.student_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
+  
+}
+td{
+    
+}
+.student_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.student_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 15px;
+   
+}
+.red_td{
+    background-color: #f7e7db;
+}
+.blue_td{
+    background-color: #d9eef3;
+}
+.student_check{
+    width:5%;
+    min-width: 25px;
+}
+.student_name{
+    width: 10%;
+    min-width: 70px;
+}
+.student_mail{
+    width: 15%;
+    min-width: 70px;
+}
+.student_phone{
+    width: 10%;
+    min-width: 70px;
+}
+.student_address{
+    width: 15%;
+    min-width: 70px;
+}
+.student_text{
+    width: 70%;
+    min-width: 50px;
+    position: relative;
+    text-align: left;
+}
+
+.teacher_text{
+    width: 60%;
+   
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 0;      
+}
+.teacher_text textarea,.manager_text textarea{
+  width: 80%;
+  height: 85px;
+}
+.manager_text{
+    width: 50%;
+    margin: 5px;
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 50%;      
+}
+.approval_button{
+    position:absolute;
+    top: 60%;
+    right: 1%;
+    width: 7%;
+}
+.detail_button{
+    position:absolute;
+    top: 20%;
+    right: 1%;
+    width: 7%;
+}
+.lesson_data{
+    position:absolute;
+    top: 5%;
+    left: 1%;
+    width: 100%;
+}
+.active_box{
+    display: none;
+}
+
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+
+
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">      
+        <h1>生徒一覧</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>生徒</a></li>
+            <li class="active">生徒一覧</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="box">
+            <form action="/studentlist" method="POST">
+                {% csrf_token %}
+                <div>
+                    <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
+                   <input type="text" required value="" name="form_student_name" id="form_student_name">                     
+                </div>
+                <div>
+                    <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
+                   <input type="email" required value="" name="form_student_mail" id="form_student_mail">                     
+                </div>
+                <div>
+                    <label for="form_student_post">郵便番号</label>
+                   <input type="text" value="" name="form_student_post" id="form_student_post">                     
+                </div>
+                <div>
+                    <label for="form_student_address">住所</label>
+                   <input type="text" value="" name="form_student_address" id="form_student_address">                     
+                </div>
+                <div>
+                    <label for="form_student_tel1">生徒の電話番号</label>
+                   <input type="text" value="" name="form_student_tel1" id="form_student_tel1">                     
+                </div>
+                <div>
+                    <label for="form_student_tel2">保護者の電話番号</label>
+                   <input type="text" value="" name="form_student_tel2" id="form_student_tel2">                     
+                </div>
+                <input type="submit" value="保存" class="btn btn-primary">
+            </form>
+            
+
+        </div>
+        <div class="assessment_box">
+            <table class="student_table" style="border-collapse:collapse;border:none;" >
+                <thead>
+                <tr >
+                    <td class="student_th student_check">
+                        <input type="checkbox">
+                    </td>
+                    <td class="student_th student_name">
+                        名前
+                    </td>
+                    <td class="student_th student_mail"> 
+                        配信用メールアドレス
+                    </td>
+                    <td class="student_th student_phone"> 
+                        電話番号
+                    </td>
+                 
+                    <td class="student_th student_address"> 
+                        住所
+                    </td>
+                    <td class="student_th student_school"> 
+                        学校
+                    </td>
+                   
+                </tr>
+            </thead>
+        </table>
+            {% for record in object %}
+            <table class="student_table"  style="border-collapse:collapse;border:none;">
+                <tr>
+                    <td class="student_td student_check">
+                        <input type="checkbox">
+                    </td>
+                    <td class="student_td red_td student_name">
+                        {{record.name}}
+                    </td>
+                    <td class="student_td student_mail"> 
+                        {{record.mail}}
+                    </td>
+                    <td class="student_td student_phone"> 
+                        {{record.phone1}}<br>{{record.phone2}}
+                    </td>
+                    
+                    <td class="student_td student_address"> 
+                        {{record.post}}<br>{{record.address}}
+                    </td>
+                    <td class="student_td student_school school_list"> 
+                        <li>{{record.address}}</li><li>{{record.address}}</li>
+                    </td>
+
+                </tr>
+                
+           
+            </table> 
+            <div class="active_box box" style="display: none;">            
+                <form action="/studentlist" method="POST" >
+                    {% csrf_token %}
+                    <div>
+                        <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
+                       <input type="text" required value="{{record.name}}" name="form_student_name" id="form_student_name">                     
+                    </div>
+                    <div>
+                        <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
+                       <input type="email" required value="{{record.mail}}" name="form_student_mail" id="form_student_mail">                     
+                    </div>
+                    <div>
+                        <label for="form_student_post">郵便番号</label>
+                       <input type="text" value="{{record.post}}" name="form_student_post" id="form_student_post">                     
+                    </div>
+                    <div>
+                        <label for="form_student_address">住所</label>
+                       <input type="text" value="{{record.address}}" name="form_student_address" id="form_student_address">                     
+                    </div>
+                    <div>
+                        <label for="form_student_tel1">生徒の電話番号</label>
+                       <input type="text" value="{{record.phone1}}" name="form_student_tel1" id="form_student_tel1">                     
+                    </div>
+                    <div>
+                        <label for="form_student_tel2">保護者の電話番号</label>
+                       <input type="text" value="{{record.phone2}}" name="form_student_tel2" id="form_student_tel2">                     
+                    </div>
+                    <input type="submit" value="保存" class="btn btn-primary">
+                </form>
+                <form action="/studentlist" method="POST" style="display:inline;">
+            
+                    <input type="submit" value="削除" class="btn btn-danger">
+                </form>
+            </div>  
+          
+            {% endfor %}
+        </div>
+ 
+     
+
+        <!-- /.row (main row) -->
+    </section>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tables = document.querySelectorAll('.student_table');
+        tables.forEach(function(table) {
+            table.addEventListener('click', function() {
+                const form = table.nextElementSibling;
+                if (form && form.classList.contains('active_box')) {
+                    // 現在の表示状態を確認し、切り替える
+                    const isVisible = form.style.display === 'block';
+                    
+                    // すべてのフォームを非表示に
+                    document.querySelectorAll('.active_box').forEach(function(box) {
+                        box.style.display = 'none';
+                    });
+                    
+                    // クリックしたテーブルのフォームを表示/非表示に切り替え
+                    form.style.display = isVisible ? 'none' : 'block';
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+    // 学生を保存するためのフォーム送信処理
+    $('form:has([value="保存"])').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var formData = $form.serialize();
+        
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // 学生リストを動的に更新するオプション
+                    location.reload();
+                } else {
+                    alert('エラー: ' + response.message);
+                }
+            }
+        });
+    });
+
+    // 学生を削除するためのフォーム送信処理
+    $('form:has([value="削除"])').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var formData = $form.serialize();
+        
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: formData,
+        }).done(response => { 
+            location.reload(); 
+            }
+        );
+    });
+});
+</script>
+{% endblock content %}
+

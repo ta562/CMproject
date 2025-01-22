@@ -13,4 +13,7 @@ urlpatterns = [
     path('classroomregistration',views.ClassroomRegistrationView.as_view(),name='classroomregistration'),
     path('classroomlist',views.ClassroomListView.as_view(),name='classroomlist'),
     path('lessonlist',views.LessonListView.as_view(),name='lessonlist'),
+    path('api/printstudentlist/get/', views.ajax_get_printstudentlist, name='ajax_get_printstudentlist'),
+    path('api/deletestudentlist/get/', views.ajax_get_deletestudentlist, name='ajax_get_deletestudentlist'),
+
 ]

@@ -1,6 +1,15 @@
 {% extends './base.html' %}
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
 
     
 <style>
@@ -10,32 +19,39 @@
 .content{
     
 }
-.assessment_box{
-    
-}
-.assessment_table{
+.form{
     border: 5px solid #fafafa;
   padding: 1em;
     width: 100%;
   text-align: center;
   background-color: #ffffff;
+}
+.student_box{
+    
+}
+.student_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
   
 }
 td{
     
 }
-.assessment_th{
+.student_th{
     border: 2px solid #fafafa;
     background-color: #c2c1c1;
    
     
 }
-.assessment_td{
+.student_td{
     
     border-bottom: 1px solid #b0b0b0;
     border-right: 2px solid #ffffff;
    background-color: #fafafa;
-   height: 150px;
+   height: 15px;
    
 }
 .red_td{
@@ -44,28 +60,36 @@ td{
 .blue_td{
     background-color: #d9eef3;
 }
-.assessment_check{
-    width: 25px;
+.student_check{
+    width:5%;
     min-width: 25px;
 }
-.assessment_status{
-    width: 80px;
-    min-width: 80px;
+.student_name{
+    width: 10%;
+    min-width: 70px;
 }
-.assessment_time , .assessment_operation{
-    width: 80px;
-    min-width: 80px;
+.student_mail{
+    width: 15%;
+    min-width: 70px;
 }
-.assessment_text{
+.student_phone{
+    width: 10%;
+    min-width: 70px;
+}
+.student_address{
+    width: 15%;
+    min-width: 70px;
+}
+.student_text{
     width: 70%;
-    min-width: 100px;
+    min-width: 50px;
     position: relative;
     text-align: left;
 }
 
 .teacher_text{
     width: 60%;
-    margin: 5px;
+   
     position: absolute;
     top: 30px; /* 上を基準 */
     left: 0;      
@@ -99,6 +123,14 @@ td{
     left: 1%;
     width: 100%;
 }
+.active_box{
+    display: none;
+}
+
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+
 
 </style>
 <div class="content-wrapper">
@@ -111,98 +143,220 @@ td{
         </ol>
     </section>
     <section class="content">
-       <div class="assessment_box">
-            <table class="assessment_table">
+        <div class="box">
+            <form action="/studentlist" method="POST">
+                {% csrf_token %}
+                <div>
+                    <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
+                   <input type="text" required value="" name="form_student_name" id="form_student_name">                     
+                </div>
+                <div>
+                    <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
+                   <input type="email" required value="" name="form_student_mail" id="form_student_mail">                     
+                </div>
+                <div>
+                    <label for="form_student_post">郵便番号</label>
+                   <input type="text" value="" name="form_student_post" id="form_student_post">                     
+                </div>
+                <div>
+                    <label for="form_student_address">住所</label>
+                   <input type="text" value="" name="form_student_address" id="form_student_address">                     
+                </div>
+                <div>
+                    <label for="form_student_tel1">生徒の電話番号</label>
+                   <input type="text" value="" name="form_student_tel1" id="form_student_tel1">                     
+                </div>
+                <div>
+                    <label for="form_student_tel2">保護者の電話番号</label>
+                   <input type="text" value="" name="form_student_tel2" id="form_student_tel2">                     
+                </div>
+                <input type="submit" value="保存" class="btn btn-primary">
+            </form>
+            
+
+        </div>
+        <div class="assessment_box">
+            <table class="student_table" style="border-collapse:collapse;border:none;" >
                 <thead>
                 <tr >
-                    <td class="assessment_th assessment_check">
-                        <input type="checkbox">
+                    <td class="student_th student_check">
+                        <input type="checkbox" id="student_check" name="student_check">
                     </td>
-                    <td class="assessment_th assessment_status">
-                        処理
+                    <td class="student_th student_name">
+                        名前
                     </td>
-                    <td class="assessment_th"> 
-                        日付
+                    <td class="student_th student_mail"> 
+                        配信用メールアドレス
                     </td>
-                    <td class="assessment_th"> 
-                        時限
+                    <td class="student_th student_phone"> 
+                        電話番号
                     </td>
-                    <td class="assessment_th"> 
-                        教室
+                 
+                    <td class="student_th student_address"> 
+                        住所
                     </td>
-                    <td class="assessment_th"> 
-                        内容
+                    <td class="student_th student_school"> 
+                        学校
                     </td>
-                </tr>
+                   
+                </tr> 
             </thead>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td red_td assessment_status">
-                        未処理
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-            </table>
-        </div>
- 
-     
-
-        <!-- /.row (main row) -->
-    </section>
+        </table>
+            <div id="student-list">
+                <!-- JavaScript will insert rows here -->
+            </div>
+       
+    </div>
+</section>
 </div>
+<script>
+
+const addTableListeners = () =>{
+    const tables = document.querySelectorAll('.student_table');
+    tables.forEach(function(table) {
+        table.addEventListener('click', function() {
+            const form = table.nextElementSibling;
+            if (form && form.classList.contains('active_box')) {
+                // 現在の表示状態を確認し、切り替える
+                const isVisible = form.style.display === 'block';
+
+                // すべてのフォームを非表示に
+                document.querySelectorAll('.active_box').forEach(function(box) {
+                    box.style.display = 'none';
+                });
+
+                // クリックしたテーブルのフォームを表示/非表示に切り替え
+                form.style.display = isVisible ? 'none' : 'block';
+            }
+        });
+    });
+}
+
+ 
+
+    
+const StudentListElement = document.getElementById('student-list');
+const printList = () => {
+    
+    $.ajax({
+        'url': '{% url "classmanager:ajax_get_printstudentlist" %}',
+        'type': 'GET',
+        'data': {'title': 'post'},
+    }).done(response => {
+        StudentListElement.innerHTML = ''; 
+        // response.studentlistは既にパースされたオブジェクトとして扱える
+        let studentList = response.studentlist;
+        
+        studentList.forEach(student => {
+            const fields = student.fields; 
+            const pks =student.pk;
+            const row = document.createElement('div');
+            
+            row.innerHTML = `
+                       <table class="student_table" style="border-collapse:collapse;border:none;" >
+            <tr>
+                <td class="student_td student_check">
+                    <input type="checkbox" id="student_check" name="student_check">
+                </td>
+                <td class="student_td red_td student_name">
+                    ${fields.name} <!-- 学生のフィールド名に合わせて調整 -->
+                </td>
+                <td class="student_td student_mail">
+                    ${fields.mail} <!-- 学生のフィールド名に合わせて調整 -->
+                </td>
+                <td class="student_td student_phone">
+                    ${fields.phone1}<br>${fields.phone2}
+                </td>
+                <td class="student_td student_address">
+                    ${fields.post}<br>${fields.address} <!-- 学生のフィールド名に合わせて調整 -->
+                </td>
+                <td class="student_td student_school school_list"> 
+                    <li>${fields.school} <!-- 学生のフィールド名に合わせて調整 --></li> 
+                </td>
+            </tr>
+            </table>
+            <div class="active_box box" style="display: none;">            
+                <form action="/studentlist" method="POST" >
+                  
+                    <div>
+                        <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
+                       <input type="text" required value="${fields.name}" name="form_student_name" id="form_student_name">                     
+                    </div>
+                    <div>
+                        <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
+                       <input type="email" required value="${fields.mail}" name="form_student_mail" id="form_student_mail">                     
+                    </div>
+                    <div>
+                        <label for="form_student_post">郵便番号</label>
+                       <input type="text" value="${fields.post}" name="form_student_post" id="form_student_post">                     
+                    </div>
+                    <div>
+                        <label for="form_student_address">住所</label>
+                       <input type="text" value="${fields.address}" name="form_student_address" id="form_student_address">                     
+                    </div>
+                    <div>
+                        <label for="form_student_tel1">生徒の電話番号</label>
+                       <input type="text" value="${fields.phone1}" name="form_student_tel1" id="form_student_tel1">                     
+                    </div>
+                    <div>
+                        <label for="form_student_tel2">保護者の電話番号</label>
+                       <input type="text" value="${fields.phone2}" name="form_student_tel2" id="form_student_tel2">                     
+                    </div>
+                   
+                </form>
+                <div style="display:inline;">
+                     <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudent(${pks})">
+                </div>
+            </div>  
+            `;
+            
+            StudentListElement.appendChild(row);
+            
+        });
+        addTableListeners();
+    });
+    
+};
+
+const createStudent = () => {
+    $.ajax({
+        'url': '{% url "classmanager:ajax_get_deletestudentlist" %}',
+        'type': 'GET',
+        'data': {'student_id': studentId}
+    }).done(response => {
+        printList(); 
+    });
+}
+const deleteStudent = (studentId) => {
+    const userConfirmed = confirm('この学生を削除してもよろしいですか関連する情報がすべて削除されます');
+
+    if (userConfirmed) {
+        console.log(studentId);
+    $.ajax({
+        'url': '{% url "classmanager:ajax_get_deletestudentlist" %}',
+        'type': 'GET',
+        'data': {'student_id': studentId}
+    }).done(response => {
+        printList(); // 学生リストを再読込み
+        // if (response.success) {
+        //     alert("学生が正常に削除されました。");
+        //     printList(); // 学生リストを再読込み
+        // } else {
+        //     alert("学生削除に失敗しました。");
+        // }
+    // }).fail(() => {
+    //     alert("AJAXリクエストでエラーが発生しました。");
+    
+    });
+}
+};
+
+
+printList();
+
+
+</script>
+
+
 {% endblock content %}
+
