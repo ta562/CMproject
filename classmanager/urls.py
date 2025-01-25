@@ -15,5 +15,11 @@ urlpatterns = [
     path('lessonlist',views.LessonListView.as_view(),name='lessonlist'),
     path('api/printstudentlist/get/', views.ajax_get_printstudentlist, name='ajax_get_printstudentlist'),
     path('api/deletestudentlist/get/', views.ajax_get_deletestudentlist, name='ajax_get_deletestudentlist'),
-
+    path('api/createstudentlist/get/', views.ajax_get_createstudentlist, name='ajax_get_createstudentlist'),
+    path('api/updatastudentlist/get/', views.ajax_get_updatastudentlist, name='ajax_get_updatastudentlist'),
+    path('api/updatastudentschool/get/', views.ajax_get_updatastudentschool, name='ajax_update_student_school'),
+    path('ajax/delete_student_school/', views.ajax_delete_student_school, name='ajax_delete_student_school'),
+    path('ajax/create_student_school/', views.ajax_create_student_school, name='ajax_create_student_school'),
 ]
+
+

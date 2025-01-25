@@ -7,15 +7,15 @@ class Student(models.Model):
     manageruser=models.ForeignKey(
         ManagerUser,
         verbose_name='マネージャー',
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE,blank=True,null=True
     )
     name=models.CharField(
         verbose_name='名前',
-        max_length=200,
+        max_length=200,blank=True,null=True
     )
     mail=models.CharField(
         verbose_name='配信用メールアドレス',
-        max_length=200,
+        max_length=200,blank=True,null=True
     )
     post=models.CharField(
         verbose_name='郵便番号',
@@ -44,16 +44,16 @@ class StudentSchool(models.Model):
     student=models.ForeignKey(
         Student,
         verbose_name='生徒',
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE,blank=True,null=True
     )
     
     school=models.CharField(
         verbose_name='学校名',
         max_length=200,blank=True,null=True
     )
-    stage=models.IntegerField(
+    stage=models.CharField(
         verbose_name='教育段階',
-        blank=True,null=True
+        max_length=200,blank=True,null=True
     )
     grade=models.IntegerField(
         verbose_name='学年',
@@ -61,10 +61,6 @@ class StudentSchool(models.Model):
     )
     schoolclass=models.CharField(
         verbose_name='組',
-        max_length=200,blank=True,null=True
-    )
-    school=models.CharField(
-        verbose_name='学校名',
         max_length=200,blank=True,null=True
     )
     posted_at=models.DateTimeField(
