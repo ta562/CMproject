@@ -148,7 +148,7 @@ td{
     </section>
     <section class="content">
         <div class="box">
-            <form method="POST">
+            <form method="POST" >
                 
                 <div>
                     <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
@@ -160,7 +160,7 @@ td{
                 </div>
                 <div>
                     <label for="form_student_post">郵便番号</label>
-                   <input type="text" value="" name="form_student_post" id="form_student_post">                     
+                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_post" id="form_student_post">                     
                 </div>
                 <div>
                     <label for="form_student_address">住所</label>
@@ -168,32 +168,48 @@ td{
                 </div>
                 <div>
                     <label for="form_student_tel1">生徒の電話番号</label>
-                   <input type="text" value="" name="form_student_tel1" id="form_student_tel1">                     
+                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_tel1" id="form_student_tel1">                     
                 </div>
                 <div>
                     <label for="form_student_tel2">保護者の電話番号</label>
-                   <input type="text" value="" name="form_student_tel2" id="form_student_tel2">                     
+                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_tel2" id="form_student_tel2">                     
                 </div>
                 <div>
-                    <label for="form_student_stage">教育段階</label>
-                   <input type="text" value="" name="form_student_stage" id="form_student_stage">                     
+                    <label for="form_student_stage">教育段階<span class="text-sm text-danger ">必須</span></label>
+                    <select name="form_student_stage" id="form_student_stage">
+                        <option value="小学生">小学生</option>
+                        <option value="中学生">中学生</option>
+                        <option value="高校生">高校生</option>
+                        <option value="その他">その他</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="form_student_grade">学年</label>
-                   <input type="text" value="" name="form_student_grade" id="form_student_grade">                     
+                    <label for="form_student_grade">学年<span class="text-sm text-danger ">必須</span></label>
+                   <select  name="form_student_grade" id="form_student_grade">  
+                        <option value="1">1年生</option>
+                        <option value="2">2年生</option>
+                        <option value="3">3年生</option>
+                        <option value="4">4年生</option> 
+                        <option value="5">5年生</option>
+                        <option value="6">6年生</option>
+                        <option value="その他">その他</option>
+                    </select>                  
                 </div>
                 <div>
                     <label for="form_student_schoolclass">組</label>
                    <input type="text" value="" name="form_student_schoolclass" id="form_student_schoolclass">                     
                 </div>
                 <div>
-                    <label for="form_student_school">学校</label>
+                    <label for="form_student_school">学校名</label>
                    <input type="text" value="" name="form_student_school" id="form_student_school">                     
                 </div>
                 <div>
                     <label for="form_student_subjects">選択科目</label>
                     <div id="subject-checkboxes">
                         <!-- チェックボックスがJavaScriptによってここに追加されます -->
+                    </div>
+                    <div id="subject-error-message" style="color: red; display: none;">
+                        少なくとも1つの科目を選択してください！
                     </div>
                 </div>
                 <input type="button" value="保存" class="btn btn-primary" onclick="createStudent()">
@@ -219,7 +235,7 @@ td{
                         電話番号
                     </td>
                  
-                    <td class="student_th student_address"> 
+                    <td  class="student_th student_address"> 
                         住所
                     </td>
                     <td class="student_th student_school"> 
@@ -374,7 +390,7 @@ row.innerHTML = `
                 ${studentFields.post}<br>${studentFields.address}
             </td>
             <td class="student_td student_school school_list">
-                ${filteredEntries.map(([key, schoolInfo]) => `学校：${schoolInfo.school} 区分：${schoolInfo.stage} 学年：${schoolInfo.grade}年 クラス：${schoolInfo.schoolclass}組`).join('<br>')}
+                ${filteredEntries.map(([key, schoolInfo]) => `区分：${schoolInfo.stage} 学年：${schoolInfo.grade} クラス：${schoolInfo.schoolclass}  　<span style="color: black;">${schoolInfo.school}</span>`).join('<br>')}
             </td>
             <td class="student_td student_subject">
                 ${studentSubjectsHtml} <!-- 科目リスト -->
@@ -427,7 +443,18 @@ row.innerHTML = `
 }
 function createStudent() {
     var form = document.querySelector('form');
-
+    const checkboxes = document.querySelectorAll('input[name="subjects"]:checked');
+    const errorMessage = document.getElementById('subject-error-message');
+    
+    // チェックボックスが選択されていない場合
+    if (checkboxes.length < 1) {
+        errorMessage.style.display = 'block';  // エラーメッセージを表示
+        return false;  // フォーム送信をキャンセル
+    }
+    
+    // チェックボックスが選択されている場合
+    errorMessage.style.display = 'none';  // エラーメッセージを非表示
+      // フォーム送信を許可
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
@@ -443,6 +470,7 @@ function createStudent() {
     const studentGrade = document.getElementById('form_student_grade').value;
     const studentSchoolClass = document.getElementById('form_student_schoolclass').value;
     const studentStage = document.getElementById('form_student_stage').value;
+    console.log(studentStage)
 
     // 選択された科目のIDを取得
     const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(checkbox => checkbox.value);
@@ -558,7 +586,7 @@ function addformStudentSchool(studentPk) {
     
     const form = document.createElement('form');
     form.innerHTML = `
-    <div data-school-id=${studentPk} >
+    <div data-school-id=${studentPk}>
         <div>
             <label for="form_student_stage_${studentPk}">教育段階</label>
             <input type="text" name="form_student_stage" id="form_student_stage_${studentPk}">
@@ -575,48 +603,59 @@ function addformStudentSchool(studentPk) {
             <label for="form_student_school_${studentPk}">学校</label>
             <input type="text" name="form_student_school" id="form_student_school_${studentPk}">
         </div>
-        <input type="button" value="保存" class="btn btn-primary" onclick="createStudentSchool(${studentPk})">
+        <div id="subject-checkboxes-${studentPk}">
+            <label for="form_student_subjects">選択科目</label>
+            <!-- チェックボックスはここに追加されます -->
         </div>
+        <input type="button" value="保存" class="btn btn-primary" onclick="createStudentSchool(${studentPk})">
+    </div>
+    <div id="subject-error-message" style="color: red; display: none;">
+                        少なくとも1つの科目を選択してください！
+                    </div>
     `;
+
     container.appendChild(form);
+
+    // fetchSubjectsを呼び出してチェックボックスを追加
+    addfetchSubjects(studentPk);
 }
 function updateStudentSchool(schoolId) {
-    console.log(schoolId)
-    const form = document.querySelector(`#student-list div[data-school-id="${schoolId}"]`);
-  
-
-    // 取得した値をログに出力して確認
-    const stage = form.querySelector(`#form_student_stage_${schoolId}`).value;
-    const grade = form.querySelector(`#form_student_grade_${schoolId}`).value;
-    const schoolclass = form.querySelector(`#form_student_schoolclass_${schoolId}`).value;
-    const school = form.querySelector(`#form_student_school_${schoolId}`).value;
-
-    console.log({stage, grade, schoolclass, school});
+    const stage = document.getElementById(`form_student_stage_${schoolId}`).value;
+    const grade = document.getElementById(`form_student_grade_${schoolId}`).value;
+    const schoolClass = document.getElementById(`form_student_schoolclass_${schoolId}`).value;
+    const schoolName = document.getElementById(`form_student_school_${schoolId}`).value;
     
+    const subjects = [];
+    document.querySelectorAll(`[data-school-id="${schoolId}"] input[type="checkbox"]:checked`).forEach(checkbox => {
+        subjects.push(checkbox.value);
+    });
+
     $.ajax({
-        url: '{% url "classmanager:ajax_update_student_school" %}',
+        url: '{% url "classmanager:ajax_get_updatastudentschool" %}',
         type: 'GET',
         data: {
             'school_id': schoolId,
             'student_stage': stage,
             'student_grade': grade,
-            'student_schoolclass': schoolclass,
-            'student_school': school
+            'student_schoolclass': schoolClass,
+            'student_school': schoolName,
+            'subjects': JSON.stringify(subjects),
         },
         success: function(response) {
             if (response.success) {
-                alert("学生の学校情報が更新されました。");
-                printList();
+                alert('学校と科目が正常に更新されました。');
             } else {
-                alert("更新に失敗しました。");
+                alert('学校と科目の更新に失敗しました。');
             }
         },
         error: function() {
-            alert("通信エラーが発生しました。");
+            alert('学校と科目の更新中にエラーが発生しました。');
         }
-    });
-}
 
+    });
+    printList();
+
+}
 function deleteStudentSchool(schoolId) {
     const userConfirmed = confirm('この学校データを削除してもよろしいですか？');
   
@@ -627,6 +666,7 @@ function deleteStudentSchool(schoolId) {
             data: { 'school_id': schoolId },
             success: function(response) {
                 if (response.success) {
+                    
                     alert("学校データが削除されました。");
                     printList(); // 更新後のリスト表示
                 } else {
@@ -640,39 +680,79 @@ function deleteStudentSchool(schoolId) {
     }
 }
 
+function createStudentSchool(studentPk) {
+    const stage = document.getElementById(`form_student_stage_${studentPk}`).value;
+    const grade = document.getElementById(`form_student_grade_${studentPk}`).value;
+    const schoolClass = document.getElementById(`form_student_schoolclass_${studentPk}`).value;
+    const schoolName = document.getElementById(`form_student_school_${studentPk}`).value;
+    
+    const subjects = [];
+    document.querySelectorAll(`#subject-checkboxes-${studentPk} input[type="checkbox"]:checked`).forEach(checkbox => {
+        subjects.push(checkbox.value);
+    });
 
-function createStudentSchool(studentId) {
-    // 各入力項目から値を取得
-    const stage = document.getElementById(`form_student_stage_${studentId}`).value;
-    const grade = document.getElementById(`form_student_grade_${studentId}`).value;
-    const schoolclass = document.getElementById(`form_student_schoolclass_${studentId}`).value;
-    const school = document.getElementById(`form_student_school_${studentId}`).value;
+    if (subjects.length === 0) {
+        alert('少なくとも1つの科目を選択してください！');
+        return;
+    }
 
-    // 新しい学校データを作成するためのリクエストをGETメソッドで送信
     $.ajax({
-        url: '{% url "classmanager:ajax_create_student_school" %}',  // 適切なURLに更新してください
+        url: '/ajax/create_student_school/',  // This should match the Django URL pattern
         type: 'GET',
         data: {
-            'student_id': studentId,
+            'student_id': studentPk,
             'student_stage': stage,
             'student_grade': grade,
-            'student_schoolclass': schoolclass,
-            'student_school': school
+            'student_schoolclass': schoolClass,
+            'student_school': schoolName,
+            'subjects': JSON.stringify(subjects)
         },
         success: function(response) {
             if (response.success) {
-                alert("新しい学校情報が作成されました。");
-                printList(); // 新しいデータを反映するためにリストを再読み込み
-            } else {
-                alert("学校情報の作成に失敗しました。");
+                alert('データが保存されました!');
+                // Optionally, clear the form or provide feedback
+            } else if (response.error) {
+                alert(`エラー: ${response.error}`);
             }
         },
         error: function() {
-            alert("通信エラーが発生しました。");
+            alert('データ保存中にエラーが発生しました。');
+        }
+    });
+    printList();
+}
+function addfetchSubjects(studentPk) {
+    $.ajax({
+        url: '/ajax/get_subjects/',  // Djangoで設定したエンドポイントに一致させる
+        type: 'GET',
+        success: function(response) {
+            if (response.subjects) {
+                const subjects = response.subjects;
+                const container = document.getElementById(`subject-checkboxes-${studentPk}`);
+                
+                // チェックボックスを動的に追加
+                subjects.forEach(subject => {
+                    const label = document.createElement('label');
+                    label.textContent = subject.title;
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = `subjects_${studentPk}`;
+                    checkbox.value = subject.id;
+                    
+                    container.appendChild(checkbox);
+                    container.appendChild(label);
+                    container.appendChild(document.createElement('br'));
+                });
+            } else {
+                alert("科目のリストを取得できませんでした。");
+            }
+        },
+        error: function() {
+            alert("科目のリスト取得中にエラーが発生しました。");
         }
     });
 }
-
 
 
 function fetchSubjects() {
@@ -692,7 +772,7 @@ function fetchSubjects() {
                     checkbox.type = 'checkbox';
                     checkbox.name = 'subjects';
                     checkbox.value = subject.id;
-
+                    
                     container.appendChild(checkbox);
                     container.appendChild(label);
                     container.appendChild(document.createElement('br'));
@@ -705,6 +785,20 @@ function fetchSubjects() {
             alert("科目のリスト取得中にエラーが発生しました。");
         }
     });
+}
+function validateForm() {
+    const checkboxes = document.querySelectorAll('input[name="subjects"]:checked');
+    const errorMessage = document.getElementById('subject-error-message');
+    
+    // チェックボックスが選択されていない場合
+    if (checkboxes.length < 1) {
+        errorMessage.style.display = 'block';  // エラーメッセージを表示
+        return false;  // フォーム送信をキャンセル
+    }
+    
+    // チェックボックスが選択されている場合
+    errorMessage.style.display = 'none';  // エラーメッセージを非表示
+    return true;  // フォーム送信を許可
 }
 
 printList();

@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .models import Student, StudentSchool,Subject,SchoolSubject
 from django.views.decorators.http import require_GET
+import json
 class IndexView(TemplateView):
     template_name='index.html'
     
@@ -111,6 +112,7 @@ def ajax_get_updatastudentlist(request):
             return JsonResponse({'success': False, 'message': '学生が存在しません'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
+    
 def ajax_get_printstudentlist(request):
     students = Student.objects.filter(manageruser_id=request.user).order_by('-posted_at')
     schools = StudentSchool.objects.order_by('-posted_at')
@@ -154,6 +156,7 @@ def ajax_get_deletestudentlist(request):
         return JsonResponse({'success': False, 'error': '削除中にエラーが発生しました。'})
     
 
+
 def ajax_get_updatastudentschool(request):
     if request.method == 'GET':
         school_id = request.GET.get('school_id')
@@ -161,21 +164,32 @@ def ajax_get_updatastudentschool(request):
         grade = request.GET.get('student_grade')
         schoolclass = request.GET.get('student_schoolclass')
         school = request.GET.get('student_school')
-        School = StudentSchool.objects.get(pk=school_id)
-            # 学校情報を更新または新規作成
-        School.stage=stage
-        School.grade=grade
-        School.schoolclass=schoolclass
-        School.school=school
-        School.save()
-        return JsonResponse({'success': True})
-     
+        subject_ids_json = request.GET.get('subjects', '[]')
+        subject_ids = json.loads(subject_ids_json)
 
-    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        try:
+            school_instance = StudentSchool.objects.get(pk=school_id)
+            school_instance.stage = stage
+            school_instance.grade = grade
+            school_instance.schoolclass = schoolclass
+            school_instance.school = school
+            school_instance.save()
 
+            # 既存の科目をクリア
+            SchoolSubject.objects.filter(school=school_instance).delete()
 
+            # 新しい科目を追加
+            for subject_id in subject_ids:
+                subject_instance = Subject.objects.get(pk=subject_id)
+                SchoolSubject.objects.create(school=school_instance, subject=subject_instance)
 
-
+            return JsonResponse({'success': True})
+        except StudentSchool.DoesNotExist:
+            return JsonResponse({'success': False, 'error': '指定された学校が見つかりません'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': '無効なリクエストメソッドです。'})
 
 @require_GET
 def ajax_delete_student_school(request):
@@ -189,7 +203,6 @@ def ajax_delete_student_school(request):
     except StudentSchool.DoesNotExist:
         return JsonResponse({'success': False, 'error': '学校データが見つかりません。'})
     
-
 def ajax_create_student_school(request):
     if request.method == 'GET':
         try:
@@ -198,11 +211,13 @@ def ajax_create_student_school(request):
             grade = request.GET.get('student_grade')
             schoolclass = request.GET.get('student_schoolclass')
             school = request.GET.get('student_school')
+            subjects_data = request.GET.get('subjects', '[]')
+            subjects_ids = json.loads(subjects_data)
 
             student = Student.objects.get(pk=student_id)
 
             # 新しいStudentSchoolインスタンスを作成
-            StudentSchool.objects.create(
+            student_school = StudentSchool.objects.create(
                 student=student,
                 stage=stage,
                 grade=grade,
@@ -210,15 +225,24 @@ def ajax_create_student_school(request):
                 school=school
             )
 
+            # SchoolSubjectレコードを作成
+            for subject_id in subjects_ids:
+                subject = Subject.objects.get(pk=subject_id)
+                SchoolSubject.objects.create(
+                    subject=subject,
+                    school=student_school
+                )
+
             return JsonResponse({'success': True})
 
         except Student.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Student not found'})
+        except Subject.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Subject not found'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
-
 
 
 
