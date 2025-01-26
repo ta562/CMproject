@@ -84,6 +84,10 @@ td{
     width: 15%;
     min-width: 70px;
 }
+.student_school{
+    text-align: left;
+    min-width: 70px;
+}
 .student_text{
     width: 70%;
     min-width: 50px;
@@ -324,7 +328,7 @@ const printList = () => {
                 const subjectHtml = allSubjectList.map(subject => {
                     const isChecked = relatedSubjects.includes(subject.title) ? 'checked' : '';
                     return `<label><input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}</label>`;
-                }).join('<br>');
+                })
 
                 return `
                 <div data-school-id=${key} >
@@ -390,7 +394,7 @@ row.innerHTML = `
                 ${studentFields.post}<br>${studentFields.address}
             </td>
             <td class="student_td student_school school_list">
-                ${filteredEntries.map(([key, schoolInfo]) => `区分：${schoolInfo.stage} 学年：${schoolInfo.grade} クラス：${schoolInfo.schoolclass}  　<span style="color: black;">${schoolInfo.school}</span>`).join('<br>')}
+                ${filteredEntries.map(([key, schoolInfo]) => `区分〔${schoolInfo.stage}〕 学年〔${schoolInfo.grade}〕 組〔${schoolInfo.schoolclass}〕  　<span style="color: black;">${schoolInfo.school}</span>`).join('<br>')}
             </td>
             <td class="student_td student_subject">
                 ${studentSubjectsHtml} <!-- 科目リスト -->
@@ -742,7 +746,7 @@ function addfetchSubjects(studentPk) {
                     
                     container.appendChild(checkbox);
                     container.appendChild(label);
-                    container.appendChild(document.createElement('br'));
+                    // container.appendChild(document.createElement('br'));
                 });
             } else {
                 alert("科目のリストを取得できませんでした。");
@@ -775,7 +779,7 @@ function fetchSubjects() {
                     
                     container.appendChild(checkbox);
                     container.appendChild(label);
-                    container.appendChild(document.createElement('br'));
+                    // container.appendChild(document.createElement(''));
                 });
             } else {
                 alert("科目のリストを取得できませんでした。");
