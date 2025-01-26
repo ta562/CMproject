@@ -1,6 +1,15 @@
 {% extends './base.html' %}
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
 
     
 <style>
@@ -10,32 +19,39 @@
 .content{
     
 }
-.assessment_box{
-    
-}
-.assessment_table{
+.form{
     border: 5px solid #fafafa;
   padding: 1em;
     width: 100%;
   text-align: center;
   background-color: #ffffff;
+}
+.subject_box{
+    
+}
+.subject_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
   
 }
 td{
     
 }
-.assessment_th{
+.subject_th{
     border: 2px solid #fafafa;
     background-color: #c2c1c1;
    
     
 }
-.assessment_td{
+.subject_td{
     
     border-bottom: 1px solid #b0b0b0;
     border-right: 2px solid #ffffff;
    background-color: #fafafa;
-   height: 150px;
+   height: 15px;
    
 }
 .red_td{
@@ -44,28 +60,36 @@ td{
 .blue_td{
     background-color: #d9eef3;
 }
-.assessment_check{
-    width: 25px;
+.subject_check{
+    width:5%;
     min-width: 25px;
 }
-.assessment_status{
-    width: 80px;
-    min-width: 80px;
+.subject_name{
+    width: 10%;
+    min-width: 70px;
 }
-.assessment_time , .assessment_operation{
-    width: 80px;
-    min-width: 80px;
+.subject_mail{
+    width: 15%;
+    min-width: 70px;
 }
-.assessment_text{
+.subject_phone{
+    width: 10%;
+    min-width: 70px;
+}
+.subject_address{
+    width: 15%;
+    min-width: 70px;
+}
+.subject_text{
     width: 70%;
-    min-width: 100px;
+    min-width: 50px;
     position: relative;
     text-align: left;
 }
 
 .teacher_text{
     width: 60%;
-    margin: 5px;
+   
     position: absolute;
     top: 30px; /* 上を基準 */
     left: 0;      
@@ -99,11 +123,16 @@ td{
     left: 1%;
     width: 100%;
 }
+.active_box{
+    display: none;
+}
 
-</style>
-<div class="content-wrapper">
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+</style><div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">      
+    <section class="content-header">
         <h1>授業一覧</h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>授業</a></li>
@@ -111,98 +140,142 @@ td{
         </ol>
     </section>
     <section class="content">
-       <div class="assessment_box">
-            <table class="assessment_table">
-                <thead>
-                <tr >
-                    <td class="assessment_th assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_th assessment_status">
-                        処理
-                    </td>
-                    <td class="assessment_th"> 
-                        日付
-                    </td>
-                    <td class="assessment_th"> 
-                        時限
-                    </td>
-                    <td class="assessment_th"> 
-                        教室
-                    </td>
-                    <td class="assessment_th"> 
-                        内容
-                    </td>
-                </tr>
-            </thead>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td red_td assessment_status">
-                        未処理
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-            </table>
+        <div class="box">
+            <form method="POST">
+                <div>
+                    <label for="form_subject_title">科目名 <span class="text-sm text-danger">必須</span></label>
+                    <input type="text" required value="" name="form_subject_title" id="form_subject_title">                     
+                </div>
+                <input type="button" value="保存" class="btn btn-primary" onclick="createSubject()">
+            </form>
         </div>
- 
-     
-
-        <!-- /.row (main row) -->
+        <div class="assessment_box">
+            <table class="subject_table" style="border-collapse:collapse;border:none;">
+                <thead>
+                    <tr>
+                        <td class="subject_th subject_check">
+                            <input type="checkbox" id="subject_check" name="subject_check">
+                        </td>
+                        <td class="subject_th subject_title">
+                            科目名
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <div id="subject-list">
+                <!-- JavaScript will insert rows here -->
+            </div>
+        </div>
     </section>
 </div>
+<script>
+
+const addTableListeners = () =>{
+    const tables = document.querySelectorAll('.subject_table');
+    tables.forEach(function(table) {
+        table.addEventListener('click', function() {
+            const form = table.nextElementSibling;
+            if (form && form.classList.contains('active_box')) {
+                // 現在の表示状態を確認し、切り替える
+                const isVisible = form.style.display === 'block';
+
+                // すべてのフォームを非表示に
+                document.querySelectorAll('.active_box').forEach(function(box) {
+                    box.style.display = 'none';
+                });
+
+                // クリックしたテーブルのフォームを表示/非表示に切り替え
+                form.style.display = isVisible ? 'none' : 'block';
+            }
+        });
+    });
+}
+
+
+
+function createSubject() {
+    var form = document.querySelector('form');
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const subjectTitle = document.getElementById('form_subject_title').value;
+
+    // Ajaxリクエストを送信
+    $.ajax({
+        url: '{% url "classmanager:ajax_create_subject" %}', // 適切なURLを設定してください
+        type: 'POST',
+        data: {
+            subject_title: subjectTitle,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("科目が保存されました。");
+                printSubjectList(); // Saveしたら一覧を更新
+            } else {
+                alert("保存に失敗しました。");
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+
+const SubjectListElement = document.getElementById('subject-list');
+const printSubjectList = () => {
+    $.ajax({
+        'url': '{% url "classmanager:ajax_get_printsubjectlist" %}',
+        'type': 'GET',
+    }).done(response => {
+        SubjectListElement.innerHTML = '';
+        let subjectList = response.subjectlist;
+        console.log(subjectList )
+        subjectList.forEach(subject => {
+            const subjectFields = subject.fields; 
+            const subjectPk = subject.pk;
+
+            const row = document.createElement('div');
+            row.setAttribute('data-subject-id', subjectPk);
+            row.innerHTML = `
+                <table class="subject_table" style="border-collapse:collapse;border:none;">
+                    <tr>
+                        <td class="subject_td subject_check">
+                            <input type="checkbox" id="subject_check" name="subject_check">
+                        </td>
+                        <td class="subject_td subject_title">
+                            ${subjectFields.title}
+                        </td>
+                    </tr>
+                </table>
+                <div class="active_box box" style="display: none;">
+                    <form>
+                        <div>
+                            <label for="form_subject_title">科目名 <span class="text-sm text-danger">必須</span></label>
+                            <input type="text" required value="${subjectFields.title}" name="form_subject_title" id="form_subject_title">
+                        </div>
+                        <div style="display:inline;">
+                            <input type="button" value="保存" class="btn btn-primary" onclick="updateSubject(${subjectPk})">
+                            <input type="button" value="削除" class="btn btn-danger" onclick="deleteSubject(${subjectPk})">
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            SubjectListElement.appendChild(row);
+        });
+        addTableListeners();
+    });
+};
+
+// Call printSubjectList to initialize the subject list
+printSubjectList();
+
+</script>
+
+
 {% endblock content %}
+

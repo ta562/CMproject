@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from .models import Student, StudentSchool,Subject,SchoolSubject
+from .models import Student, StudentSchool
 from django.views.decorators.http import require_GET
 class IndexView(TemplateView):
     template_name='index.html'
@@ -62,7 +62,7 @@ def ajax_get_createstudentlist(request):
     if request.method == 'GET':
         # Studentを作成
         new_student = Student.objects.create(
-            manageruser=request.user,
+            manageruser=request.user,  # ForeignKeyに直接Userオブジェクトを渡す場合
             name=request.GET.get('student_name'),
             mail=request.GET.get('student_mail'),
             post=request.GET.get('student_post'),
@@ -72,24 +72,14 @@ def ajax_get_createstudentlist(request):
         )
         
         # StudentSchoolを関連付けて作成
-        new_school = StudentSchool.objects.create(
-            student=new_student,
+        StudentSchool.objects.create(
+            student=new_student,  # 先ほど作成したStudentをForeignKeyとして設定
             school=request.GET.get('student_school'),
             stage=request.GET.get('student_stage'),
             grade=request.GET.get('student_grade'),
             schoolclass=request.GET.get('student_schoolclass')
         )
         
-        # 選択された科目を関連付け
-        subject_ids = request.GET.get('student_subjects', '').split(',')
-        subject_objects = Subject.objects.filter(id__in=subject_ids)
-        for subject in subject_objects:
-            # SchoolSubjectインスタンスを作成して保存
-            SchoolSubject.objects.create(
-                subject=subject,
-                school=new_school
-            )
-
         return JsonResponse({'success': True, 'message': '学生と学校情報が保存されました'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
@@ -111,35 +101,14 @@ def ajax_get_updatastudentlist(request):
             return JsonResponse({'success': False, 'message': '学生が存在しません'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
+
 def ajax_get_printstudentlist(request):
-    students = Student.objects.filter(manageruser_id=request.user).order_by('-posted_at')
-    schools = StudentSchool.objects.order_by('-posted_at')
-    subjects = SchoolSubject.objects.select_related('subject', 'school').all()
-    all_subjects = Subject.objects.all()  # すべての科目を取得
-
+    students = Student.objects.all().order_by('-posted_at').filter(manageruser_id=request.user)
+    schools = StudentSchool.objects.all().order_by('-posted_at')
     studentlist = serializers.serialize('python', students)
-    schoollist = serializers.serialize('python', schools)
+    schoollist=serializers.serialize('python', schools)
 
-    subjectlist = [
-        {
-            'school_id': school_subject.school.id,
-            'subject_title': school_subject.subject.title,
-        }
-        for school_subject in subjects
-    ]
-
-    # すべての科目情報を整形
-    all_subjectlist = [
-        {'id': subject.id, 'title': subject.title}
-        for subject in all_subjects
-    ]
-
-    data = {
-        'studentlist': studentlist,
-        'schoollist': schoollist,
-        'subjectlist': subjectlist,
-        'all_subjectlist': all_subjectlist  # すべての科目を追加
-    }
+    data={'studentlist':studentlist,'schoollist':schoollist}
     return JsonResponse(data)
 
 def ajax_get_deletestudentlist(request):
@@ -218,9 +187,39 @@ def ajax_create_student_school(request):
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+# class StudentListView(CreateView, ListView):
+#     def get(self, request, *args, **kwargs):
+#         object = Student.objects.all().order_by('-posted_at')  
+#         context = {'object': object}
+#         return render(request, 'studentlist.html', context)
 
-
-
+#     def post(self, request, *args, **kwargs):
+#         if 'delete_student_id' in request.POST:
+#             # 削除処理
+#             student_id = request.POST['delete_student_id']
+#             try:
+#                 student = Student.objects.get(id=student_id)
+#                 student.delete()
+#             except Student.DoesNotExist:
+#                 # 学生が存在しない場合の処理
+#                 pass
+#         else:
+#             # 作成処理
+#             obj = Student(
+#                 manageruser_id=self.request.user.id,
+#                 name=request.POST['form_student_name'],
+#                 mail=request.POST['form_student_mail'],
+#                 post=request.POST['form_student_post'],
+#                 address=request.POST['form_student_address'],
+#                 phone1=request.POST['form_student_tel1'],
+#                 phone2=request.POST['form_student_tel2']
+#             )
+#             obj.save()
+        
+#         # リストを更新
+#         object = Student.objects.all().order_by('-posted_at') 
+#         context = {'object': object}
+#         return render(request, 'studentlist.html', context)
 
 class TeacherRegistrationView(TemplateView):
     template_name='teacherregistration.html'
@@ -235,34 +234,4 @@ class ClassroomListView(TemplateView):
     template_name='classroomlist.html' 
 
 class LessonListView(TemplateView):
-    template_name='lessonlist.html'
-
-
-def ajax_create_subject(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        title = request.POST.get('subject_title')
-
-        if title:
-            Subject.objects.create(
-                manageruser=request.user,
-                title=title
-            )
-            return JsonResponse({'success': True, 'message': '科目が保存されました'})
-        else:
-            return JsonResponse({'success': False, 'message': '無効なデータです'})
-    
-    return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-
-def ajax_get_printsubjectlist(request):
-    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # all subjects related to the logged-in user
-        subjects = Subject.objects.filter(manageruser=request.user)
-        subject_list = serializers.serialize('python', subjects)
-        return JsonResponse({'subjectlist': subject_list}, safe=False)
-
-    return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-
-def get_subjects(request):
-    subjects = Subject.objects.all()  # 科目の全リストを取得
-    subject_list = [{'id': subject.id, 'title': subject.title} for subject in subjects]
-    return JsonResponse({'subjects': subject_list})
+    template_name='lessonlist.html' 

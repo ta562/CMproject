@@ -20,6 +20,9 @@ urlpatterns = [
     path('api/updatastudentschool/get/', views.ajax_get_updatastudentschool, name='ajax_update_student_school'),
     path('ajax/delete_student_school/', views.ajax_delete_student_school, name='ajax_delete_student_school'),
     path('ajax/create_student_school/', views.ajax_create_student_school, name='ajax_create_student_school'),
+    path('create_subject/', views.ajax_create_subject, name='ajax_create_subject'),
+    path('ajax_get_printsubjectlist/', views.ajax_get_printsubjectlist, name='ajax_get_printsubjectlist'),
+    path('ajax/get_subjects/', views.get_subjects, name='get_subjects'),
 ]
 
 

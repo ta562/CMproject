@@ -55,9 +55,9 @@ class StudentSchool(models.Model):
         verbose_name='教育段階',
         max_length=200,blank=True,null=True
     )
-    grade=models.IntegerField(
+    grade=models.CharField(
         verbose_name='学年',
-        blank=True,null=True
+        max_length=200,blank=True,null=True
     )
     schoolclass=models.CharField(
         verbose_name='組',
@@ -82,6 +82,18 @@ class Subject(models.Model):
         verbose_name='投稿日時',
         auto_now_add=True,blank=True,null=True
         )
+
+class SchoolSubject(models.Model):
+    subject=models.ForeignKey(
+        Subject,
+        verbose_name='科目',
+        on_delete=models.CASCADE, blank=True, null=True
+    )
+    school=models.ForeignKey(
+        StudentSchool,
+        verbose_name='科目',
+        on_delete=models.CASCADE, blank=True, null=True
+    )
 
 class StudentSubject(models.Model):
     student=models.ForeignKey(

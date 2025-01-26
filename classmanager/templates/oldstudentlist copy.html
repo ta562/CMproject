@@ -61,7 +61,7 @@ td{
     background-color: #d9eef3;
 }
 .student_check{
-    width:2%;
+    width:5%;
     min-width: 25px;
 }
 .student_name{
@@ -73,14 +73,10 @@ td{
     min-width: 70px;
 }
 .student_phone{
-    width: 8%;
+    width: 10%;
     min-width: 70px;
 }
 .student_address{
-    width: 15%;
-    min-width: 70px;
-}
-.student_subject{
     width: 15%;
     min-width: 70px;
 }
@@ -149,7 +145,7 @@ td{
     <section class="content">
         <div class="box">
             <form method="POST">
-                
+
                 <div>
                     <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
                    <input type="text" required value="" name="form_student_name" id="form_student_name">                     
@@ -190,12 +186,6 @@ td{
                     <label for="form_student_school">学校</label>
                    <input type="text" value="" name="form_student_school" id="form_student_school">                     
                 </div>
-                <div>
-                    <label for="form_student_subjects">選択科目</label>
-                    <div id="subject-checkboxes">
-                        <!-- チェックボックスがJavaScriptによってここに追加されます -->
-                    </div>
-                </div>
                 <input type="button" value="保存" class="btn btn-primary" onclick="createStudent()">
 
             </form>
@@ -224,18 +214,13 @@ td{
                     </td>
                     <td class="student_th student_school"> 
                         学校
-                    </td>
-                    <td class="student_th student_subject"> 
-                        選択科目
-                    </td>
-                   
+                    </td>   
                 </tr> 
             </thead>
         </table>
             <div id="student-list">
                 <!-- JavaScript will insert rows here -->
-            </div>
-       
+            </div>       
     </div>
 </section>
 </div>
@@ -275,161 +260,125 @@ const printList = () => {
         StudentListElement.innerHTML = ''; 
         let studentList = response.studentlist;
         let schoolList = response.schoollist;
-        let subjectList = response.subjectlist;
-        let allSubjectList = response.all_subjectlist;  // すべての科目情報
-
-        // Create dictionaries for school and subject information
+        console.log(schoolList)
+        // 学生IDをキーとして学校情報を辞書に変換
         const schoolDict = {};
         const schoolDictnew = {};
         schoolList.forEach(school => {
             const schoolFields = school.fields;
-            const schoolpkFields = school.pk;
+            const schoolpkFields=school.pk;
             schoolDictnew[schoolpkFields] = schoolFields;
             schoolDict[schoolFields.student] = schoolFields;
         });
 
-        const schoolSubjectDict = {};
-        subjectList.forEach(subjectEntry => {
-            const schoolId = subjectEntry.school_id;
-            if (!schoolSubjectDict[schoolId]) {
-                schoolSubjectDict[schoolId] = [];
-            }
-            schoolSubjectDict[schoolId].push(subjectEntry.subject_title);
-        });
-
         studentList.forEach(student => {
-            const studentFields = student.fields; 
-            const studentPk = student.pk;
-            const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
+    const studentFields = student.fields; 
+    const studentPk = student.pk;
+    const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
+    
+    // 各学校に対するフォームフィールドを生成
+    const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
+        return `
+        <div data-school-id=${key} >
+            <div>
+                <label for="form_student_stage_${key}">教育段階</label>
+                <input type="text" value="${schoolInfo.stage}" name="form_student_stage_${key}" id="form_student_stage_${key}">
+            </div>
+            <div>
+                <label for="form_student_grade_${key}">学年</label>
+                <input type="text" value="${schoolInfo.grade}" name="form_student_grade_${key}" id="form_student_grade_${key}">
+            </div>
+            <div>
+                <label for="form_student_schoolclass_${key}">組</label>
+                <input type="text" value="${schoolInfo.schoolclass}" name="form_student_schoolclass_${key}" id="form_student_schoolclass_${key}">
+            </div>
+            <div>
+                <label for="form_student_school_${key}">学校</label>
+                <input type="text" value="${schoolInfo.school}" name="form_student_school_${key}" id="form_student_school_${key}">
+            </div>
+            <div style="display:inline;">
+                <input type="button" value="保存" class="btn btn-primary" onclick="updateStudentSchool(${key})">
+                <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudentSchool(${key})">
+            </div>
+        </div>
+        `;
+    }).join('');
 
-            const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
-                const relatedSubjects = schoolSubjectDict[key] || [];
-
-                const subjectHtml = allSubjectList.map(subject => {
-                    const isChecked = relatedSubjects.includes(subject.title) ? 'checked' : '';
-                    return `<label><input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}</label>`;
-                }).join('<br>');
-
-                return `
-                <div data-school-id=${key} >
-                    <div>
-                        <label for="form_student_stage_${key}">教育段階</label>
-                        <input type="text" value="${schoolInfo.stage}" name="form_student_stage_${key}" id="form_student_stage_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_grade_${key}">学年</label>
-                        <input type="text" value="${schoolInfo.grade}" name="form_student_grade_${key}" id="form_student_grade_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_schoolclass_${key}">組</label>
-                        <input type="text" value="${schoolInfo.schoolclass}" name="form_student_schoolclass_${key}" id="form_student_schoolclass_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_school_${key}">学校</label>
-                        <input type="text" value="${schoolInfo.school}" name="form_student_school_${key}" id="form_student_school_${key}">
-                    </div>
-                    <div>
-                        <label>科目:</label>
-                        ${subjectHtml}
-                    </div>
-                    <div style="display:inline;">
-                        <input type="button" value="保存" class="btn btn-primary" onclick="updateStudentSchool(${key})">
-                        <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudentSchool(${key})">
-                    </div>
+    const row = document.createElement('div');
+    row.setAttribute('data-student-id', studentPk);
+    row.innerHTML = `
+        <table class="student_table" style="border-collapse:collapse;border:none;" >
+            <tr>
+                <td class="student_td student_check">
+                    <input type="checkbox" id="student_check" name="student_check">
+                </td>
+                <td class="student_td red_td student_name">
+                    ${studentFields.name}
+                </td>
+                <td class="student_td student_mail">
+                    ${studentFields.mail}
+                </td>
+                <td class="student_td student_phone">
+                    ${studentFields.phone1}<br>${studentFields.phone2}
+                </td>
+                <td class="student_td student_address">
+                    ${studentFields.post}<br>${studentFields.address}
+                </td>
+                <td class="student_td student_school school_list">
+                    ${filteredEntries.map(([key, schoolInfo]) => `学校：${schoolInfo.school} 区分：${schoolInfo.stage} 学年：${schoolInfo.grade}年 クラス：${schoolInfo.schoolclass}組`).join('<br>')}
+                </td>
+            </tr>
+        </table>
+        <div class="active_box box" style="display: none;">
+            <form>
+                <div>
+                    <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
+                    <input type="text" required value="${studentFields.name}" name="form_student_name" id="form_student_name">
                 </div>
-                `;
-            }).join('');
-
-
-
-const studentSubjectsHtml = filteredEntries.map(([key, schoolInfo]) => {
-    // `key`は学校のIDで、そのIDを使って`schoolSubjectDict`から関連科目を取得
-    const subjects = schoolSubjectDict[key] || [];
-    // 科目が配列かどうか確認
-    console.log('Subjects for school ID', key, ':', subjects);
-
-    // 各科目をHTMLに変換して結合
-    return subjects.map(subject => `<span>${subject}</span>`).join('　');
-}).join('<br>');
-
-// テーブルの中で正しい場所に挿入
-const row = document.createElement('div');
-row.setAttribute('data-student-id', studentPk);
-row.innerHTML = `
-    <table class="student_table" style="border-collapse:collapse;border:none;">
-        <tr>
-            <td class="student_td student_check">
-                <input type="checkbox" id="student_check" name="student_check">
-            </td>
-            <td class="student_td red_td student_name">
-                ${studentFields.name}
-            </td>
-            <td class="student_td student_mail">
-                ${studentFields.mail}
-            </td>
-            <td class="student_td student_phone">
-                ${studentFields.phone1}<br>${studentFields.phone2}
-            </td>
-            <td class="student_td student_address">
-                ${studentFields.post}<br>${studentFields.address}
-            </td>
-            <td class="student_td student_school school_list">
-                ${filteredEntries.map(([key, schoolInfo]) => `学校：${schoolInfo.school} 区分：${schoolInfo.stage} 学年：${schoolInfo.grade}年 クラス：${schoolInfo.schoolclass}組`).join('<br>')}
-            </td>
-            <td class="student_td student_subject">
-                ${studentSubjectsHtml} <!-- 科目リスト -->
-            </td>
-        </tr>
-    </table>
-                <div class="active_box box" style="display: none;">
-                    <form>
-                        <div>
-                            <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
-                            <input type="text" required value="${studentFields.name}" name="form_student_name" id="form_student_name">
-                        </div>
-                        <div>
-                            <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
-                            <input type="email" required value="${studentFields.mail}" name="form_student_mail" id="form_student_mail">
-                        </div>
-                        <div>
-                            <label for="form_student_post">郵便番号</label>
-                            <input type="text" value="${studentFields.post}" name="form_student_post" id="form_student_post">
-                        </div>
-                        <div>
-                            <label for="form_student_address">住所</label>
-                            <input type="text" value="${studentFields.address}" name="form_student_address" id="form_student_address">
-                        </div>
-                        <div>
-                            <label for="form_student_tel1">生徒の電話番号</label>
-                            <input type="text" value="${studentFields.phone1}" name="form_student_tel1" id="form_student_tel1">
-                        </div>
-                        <div>
-                            <label for="form_student_tel2">保護者の電話番号</label>
-                            <input type="text" value="${studentFields.phone2}" name="form_student_tel2" id="form_student_tel2">
-                        </div>
-                         <div style="display:inline;">
-                            <input type="button" value="保存" class="btn btn-primary" onclick="updateStudent(${studentPk})">
-                            <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudent(${studentPk})">
-                        </div>
-                        ${schoolFormsHtml}
-                    </form>
-                    <div style="display:inline;">
-                        <input type="button" value="学校を追加" class="btn btn-info" onclick="addformStudentSchool(${studentPk})">
-                    </div>
+                <div>
+                    <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
+                    <input type="email" required value="${studentFields.mail}" name="form_student_mail" id="form_student_mail">
                 </div>
-            `;
+                <div>
+                    <label for="form_student_post">郵便番号</label>
+                    <input type="text" value="${studentFields.post}" name="form_student_post" id="form_student_post">
+                </div>
+                <div>
+                    <label for="form_student_address">住所</label>
+                    <input type="text" value="${studentFields.address}" name="form_student_address" id="form_student_address">
+                </div>
+                <div>
+                    <label for="form_student_tel1">生徒の電話番号</label>
+                    <input type="text" value="${studentFields.phone1}" name="form_student_tel1" id="form_student_tel1">
+                </div>
+                <div>
+                    <label for="form_student_tel2">保護者の電話番号</label>
+                    <input type="text" value="${studentFields.phone2}" name="form_student_tel2" id="form_student_tel2">
+                </div>
+                 <div style="display:inline;">
+                <input type="button" value="保存" class="btn btn-primary" onclick="updateStudent(${studentPk})">
+                <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudent(${studentPk})">
+            </div>
+                ${schoolFormsHtml}
+            </form>
+            <div style="display:inline;">
+                <input type="button" value="学校を追加" class="btn btn-info" onclick="addformStudentSchool(${studentPk})">
+            </div>
+        </div>
+    `;
 
-            StudentListElement.appendChild(row);
-        });
-
+    StudentListElement.appendChild(row);
+});
         addTableListeners();
     });
-}
+    
+};
+
 function createStudent() {
     var form = document.querySelector('form');
 
     if (!form.checkValidity()) {
-        form.reportValidity();
+        form.reportValidity(); // 初期問題があったばかりでなく、問題を示すメッセージも表示する。
         return;
     }
 
@@ -444,8 +393,6 @@ function createStudent() {
     const studentSchoolClass = document.getElementById('form_student_schoolclass').value;
     const studentStage = document.getElementById('form_student_stage').value;
 
-    // 選択された科目のIDを取得
-    const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(checkbox => checkbox.value);
 
     // Ajaxリクエストを送信
     $.ajax({
@@ -462,11 +409,10 @@ function createStudent() {
             student_grade: studentGrade,
             student_schoolclass: studentSchoolClass,
             student_stage: studentStage,
-            student_subjects: selectedSubjects.join(',') // カンマ区切りで送信
         },
         success: function(response) {
             if (response.success) {
-                printList();
+                printList(); // 保存後の学生リストの再読み込み
             } else {
                 alert("保存に失敗しました。");
             }
@@ -673,42 +619,8 @@ function createStudentSchool(studentId) {
     });
 }
 
-
-
-function fetchSubjects() {
-    $.ajax({
-        url: '/ajax/get_subjects/',  // Djangoで設定したエンドポイントに一致させる
-        type: 'GET',
-        success: function(response) {
-            if (response.subjects) {
-                const subjects = response.subjects;
-                const container = document.getElementById('subject-checkboxes');
-                
-                subjects.forEach(subject => {
-                    const label = document.createElement('label');
-                    label.textContent = subject.title;
-
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'subjects';
-                    checkbox.value = subject.id;
-
-                    container.appendChild(checkbox);
-                    container.appendChild(label);
-                    container.appendChild(document.createElement('br'));
-                });
-            } else {
-                alert("科目のリストを取得できませんでした。");
-            }
-        },
-        error: function() {
-            alert("科目のリスト取得中にエラーが発生しました。");
-        }
-    });
-}
-
 printList();
-fetchSubjects();
+
 
 </script>
 
