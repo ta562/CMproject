@@ -23,6 +23,8 @@ urlpatterns = [
     path('create_subject/', views.ajax_create_subject, name='ajax_create_subject'),
     path('ajax_get_printsubjectlist/', views.ajax_get_printsubjectlist, name='ajax_get_printsubjectlist'),
     path('ajax/get_subjects/', views.get_subjects, name='get_subjects'),
+    path('ajax_get_printclassroomlist/', views.ajax_get_printclassroomlist, name='ajax_get_printclassroomlist'),
+    
 ]
 
 

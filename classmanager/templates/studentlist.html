@@ -9,7 +9,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
- 
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
     
 <style>
@@ -140,6 +140,99 @@ td{
     }
 
 
+
+
+
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 各ラベル */
+    label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* 入力フィールド */
+    input[type="text"],
+    input[type="email"],
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* 必須項目のマーク */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 12px;
+    }
+
+    /* 横並びレイアウト */
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .input-row-subjects {
+        display: flex;
+        justify-content:left;
+        
+        flex-wrap: wrap;
+    }
+    .input-row div {
+        flex: 1;
+    }
+
+    /* 入力フィールドに対するエラーメッセージ */
+    #subject-error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #e74c3c;
+    }
+
+    /* ボタンのスタイル */
+    .btn {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #2980b9;
+    }
+
+    /* チェックボックスのスタイル */
+    #subject-checkboxes input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    /* 小さなフォントサイズ */
+    .text-sm {
+        font-size: 12px;
+    }
+
+
+
+
+
 </style>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -152,73 +245,85 @@ td{
     </section>
     <section class="content">
         <div class="box">
-            <form method="POST" >
-                
-                <div>
-                    <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
-                   <input type="text" required value="" name="form_student_name" id="form_student_name">                     
-                </div>
-                <div>
-                    <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
-                   <input type="email" required value="" name="form_student_mail" id="form_student_mail">                     
-                </div>
-                <div>
-                    <label for="form_student_post">郵便番号</label>
-                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_post" id="form_student_post">                     
-                </div>
-                <div>
-                    <label for="form_student_address">住所</label>
-                   <input type="text" value="" name="form_student_address" id="form_student_address">                     
-                </div>
-                <div>
-                    <label for="form_student_tel1">生徒の電話番号</label>
-                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_tel1" id="form_student_tel1">                     
-                </div>
-                <div>
-                    <label for="form_student_tel2">保護者の電話番号</label>
-                   <input pattern="\d+" placeholder="数字"  type="text" value="" name="form_student_tel2" id="form_student_tel2">                     
-                </div>
-                <div>
-                    <label for="form_student_stage">教育段階<span class="text-sm text-danger ">必須</span></label>
-                    <select name="form_student_stage" id="form_student_stage">
-                        <option value="小学生">小学生</option>
-                        <option value="中学生">中学生</option>
-                        <option value="高校生">高校生</option>
-                        <option value="その他">その他</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="form_student_grade">学年<span class="text-sm text-danger ">必須</span></label>
-                   <select  name="form_student_grade" id="form_student_grade">  
-                        <option value="1">1年生</option>
-                        <option value="2">2年生</option>
-                        <option value="3">3年生</option>
-                        <option value="4">4年生</option> 
-                        <option value="5">5年生</option>
-                        <option value="6">6年生</option>
-                        <option value="その他">その他</option>
-                    </select>                  
-                </div>
-                <div>
-                    <label for="form_student_schoolclass">組</label>
-                   <input type="text" value="" name="form_student_schoolclass" id="form_student_schoolclass">                     
-                </div>
-                <div>
-                    <label for="form_student_school">学校名</label>
-                   <input type="text" value="" name="form_student_school" id="form_student_school">                     
-                </div>
-                <div>
-                    <label for="form_student_subjects">選択科目</label>
-                    <div id="subject-checkboxes">
-                        <!-- チェックボックスがJavaScriptによってここに追加されます -->
-                    </div>
-                    <div id="subject-error-message" style="color: red; display: none;">
-                        少なくとも1つの科目を選択してください！
-                    </div>
-                </div>
-                <input type="button" value="保存" class="btn btn-primary" onclick="createStudent()">
+           
+<form method="POST">
+    <div class="input-row">
+        <div>
+            <label for="form_student_name">名前 <span class="text-sm text-danger">必須</span></label>
+            <input type="text" required name="form_student_name" id="form_student_name">
+        </div>
+        <div>
+            <label for="form_student_mail">配信用メールアドレス <span class="text-sm text-danger">必須</span></label>
+            <input type="email" required name="form_student_mail" id="form_student_mail">
+        </div>
+    </div>
 
-            </form>
+    <div class="input-row">
+        <div>
+            <label for="form_student_post">郵便番号</label>
+            <input pattern="\d+" placeholder="数字" type="text" name="form_student_post" id="form_student_post">
+        </div>
+        <div>
+            <label for="form_student_address">住所</label>
+            <input type="text" name="form_student_address" id="form_student_address">
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div>
+            <label for="form_student_tel1">生徒の電話番号</label>
+            <input pattern="\d+" placeholder="数字" type="text" name="form_student_tel1" id="form_student_tel1">
+        </div>
+        <div>
+            <label for="form_student_tel2">保護者の電話番号</label>
+            <input pattern="\d+" placeholder="数字" type="text" name="form_student_tel2" id="form_student_tel2">
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div>
+            <label for="form_student_stage">教育段階 <span class="text-sm text-danger">必須</span></label>
+            <select name="form_student_stage" id="form_student_stage">
+                <option value="小学生">小学生</option>
+                <option value="中学生">中学生</option>
+                <option value="高校生">高校生</option>
+                <option value="その他">その他</option>
+            </select>
+        </div>
+        <div>
+            <label for="form_student_grade">学年 <span class="text-sm text-danger">必須</span></label>
+            <select name="form_student_grade" id="form_student_grade" >
+                <option value="1">1年生</option>
+                <option value="2">2年生</option>
+                <option value="3">3年生</option>
+                <option value="4">4年生</option>
+                <option value="5">5年生</option>
+                <option value="6">6年生</option>
+                <option value="その他">その他</option>
+            </select>
+        </div>
+    </div>
+    <div class="input-row">
+    <div>
+        <label for="form_student_schoolclass">組</label>
+        <input type="text" name="form_student_schoolclass" id="form_student_schoolclass">
+    </div>
+
+    <div>
+        <label for="form_student_school">学校名</label>
+        <input type="text" name="form_student_school" id="form_student_school">
+    </div>
+    </div>
+    <div >
+        <label for="form_student_subjects">選択科目</label>
+        <div id="subject-checkboxes"  class="input-row-subjects">
+            <!-- チェックボックスがJavaScriptによってここに追加されます -->
+        </div>
+        <div id="subject-error-message" style="display: none;">少なくとも1つの科目を選択してください！</div>
+    </div>
+    {% csrf_token %}
+    <input type="button" value="保存" class="btn btn-primary" onclick="createStudent()">
+</form>
             
 
         </div>
@@ -323,42 +428,83 @@ const printList = () => {
             const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
 
             const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
-                const relatedSubjects = schoolSubjectDict[key] || [];
+    const relatedSubjects = schoolSubjectDict[key] || [];
 
-                const subjectHtml = allSubjectList.map(subject => {
-                    const isChecked = relatedSubjects.includes(subject.title) ? 'checked' : '';
-                    return `<label><input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}</label>`;
-                })
+    const subjectHtml = allSubjectList.map(subject => {
+        const isChecked = relatedSubjects.includes(subject.title) ? 'checked' : '';
+        
+        return `
+        <div class="input-row-subjects">
+        <label>
+            <input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}</label></div>`;
+    });
 
-                return `
-                <div data-school-id=${key} >
-                    <div>
-                        <label for="form_student_stage_${key}">教育段階</label>
-                        <input type="text" value="${schoolInfo.stage}" name="form_student_stage_${key}" id="form_student_stage_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_grade_${key}">学年</label>
-                        <input type="text" value="${schoolInfo.grade}" name="form_student_grade_${key}" id="form_student_grade_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_schoolclass_${key}">組</label>
-                        <input type="text" value="${schoolInfo.schoolclass}" name="form_student_schoolclass_${key}" id="form_student_schoolclass_${key}">
-                    </div>
-                    <div>
-                        <label for="form_student_school_${key}">学校</label>
-                        <input type="text" value="${schoolInfo.school}" name="form_student_school_${key}" id="form_student_school_${key}">
-                    </div>
-                    <div>
-                        <label>科目:</label>
-                        ${subjectHtml}
-                    </div>
-                    <div style="display:inline;">
-                        <input type="button" value="保存" class="btn btn-primary" onclick="updateStudentSchool(${key})">
-                        <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudentSchool(${key})">
-                    </div>
-                </div>
-                `;
-            }).join('');
+    // 学年セレクトオプションを構築
+    const gradeOptions = [
+        { value: "1", label: "1年生" },
+        { value: "2", label: "2年生" },
+        { value: "3", label: "3年生" },
+        { value: "4", label: "4年生" },
+        { value: "5", label: "5年生" },
+        { value: "6", label: "6年生" },
+        { value: "その他", label: "その他" }
+    ];
+
+    // 学年セレクトボックスのHTML生成
+    const gradeSelectHtml = gradeOptions.map(option => {
+        const isSelected = option.value == schoolInfo.grade ? 'selected' : '';
+        return `<option value="${option.value}" ${isSelected}>${option.label}</option>`;
+    }).join('');
+
+    // 教育段階セレクトオプションを構築
+    const stageOptions = [
+        { value: "小学生", label: "小学生" },
+        { value: "中学生", label: "中学生" },
+        { value: "高校生", label: "高校生" },
+        { value: "その他", label: "その他" }
+    ];
+
+    // 教育段階セレクトボックスのHTML生成
+    const stageSelectHtml = stageOptions.map(option => {
+        const isSelected = option.value == schoolInfo.stage ? 'selected' : '';
+        return `<option value="${option.value}" ${isSelected}>${option.label}</option>`;
+    }).join('');
+
+    return `
+    <div data-school-id=${key} >
+        <div class="input-row">
+        <div>
+            <label for="form_student_stage_${key}">教育段階</label>
+            <select name="form_student_stage_${key}" id="form_student_stage_${key}">
+                ${stageSelectHtml}
+            </select>
+        </div>
+        <div>
+            <label for="form_student_grade_${key}">学年</label>
+            <select name="form_student_grade_${key}" id="form_student_grade_${key}">
+                ${gradeSelectHtml}
+            </select>
+        </div>
+        <div>
+            <label for="form_student_schoolclass_${key}">組</label>
+            <input type="text" value="${schoolInfo.schoolclass}" name="form_student_schoolclass_${key}" id="form_student_schoolclass_${key}">
+        </div>
+        <div>
+            <label for="form_student_school_${key}">学校</label>
+            <input type="text" value="${schoolInfo.school}" name="form_student_school_${key}" id="form_student_school_${key}">
+        </div>
+        </div>
+        <div>
+            <label>科目:</label>
+            ${subjectHtml}
+        </div>
+        <div style="display:inline;">
+            <input type="button" value="保存" class="btn btn-primary" onclick="updateStudentSchool(${key})">
+            <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudentSchool(${key})">
+        </div>
+    </div>
+    `;
+}).join('');
 
 
 
@@ -403,7 +549,8 @@ row.innerHTML = `
     </table>
                 <div class="active_box box" style="display: none;">
                     <form>
-                        <div>
+                        <div class="input-row">
+                        <div >
                             <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
                             <input type="text" required value="${studentFields.name}" name="form_student_name" id="form_student_name">
                         </div>
@@ -411,14 +558,19 @@ row.innerHTML = `
                             <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
                             <input type="email" required value="${studentFields.mail}" name="form_student_mail" id="form_student_mail">
                         </div>
+                        </div>
+                        <div class="input-row">
                         <div>
                             <label for="form_student_post">郵便番号</label>
                             <input type="text" value="${studentFields.post}" name="form_student_post" id="form_student_post">
                         </div>
+                        
                         <div>
                             <label for="form_student_address">住所</label>
                             <input type="text" value="${studentFields.address}" name="form_student_address" id="form_student_address">
                         </div>
+                        </div>
+                        <div class="input-row">
                         <div>
                             <label for="form_student_tel1">生徒の電話番号</label>
                             <input type="text" value="${studentFields.phone1}" name="form_student_tel1" id="form_student_tel1">
@@ -426,6 +578,7 @@ row.innerHTML = `
                         <div>
                             <label for="form_student_tel2">保護者の電話番号</label>
                             <input type="text" value="${studentFields.phone2}" name="form_student_tel2" id="form_student_tel2">
+                        </div>
                         </div>
                          <div style="display:inline;">
                             <input type="button" value="保存" class="btn btn-primary" onclick="updateStudent(${studentPk})">
@@ -480,10 +633,9 @@ function createStudent() {
     const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(checkbox => checkbox.value);
 
     // Ajaxリクエストを送信
-    $.ajax({
-        url: '{% url "classmanager:ajax_get_createstudentlist" %}',
-        type: 'GET',
-        data: {
+    const csrftoken = Cookies.get('csrftoken'); 
+
+    const postBody = {
             student_name: studentName,
             student_mail: studentMail,
             student_post: studentPost,
@@ -494,8 +646,18 @@ function createStudent() {
             student_grade: studentGrade,
             student_schoolclass: studentSchoolClass,
             student_stage: studentStage,
-            student_subjects: selectedSubjects.join(',') // カンマ区切りで送信
+            // student_subjects: selectedSubjects.join(',') // カンマ区切りで送信
+    };
+
+    $.ajax({
+        url: '{% url "classmanager:ajax_get_createstudentlist" %}',
+        type: 'POST',
+        dataType: 'json',
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken, 
         },
+        data: postBody,
         success: function(response) {
             if (response.success) {
                 printList();
@@ -503,7 +665,7 @@ function createStudent() {
                 alert("保存に失敗しました。");
             }
         },
-        error: function() {
+        error: function(error) {
             alert("通信エラーが発生しました。");
         }
     });
@@ -593,11 +755,26 @@ function addformStudentSchool(studentPk) {
     <div data-school-id=${studentPk}>
         <div>
             <label for="form_student_stage_${studentPk}">教育段階</label>
-            <input type="text" name="form_student_stage" id="form_student_stage_${studentPk}">
+
+
+             <select name="form_student_stage" id="form_student_stage_${studentPk}">
+                        <option value="小学生">小学生</option>
+                        <option value="中学生">中学生</option>
+                        <option value="高校生">高校生</option>
+                        <option value="その他">その他</option>
+                    </select>
         </div>
         <div>
             <label for="form_student_grade_${studentPk}">学年</label>
-            <input type="text" name="form_student_grade" id="form_student_grade_${studentPk}">
+             <select  name="form_student_grade" id="form_student_grade_${studentPk}"">  
+                        <option value="1">1年生</option>
+                        <option value="2">2年生</option>
+                        <option value="3">3年生</option>
+                        <option value="4">4年生</option> 
+                        <option value="5">5年生</option>
+                        <option value="6">6年生</option>
+                        <option value="その他">その他</option>
+                    </select>    
         </div>
         <div>
             <label for="form_student_schoolclass_${studentPk}">組</label>
@@ -699,10 +876,14 @@ function createStudentSchool(studentPk) {
         alert('少なくとも1つの科目を選択してください！');
         return;
     }
-
+    const csrftoken = Cookies.get('csrftoken'); 
     $.ajax({
         url: '/ajax/create_student_school/',  // This should match the Django URL pattern
-        type: 'GET',
+        type: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken, 
+        },
         data: {
             'student_id': studentPk,
             'student_stage': stage,

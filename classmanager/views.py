@@ -8,8 +8,10 @@ from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .models import Student, StudentSchool,Subject,SchoolSubject
+from accounts.models import ManagerClassroom
 from django.views.decorators.http import require_GET
 import json
+from django.views.decorators.csrf import csrf_protect
 class IndexView(TemplateView):
     template_name='index.html'
     
@@ -58,27 +60,31 @@ class StudentListView(CreateView, ListView):
 #生徒登録関連
 
 
-
+@csrf_protect   
 def ajax_get_createstudentlist(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
+        print('test')
+        json_body = request.body.decode("utf-8")
+        print(json_body)
+        body = json.loads(json_body)
         # Studentを作成
         new_student = Student.objects.create(
             manageruser=request.user,
-            name=request.GET.get('student_name'),
-            mail=request.GET.get('student_mail'),
-            post=request.GET.get('student_post'),
-            address=request.GET.get('student_address'),
-            phone1=request.GET.get('student_tel1'),
-            phone2=request.GET.get('student_tel2')
+            name=body['student_name'],
+            mail=body['student_mail'],
+            post=body['student_post'],
+            address=body['student_address'],
+            phone1=body['student_tel1'],
+            phone2=body['student_tel2']
         )
         
         # StudentSchoolを関連付けて作成
         new_school = StudentSchool.objects.create(
             student=new_student,
-            school=request.GET.get('student_school'),
-            stage=request.GET.get('student_stage'),
-            grade=request.GET.get('student_grade'),
-            schoolclass=request.GET.get('student_schoolclass')
+            school=body['student_school'],
+            stage=body['student_stage'],
+            grade=body['student_grade'],
+            schoolclass=body['student_schoolclass'],
         )
         
         # 選択された科目を関連付け
@@ -203,16 +209,23 @@ def ajax_delete_student_school(request):
     except StudentSchool.DoesNotExist:
         return JsonResponse({'success': False, 'error': '学校データが見つかりません。'})
     
+@csrf_protect    
 def ajax_create_student_school(request):
-    if request.method == 'GET':
-        try:
-            student_id = request.GET.get('student_id')
-            stage = request.GET.get('student_stage')
-            grade = request.GET.get('student_grade')
-            schoolclass = request.GET.get('student_schoolclass')
-            school = request.GET.get('student_school')
-            subjects_data = request.GET.get('subjects', '[]')
-            subjects_ids = json.loads(subjects_data)
+    if request.method == 'POST':
+
+        # try:
+            print('test')
+            json_body = request.body.decode("utf-8")
+            print('test2')
+            body = json.loads(json_body)
+            student_id = body['student_id']
+            print('test3')
+            stage = body['student_stage']
+            grade = body['student_grade']
+            schoolclass = body['student_schoolclass']
+            school = body['student_school']
+            subjects_data = body['subjects', '[]']
+            subjects_ids = body['subjects_data']
 
             student = Student.objects.get(pk=student_id)
 
@@ -235,14 +248,14 @@ def ajax_create_student_school(request):
 
             return JsonResponse({'success': True})
 
-        except Student.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Student not found'})
-        except Subject.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Subject not found'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+    #     except Student.DoesNotExist:
+    #         return JsonResponse({'success': False, 'error': 'Student not found'})
+    #     except Subject.DoesNotExist:
+    #         return JsonResponse({'success': False, 'error': 'Subject not found'})
+    #     except Exception as e:
+    #         return JsonResponse({'success': False, 'error': str(e)})
 
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    # return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 
 
@@ -290,3 +303,16 @@ def get_subjects(request):
     subjects = Subject.objects.all()  # 科目の全リストを取得
     subject_list = [{'id': subject.id, 'title': subject.title} for subject in subjects]
     return JsonResponse({'subjects': subject_list})
+
+def ajax_get_printclassroomlist(request):
+    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # 現在ログインしているManagerUserに紐づくClassroomUserを取得
+        classrooms = ManagerClassroom.objects.filter(manager=request.user)
+        classroom_list = [{
+            'username': classroom.classroom.username,
+            'email': classroom.classroom.email
+        } for classroom in classrooms]
+        
+        return JsonResponse({'classroomlist': classroom_list}, safe=False)
+
+    return JsonResponse({'success': False, 'message': '無効なリクエストです'})

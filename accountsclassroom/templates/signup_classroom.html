@@ -1,15 +1,25 @@
 
 
 
-{% extends 'baselite.html' %}
+{% extends './base.html' %}
 {% block title %}Sign up{% endblock %}
     {% block content %}
     
-    <hr>
-    <div class="container">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">      
+            <h1>教室アカウントの作成</h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>生徒</a></li>
+                <li class="active">生徒一覧</li>
+            </ol>
+        </section>
+        <section class="content">
+            <div class="box">
+    <div class="container ">
         <div class="row">
             <div class="col offset-2">
-                <h3>サインアップ</h3>
+                <br>
                 <form method = "post">
                     {% csrf_token %}
                     {% for field in form %}
@@ -37,4 +47,6 @@
             </div>
         </div>
     </div>
+    </div>
+    </section>
     {% endblock %}

@@ -113,3 +113,41 @@ class StudentSubject(models.Model):
         auto_now_add=True,blank=True,null=True
         )
 
+class Teacher(models.Model):
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    teacher_id=models.CharField(
+        verbose_name='ID',
+        max_length=200,blank=True,null=True
+    )
+    name=models.CharField(
+        verbose_name='名前',
+        max_length=200,blank=True,null=True
+    )
+    mail=models.CharField(
+        verbose_name='メールアドレス',
+        max_length=200,blank=True,null=True
+    )
+    post=models.CharField(
+        verbose_name='郵便番号',
+        max_length=200,blank=True,null=True
+    )
+    address=models.CharField(
+        verbose_name='住所',
+        max_length=200,blank=True,null=True
+    )
+    phone1=models.CharField(
+        verbose_name='電話番号',
+        max_length=200,blank=True,null=True
+    )
+    note=models.CharField(
+        verbose_name='メモ',
+        max_length=200,blank=True,null=True
+    )
+    posted_at=models.DateTimeField(
+        verbose_name='投稿日時',
+        auto_now_add=True,blank=True,null=True
+        )

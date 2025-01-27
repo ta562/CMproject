@@ -4,205 +4,163 @@
 
     
 <style>
-.content-wrapper{
-  
-}
-.content{
-    
-}
-.assessment_box{
-    
-}
-.assessment_table{
-    border: 5px solid #fafafa;
-  padding: 1em;
-    width: 100%;
-  text-align: center;
-  background-color: #ffffff;
-  
-}
-td{
-    
-}
-.assessment_th{
-    border: 2px solid #fafafa;
-    background-color: #c2c1c1;
-   
-    
-}
-.assessment_td{
-    
-    border-bottom: 1px solid #b0b0b0;
-    border-right: 2px solid #ffffff;
-   background-color: #fafafa;
-   height: 150px;
-   
-}
-.red_td{
-    background-color: #f7e7db;
-}
-.blue_td{
-    background-color: #d9eef3;
-}
-.assessment_check{
-    width: 25px;
-    min-width: 25px;
-}
-.assessment_status{
-    width: 80px;
-    min-width: 80px;
-}
-.assessment_time , .assessment_operation{
-    width: 80px;
-    min-width: 80px;
-}
-.assessment_text{
-    width: 70%;
-    min-width: 100px;
-    position: relative;
-    text-align: left;
-}
-
-.teacher_text{
-    width: 60%;
-    margin: 5px;
-    position: absolute;
-    top: 30px; /* 上を基準 */
-    left: 0;      
-}
-.teacher_text textarea,.manager_text textarea{
-  width: 80%;
-  height: 85px;
-}
-.manager_text{
-    width: 50%;
-    margin: 5px;
-    position: absolute;
-    top: 30px; /* 上を基準 */
-    left: 50%;      
-}
-.approval_button{
-    position:absolute;
-    top: 60%;
-    right: 1%;
-    width: 7%;
-}
-.detail_button{
-    position:absolute;
-    top: 20%;
-    right: 1%;
-    width: 7%;
-}
-.lesson_data{
-    position:absolute;
-    top: 5%;
-    left: 1%;
-    width: 100%;
-}
-
+    /* 既存のスタイル */
+    .tabs {
+        display: flex;
+        cursor: pointer;
+        margin-bottom: 10px;
+        overflow-x: auto;  /* 横スクロールを許可 */
+        white-space: nowrap; /* タブを横並びにする */
+    }
+    .tab {
+        padding: 10px 20px;
+        background: #ddd;
+        margin-right: 5px;
+        border-radius: 5px 5px 0 0;
+        flex-shrink: 0; /* タブが縮小しないようにする */
+    }
+    .tab.active {
+        background: #fff;
+        border-bottom: 2px solid #fff;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .modal.open {
+        display: flex;
+    }
 </style>
+
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">      
-        <h1>生徒一覧</h1>
-        <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>生徒</a></li>
-            <li class="active">生徒一覧</li>
-        </ol>
-    </section>
     <section class="content">
-       <div class="assessment_box">
-            <table class="assessment_table">
-                <thead>
-                <tr >
-                    <td class="assessment_th assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_th assessment_status">
-                        処理
-                    </td>
-                    <td class="assessment_th"> 
-                        日付
-                    </td>
-                    <td class="assessment_th"> 
-                        時限
-                    </td>
-                    <td class="assessment_th"> 
-                        教室
-                    </td>
-                    <td class="assessment_th"> 
-                        内容
-                    </td>
-                </tr>
-            </thead>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td red_td assessment_status">
-                        未処理
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-            </table>
+        <div class="studentselecter_box">
+            <div class="tabs">
+                <div class="tab active" data-tab="tanaka">田中</div>
+                <div class="tab" data-tab="yamada">山田</div>
+                <div class="tab" data-tab="kimura">木村</div>
+                <div id="add-tab-button" class="tab">＋</div>
+            </div>
+            <div class="tab-content active" id="tanaka">
+                <p>田中の授業情報です。</p>
+            </div>
+            <div class="tab-content" id="yamada">
+                <p>山田の授業情報です。</p>
+            </div>
+            <div class="tab-content" id="kimura">
+                <p>木村の授業情報です。</p>
+            </div>
+            <!-- モーダルウィンドウ -->
+            <div id="studentModal" class="modal">
+                <div class="modal-content">
+                    <h3>生徒を選択してください</h3>
+                    <ul>
+                        <li onclick="addStudentTab('sato')">佐藤</li>
+                        <li onclick="addStudentTab('suzuki')">鈴木</li>
+                        <li onclick="addStudentTab('nijimura')">虹村</li>
+                    </ul>
+                    <button onclick="closeModal()">閉じる</button>
+                </div>
+            </div>
         </div>
- 
-     
-
-        <!-- /.row (main row) -->
     </section>
 </div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        if(tab.id !== 'add-tab-button') {
+            // 全てのタブとコンテンツを不活性化
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+            // 選択されたタブとコンテンツを活性化
+            tab.classList.add('active');
+            document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            
+            // スクロールをタブに合わせる
+            scrollToTab(tab);
+        }
+    });
+});
+
+document.getElementById('add-tab-button').addEventListener('click', () => {
+    // モーダルを開く
+    document.getElementById('studentModal').classList.add('open');
+});
+
+function closeModal() {
+    document.getElementById('studentModal').classList.remove('open');
+}
+
+function addStudentTab(studentId) {
+    const studentNames = {
+        sato: "佐藤",
+        suzuki: "鈴木",
+        nijimura: "虹村"
+    };
+
+    // 新しいタブ要素を作成
+    const newTab = document.createElement('div');
+    newTab.className = 'tab';
+    newTab.setAttribute('data-tab', studentId);
+    newTab.innerText = studentNames[studentId];
+    
+    // 新しいコンテンツ要素を作成
+    const newTabContent = document.createElement('div');
+    newTabContent.className = 'tab-content';
+    newTabContent.setAttribute('id', studentId);
+    newTabContent.innerHTML = `<p>${studentNames[studentId]}の授業情報です。</p>`;
+
+    // タブとコンテンツを追加
+    document.querySelector('.tabs').insertBefore(newTab, document.getElementById('add-tab-button'));
+    document.querySelector('.studentselecter_box').appendChild(newTabContent);
+
+    // 新しいタブにもクリックイベントを付加する
+    newTab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+        newTab.classList.add('active');
+        newTabContent.classList.add('active');
+
+        // スクロールをタブに合わせる
+        scrollToTab(newTab);
+    });
+
+    // モーダルを閉じる
+    closeModal();
+}
+
+// タブが選択されたときに自動的にスクロール
+function scrollToTab(tab) {
+    const tabContainer = document.querySelector('.tabs');
+    const tabOffset = tab.offsetLeft;
+    const tabWidth = tab.offsetWidth;
+    
+    // タブの位置が左側に来るようにスクロール
+    tabContainer.scrollTo({
+        left: tabOffset - tabContainer.offsetLeft - (tabContainer.offsetWidth / 2) + (tabWidth / 2),
+        behavior: 'smooth'
+    });
+}
+</script>
 {% endblock content %}

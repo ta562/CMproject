@@ -30,19 +30,27 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from .models import ClassroomUser
+from accounts.models import ManagerClassroom
 from django.contrib.auth.views import LoginView,LogoutView
 
 UserModel = ClassroomUser.objects
 # Create your views here.
 
 class SignUpClassroomView(CreateView):
-    form_class=ClassroomUserCreationForm
-    template_name="signup_classroom.html"
-    success_url=reverse_lazy('accountsclassroom:signup_success_classroom')
+    form_class = ClassroomUserCreationForm
+    template_name = "signup_classroom.html"
+    success_url = reverse_lazy('classmanager:classroomlist')
 
-    def form_valid(self,form):
-        user=form.save()
-        self.object=user
+    def form_valid(self, form):
+        user = form.save()
+        self.object = user
+
+        # 現在ログインしているManagerUserを取得
+        manager = self.request.user
+
+        # ManagerClassroomのインスタンスを作成し保存
+        ManagerClassroom.objects.create(manager=manager, classroom=user)
+
         return super().form_valid(form)
 
 class SignUpSuccessClassroomView(TemplateView):
