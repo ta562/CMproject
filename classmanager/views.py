@@ -110,9 +110,14 @@ def ajax_get_createstudentlist(request):
 def ajax_get_updatastudentlist(request):
     if request.method == 'GET':
         student_id = request.GET.get('student_id')
+        classroomuser_id = request.GET.get('student_classroomuser')
+        
+        
         try:
             student = Student.objects.get(pk=student_id)
             student.name = request.GET.get('student_name')
+            student.classroomuser = ClassroomUser.objects.get(id=int(classroomuser_id))
+            print(student.classroomuser)
             student.mail = request.GET.get('student_mail')
             student.post = request.GET.get('student_post')
             student.address = request.GET.get('student_address')
@@ -124,14 +129,27 @@ def ajax_get_updatastudentlist(request):
             return JsonResponse({'success': False, 'message': '学生が存在しません'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-    
 def ajax_get_printstudentlist(request):
     students = Student.objects.filter(manageruser_id=request.user).order_by('-posted_at')
     schools = StudentSchool.objects.order_by('-posted_at')
     subjects = SchoolSubject.objects.select_related('subject', 'school').all()
     all_subjects = Subject.objects.all()  # すべての科目を取得
 
-    studentlist = serializers.serialize('python', students)
+    manager_classrooms = ManagerClassroom.objects.filter(manager=request.user)
+    classroom_users = ClassroomUser.objects.filter(
+        id__in=manager_classrooms.values_list('classroom_id', flat=True)
+    )
+
+    studentlist = []
+    for student in students:
+        serialized_student = serializers.serialize('python', [student])[0]
+        # classroomuserのusernameを安全に追加
+        if student.classroomuser is not None:
+            serialized_student['fields']['classroomusername'] = student.classroomuser.username
+        else:
+            serialized_student['fields']['classroomusername'] = None
+        studentlist.append(serialized_student)
+
     schoollist = serializers.serialize('python', schools)
 
     subjectlist = [
@@ -142,17 +160,21 @@ def ajax_get_printstudentlist(request):
         for school_subject in subjects
     ]
 
-    # すべての科目情報を整形
     all_subjectlist = [
         {'id': subject.id, 'title': subject.title}
         for subject in all_subjects
+    ]
+
+    classroom_user_list = [
+        {'id': user.id, 'username': user.username} for user in classroom_users
     ]
 
     data = {
         'studentlist': studentlist,
         'schoollist': schoollist,
         'subjectlist': subjectlist,
-        'all_subjectlist': all_subjectlist  # すべての科目を追加
+        'all_subjectlist': all_subjectlist,
+        'classroom_users': classroom_user_list
     }
     return JsonResponse(data)
 

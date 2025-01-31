@@ -68,6 +68,10 @@ td{
     width: 10%;
     min-width: 70px;
 }
+.student_classroomuser{
+    width: 10%;
+    min-width: 70px;
+}
 .student_mail{
     width: 15%;
     min-width: 70px;
@@ -342,6 +346,9 @@ td{
                     <td class="student_th student_name">
                         名前
                     </td>
+                    <td class="student_th student_classroomuser">
+                        教室
+                    </td>
                     <td class="student_th student_mail"> 
                         配信用メールアドレス
                     </td>
@@ -427,7 +434,8 @@ const printList = () => {
         let studentList = response.studentlist;
         let schoolList = response.schoollist;
         let subjectList = response.subjectlist;
-        let allSubjectList = response.all_subjectlist;  // すべての科目情報
+        let allSubjectList = response.all_subjectlist; 
+        let classroomuserList =response.classroom_users // すべての科目情報
 
         // Create dictionaries for school and subject information
         const schoolDict = {};
@@ -447,10 +455,16 @@ const printList = () => {
             }
             schoolSubjectDict[schoolId].push(subjectEntry.subject_title);
         });
+      
 
         studentList.forEach(student => {
             const studentFields = student.fields; 
             const studentPk = student.pk;
+            const classroomUserSelectHtml = (response.classroom_users || []).map(user => {
+    const isSelected = (user.id === studentFields.classroomuser) ? 'selected' : '';
+    return `<option value="${user.id}" ${isSelected}>${user.username}</option>`;
+}).join('');
+
             const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
 
             const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
@@ -557,7 +571,7 @@ row.innerHTML = `
                 ${studentFields.name}
             </td>
             <td class="student_td  student_classroomuser">
-                ${studentFields.classroomuser}
+                ${studentFields.classroomusername}
             </td>
             <td class="student_td student_mail">
                 ${studentFields.mail}
@@ -583,11 +597,12 @@ row.innerHTML = `
                             <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
                             <input type="text" required value="${studentFields.name}" name="form_student_name" id="form_student_name">
                         </div>
-                        <div>
-                             <label for="form_student_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
-                            <select required name="form_student_classroomuser" id="form_student_classroomuser">
-                            </select>
-                        </div>
+                         <div>
+                                 <label for="form_student_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
+                                <select required name="form_student_classroomuser" id="form_student_classroomuser">
+                                    ${classroomUserSelectHtml}
+                                </select>
+                            </div>
                         <div>
                             <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
                             <input type="email" required value="${studentFields.mail}" name="form_student_mail" id="form_student_mail">
@@ -740,6 +755,7 @@ function updateStudent(studentId) {
 
     // 各フィールドから値を取得
     const name = form.querySelector(`#form_student_name`).value;
+    const classroomuser = form.querySelector(`#form_student_classroomuser`).value;
     const mail = form.querySelector(`#form_student_mail`).value;
     const post = form.querySelector(`#form_student_post`).value;
     const address = form.querySelector(`#form_student_address`).value;
@@ -752,6 +768,7 @@ function updateStudent(studentId) {
         type: 'GET',
         data: {
             'student_id': studentId,
+            'student_classroomuser':classroomuser,
             'student_name': name,
             'student_mail': mail,
             'student_post': post,
@@ -761,7 +778,7 @@ function updateStudent(studentId) {
         },
         success: function(response) {
             if (response.success) {
-                alert("学生情報が更新されました。");
+               
                 printList(); // 更新後の学生リストの再読み込み
             } else {
                 alert("更新に失敗しました。");
