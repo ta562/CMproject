@@ -166,6 +166,49 @@ td{
                 <!-- JavaScript will insert rows here -->
             </div>
         </div>
+
+
+        <div class="box">
+            <form method="POST" id="period-form">
+                <div>
+                    <label for="form_period_title">時限の名前 <span class="text-sm text-danger">必須</span></label>
+                    <input type="text" required value="" name="form_period_title" id="form_period_title">                     
+                </div>
+                <div>
+                    <label for="form_period_start_time">開始時刻 <span class="text-sm text-danger">必須</span></label>
+                    <input type="time" required name="form_period_start_time" id="form_period_start_time">
+                </div>
+                <div>
+                    <label for="form_period_end_time">終了時刻 <span class="text-sm text-danger">必須</span></label>
+                    <input type="time" required name="form_period_end_time" id="form_period_end_time">
+                </div>
+                <input type="button" value="保存" class="btn btn-primary" onclick="createPeriod()">
+            </form>
+        </div>
+        <div class="assessment_box">
+            <table class="period_table" style="border-collapse:collapse;border:none;">
+                <thead>
+                    <tr>
+                        <td class="period_th period_check">
+                            <input type="checkbox" id="period_check" name="period_check">
+                        </td>
+                        <td class="period_th period_title">
+                            時限名
+                        </td>
+                        <td class="period_th period_title">
+                            開始時刻
+                        </td>
+                        <td class="period_th period_title">
+                            終了時刻
+                        </td>
+
+                    </tr>
+                </thead>
+            </table>
+            <div id="period-list">
+                <!-- JavaScript will insert rows here -->
+            </div>
+        </div>
     </section>
 </div>
 <script>
@@ -271,8 +314,99 @@ const printSubjectList = () => {
     });
 };
 
+function createPeriod() {
+    // フォームの検証
+    var form = document.getElementById('period-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    const periodTitle = document.getElementById('form_period_title').value;
+    const periodStartTime = document.getElementById('form_period_start_time').value;
+    const periodEndTime = document.getElementById('form_period_end_time').value;
+
+    // 必須フィールドが入力されているか確認
+    if (!periodTitle || !periodStartTime || !periodEndTime) {
+        alert('全ての必須項目を入力してください。');
+        return;
+    }
+
+    // AJAXリクエストを送信
+    $.ajax({
+        url: '{% url "classmanager:ajax_create_period" %}',
+        type: 'POST',
+        data: {
+            title: periodTitle,
+            start_time: periodStartTime,
+            end_time: periodEndTime,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("時限が保存されました。");
+                printPeriodList(); // 一覧を更新
+            } else {
+                alert("保存に失敗しました。");
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+const PeriodListElement = document.getElementById('period-list');
+const printPeriodList = () => {
+    $.ajax({
+        'url': '{% url "classmanager:ajax_get_printperiodlist" %}',
+        'type': 'GET',
+    }).done(response => {
+        PeriodListElement.innerHTML = '';
+        let periodList = response.periodlist;
+        periodList.forEach(period => {
+            const periodFields = period.fields;
+            const periodPk = period.pk;
+            const row = document.createElement('div');
+            row.setAttribute('data-period-id', periodPk);
+            row.innerHTML = `
+                <table class="period_table" style="border-collapse:collapse;border:none;">
+                    <tr>
+                        <td class="period_td period_check">
+                            <input type="checkbox" id="period_check" name="period_check">
+                        </td>
+                        <td class="period_td period_title">
+                            ${periodFields.title}
+                        </td>
+                        <td class="period_td period_start_time">
+                            ${periodFields.start_time}
+                        </td>
+                        <td class="period_td period_end_time">
+                            ${periodFields.end_time}
+                        </td>
+                    </tr>
+                </table>
+                <div class="active_box box" style="display: none;">
+                    <form>
+                        <div>
+                            <label for="form_period_title">時限の名前 <span class="text-sm text-danger">必須</span></label>
+                            <input type="text" required value="${periodFields.title}" name="form_period_title" id="form_period_title">
+                        </div>
+                        <div>
+                            <input type="button" value="保存" class="btn btn-primary" onclick="updatePeriod(${periodPk})">
+                            <input type="button" value="削除" class="btn btn-danger" onclick="deletePeriod(${periodPk})">
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            PeriodListElement.appendChild(row);
+        });
+        addTableListeners(); // これが科目と時限の両方に対応するか確認
+    });
+};
+
 // Call printSubjectList to initialize the subject list
 printSubjectList();
+printPeriodList();
 
 </script>
 

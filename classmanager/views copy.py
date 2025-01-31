@@ -7,16 +7,11 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from .models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period
+from .models import Student, StudentSchool,Subject,SchoolSubject
 from accounts.models import ManagerClassroom
-from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt
 import json
-from django.utils.dateparse import parse_datetime
-from django.views.decorators.csrf import ensure_csrf_cookie
-
-
+from django.views.decorators.csrf import csrf_protect
 class IndexView(TemplateView):
     template_name='index.html'
     
@@ -29,8 +24,6 @@ class AssessmentListView(TemplateView):
 class StudentRegistrationView(TemplateView):
     template_name='studentregistration.html'
 
-class TimetableView(TemplateView):
-    template_name='timetable.html'
 
 from django.http import JsonResponse
 
@@ -67,15 +60,16 @@ class StudentListView(CreateView, ListView):
 #生徒登録関連
 
 
+@csrf_protect   
 def ajax_get_createstudentlist(request):
     if request.method == 'POST':
         print('test')
-        body = json.loads(request.body)
-        print(body)
+        json_body = request.body.decode("utf-8")
+        print(json_body)
+        body = json.loads(json_body)
         # Studentを作成
         new_student = Student.objects.create(
             manageruser=request.user,
-            classroomuser_id=body['student_classroomuser'],
             name=body['student_name'],
             mail=body['student_mail'],
             post=body['student_post'],
@@ -94,7 +88,7 @@ def ajax_get_createstudentlist(request):
         )
         
         # 選択された科目を関連付け
-        subject_ids = body['student_subjects']
+        subject_ids = request.GET.get('student_subjects', '').split(',')
         subject_objects = Subject.objects.filter(id__in=subject_ids)
         for subject in subject_objects:
             # SchoolSubjectインスタンスを作成して保存
@@ -215,16 +209,23 @@ def ajax_delete_student_school(request):
     except StudentSchool.DoesNotExist:
         return JsonResponse({'success': False, 'error': '学校データが見つかりません。'})
     
+@csrf_protect    
 def ajax_create_student_school(request):
-    if request.method == 'GET':
-        try:
-            student_id = request.GET.get('student_id')
-            stage = request.GET.get('student_stage')
-            grade = request.GET.get('student_grade')
-            schoolclass = request.GET.get('student_schoolclass')
-            school = request.GET.get('student_school')
-            subjects_data = request.GET.get('subjects', '[]')
-            subjects_ids = json.loads(subjects_data)
+    if request.method == 'POST':
+
+        # try:
+            print('test')
+            json_body = request.body.decode("utf-8")
+            print('test2')
+            body = json.loads(json_body)
+            student_id = body['student_id']
+            print('test3')
+            stage = body['student_stage']
+            grade = body['student_grade']
+            schoolclass = body['student_schoolclass']
+            school = body['student_school']
+            subjects_data = body['subjects', '[]']
+            subjects_ids = body['subjects_data']
 
             student = Student.objects.get(pk=student_id)
 
@@ -247,14 +248,14 @@ def ajax_create_student_school(request):
 
             return JsonResponse({'success': True})
 
-        except Student.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Student not found'})
-        except Subject.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Subject not found'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+    #     except Student.DoesNotExist:
+    #         return JsonResponse({'success': False, 'error': 'Student not found'})
+    #     except Subject.DoesNotExist:
+    #         return JsonResponse({'success': False, 'error': 'Subject not found'})
+    #     except Exception as e:
+    #         return JsonResponse({'success': False, 'error': str(e)})
 
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    # return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 
 
@@ -303,57 +304,6 @@ def get_subjects(request):
     subject_list = [{'id': subject.id, 'title': subject.title} for subject in subjects]
     return JsonResponse({'subjects': subject_list})
 
-def classroom_users_endpoint(request):
-    # Assuming `request.user` is the logged-in ManagerUser
-    manager_user = request.user
-
-    # Get classrooms linked to the ManagerUser
-    manager_classrooms = ManagerClassroom.objects.filter(manager=manager_user)
-
-    # Get ClassroomUser IDs from these manager classrooms
-    classroom_users = ClassroomUser.objects.filter(
-        id__in=manager_classrooms.values_list('classroom_id', flat=True)
-    )  # .select_related('user') は削除
-
-    # Prepare data for JSON response
-    data = {
-        'classroom_users': [
-            {'id': user.id, 'username': user.username} for user in classroom_users
-        ]
-    }
-
-    return JsonResponse(data)
-
-@ensure_csrf_cookie
-def ajax_create_period(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        title = request.POST.get('title')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
-
-        if title and start_time and end_time:
-            Period.objects.create(
-                manageruser=request.user,  # 正しくリンクされていることを確認
-                title=title,
-                start_time=start_time,
-                end_time=end_time
-            )
-            return JsonResponse({'success': True, 'message': '時限が保存されました'})
-        else:
-            return JsonResponse({'success': False, 'message': '無効なデータです'})
-
-    return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-
-def ajax_get_printperiodlist(request):
-    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # ログインしているユーザーに関連するすべての時限
-        periods = Period.objects.filter(manageruser=request.user)
-        period_list = serializers.serialize('python', periods)
-        return JsonResponse({'periodlist': period_list})
-
-    return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-
-
 def ajax_get_printclassroomlist(request):
     if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # 現在ログインしているManagerUserに紐づくClassroomUserを取得
@@ -372,16 +322,10 @@ def ajax_get_printclassroomlist(request):
 def ajax_create_teacher(request):
     if request.method == 'POST':
         body = json.loads(request.body)
-        teacher_id = body.get('teacher_id')
-        
-        # teacher_idが重複していないか確認
-        if Teacher.objects.filter(teacher_id=teacher_id).exists():
-            return JsonResponse({'success': False, 'message': 'このIDは既に存在します'})
-
         # Teacherオブジェクトの作成
         new_teacher = Teacher.objects.create(
             manageruser=request.user,
-            teacher_id=teacher_id,
+            teacher_id=body.get('teacher_id'),
             name=body.get('name'),
             mail=body.get('mail'),
             post=body.get('post'),
@@ -393,149 +337,8 @@ def ajax_create_teacher(request):
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
     
-def ajax_get_teacherlist(request):
-    teachers = Teacher.objects.filter(manageruser_id=request.user).order_by('-posted_at')
-    teacherlist = serializers.serialize('python', teachers)
-    
-    data = {
-        'teacherlist': teacherlist,
-    }
-    return JsonResponse(data)
 
-@csrf_exempt  # ここではcsrf_exemptを使用するが、通常は推奨されない。適切にCSRFトークンを扱う必要がある。
-def ajax_get_update_teacher(request):
-    if request.method == 'POST':
-        teacher_id = request.POST.get('teacher_id')
-        try:
-            teacher = Teacher.objects.get(id=teacher_id)
-            teacher.teacher_id=request.POST.get('teacher_teacher_id')
-            teacher.name = request.POST.get('teacher_name')
-            teacher.mail = request.POST.get('teacher_mail')
-            teacher.post = request.POST.get('teacher_post')
-            teacher.address = request.POST.get('teacher_address')
-            teacher.phone1 = request.POST.get('teacher_phone')
-            teacher.note = request.POST.get('teacher_note')
-            teacher.save()
-            return JsonResponse({'success': True})
-        except Teacher.DoesNotExist:
-            return JsonResponse({'success': False, 'error': '教師が見つかりませんでした。'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    else:
-        return JsonResponse({'success': False, 'error': '無効なリクエストです。'})
-    
-@csrf_exempt  # こちらも同様にCSRFを適切に扱うべき
-def ajax_get_deleteteacherlist(request):
-    if request.method == 'POST':
-        teacher_id = request.POST.get('teacher_id')
-        try:
-            teacher = Teacher.objects.get(id=teacher_id)
-            teacher.delete()
-            return JsonResponse({'success': True})
-        except Teacher.DoesNotExist:
-            return JsonResponse({'success': False, 'error': '教師が見つかりませんでした。'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    else:
-        return JsonResponse({'success': False, 'error': '無効なリクエストです。'})
-    
-@csrf_exempt
-def update_class_schedule(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            schedule_id = data.get('id')
-            start_time = data.get('start_time')
-            end_time = data.get('end_time')
-            location = data.get('location')
-            notes = data.get('notes')
-
-            # `ClassSchedule`モデルのインスタンスを取得
-            schedule = ClassSchedule.objects.get(id=schedule_id)
-            schedule.start_time = start_time
-            schedule.end_time = end_time
-            schedule.location = location
-            schedule.notes = notes
-            schedule.save()
-
-            return JsonResponse({'success': True, 'message': 'スケジュールが更新されました。'})
-        except ClassSchedule.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'スケジュールが見つかりません。'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
-    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
-
-
-@csrf_exempt
-def create_class_schedule(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            student_id = data.get('student_id')
-          
-            teacher_id = data.get('teacher_id')
-            classroomuser_id = data.get('classroomuser_id')
-            period_id = data.get('period_id')
-            date = data.get('date')  # 提出されたデータから日付を取得
-           
-
-            # ClassScheduleオブジェクトを新規作成
-            schedule = ClassSchedule.objects.create(
-                student=Student.objects.get(id=student_id),
-                teacher=Teacher.objects.get(id=teacher_id),
-                classroomuser=ClassroomUser.objects.get(id=classroomuser_id),
-                period=Period.objects.get(id=period_id),
-                date=date,  # 日付を保存
-             
-            )
-
-            return JsonResponse({'success': True, 'message': '新しいスケジュールが作成されました。'})
-        except (Student.DoesNotExist, Teacher.DoesNotExist, ClassroomUser.DoesNotExist, Period.DoesNotExist):
-            return JsonResponse({'success': False, 'message': '関連するデータが見つかりません。'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
-    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
-
-def get_class_schedules(request):
-    try:
-        schedules = ClassSchedule.objects.all()
-        print('test')
-        
-        
-        data = [{
-            'id': schedule.id,
-            'student_name': schedule.student.name,  # 生徒名の取得
-            'teacher_name': schedule.teacher.name,  # 教師名の取得
-            'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',  # 教室名を取得（存在する場合）
-            'period_title': schedule.period.title if schedule.period else '',  # 時限のタイトルを取得（存在する場合）
-            'date': schedule.date.strftime('%Y-%m-%d') if schedule.date else '',  # 日付をフォーマット
-            
-        } for schedule in schedules]
-        print('test2')
-        return JsonResponse(data, safe=False)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-def ajax_get_printtimetableoption(request):
-    # ユーザーが ManagerUser であることを確認します（必要に応じて調整してください）
-    manager_id = request.user.id
-    
-    # ログイン中の ManagerUser に関連する教室と時限をフィルタリングします
-    classrooms = ManagerClassroom.objects.filter(manager_id=manager_id).select_related('classroom')
-    periods = Period.objects.filter(manageruser_id=manager_id)
-
-    # JSON 形式で送信するためにデータをシリアライズ化します
-    classroom_list = [{'id': classroom.classroom.id, 'username': classroom.classroom.username} for classroom in classrooms]
-    period_list = [{'id': period.id, 'title': period.title} for period in periods]
-
-    data = {
-        'classroom_list': classroom_list,
-        'period_list': period_list,
-        # 以下の行を追加して、既存の学生、科目、教師のリストも取得します
-        'student_list': [{'id': student.id, 'name': student.name} for student in Student.objects.filter(manageruser_id=manager_id)],
-        'subject_list': [{'id': subject.id, 'title': subject.title} for subject in Subject.objects.filter(manageruser_id=manager_id)],
-        'teacher_list': [{'id': teacher.id, 'name': teacher.name} for teacher in Teacher.objects.filter(manageruser_id=manager_id)],
-    }
-
-    return JsonResponse(data)
+    def ajax_get_teachers(request):
+    teachers = Teacher.objects.filter(manageruser=request.user).order_by('-posted_at')
+    teacher_list = serializers.serialize('python', teachers)
+    return JsonResponse({'teacherlist': teacher_list})

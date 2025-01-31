@@ -4,38 +4,40 @@
 
     
 <style>
-.content-wrapper{
-  
-}
-.content{
-    
-}
-.assessment_box{
-    
-}
-.assessment_table{
+
+.form{
     border: 5px solid #fafafa;
   padding: 1em;
     width: 100%;
   text-align: center;
   background-color: #ffffff;
+}
+.teacher_box{
+    
+}
+.teacher_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
   
 }
 td{
     
 }
-.assessment_th{
+.teacher_th{
     border: 2px solid #fafafa;
     background-color: #c2c1c1;
    
     
 }
-.assessment_td{
+.teacher_td{
     
     border-bottom: 1px solid #b0b0b0;
     border-right: 2px solid #ffffff;
    background-color: #fafafa;
-   height: 150px;
+   height: 15px;
    
 }
 .red_td{
@@ -44,28 +46,52 @@ td{
 .blue_td{
     background-color: #d9eef3;
 }
-.assessment_check{
-    width: 25px;
+.teacher_check{
+    width:2%;
     min-width: 25px;
 }
-.assessment_status{
-    width: 80px;
-    min-width: 80px;
+.teacher_name{
+    width: 10%;
+    min-width: 70px;
 }
-.assessment_time , .assessment_operation{
-    width: 80px;
-    min-width: 80px;
+.teacher_mail{
+    width: 15%;
+    min-width: 70px;
 }
-.assessment_text{
+.teacher_phone1{
+    width: 8%;
+    min-width: 70px;
+}
+.teacher_address{
+    width: 15%;
+    min-width: 70px;
+}
+.teacher_subject{
+    width: 15%;
+    min-width: 70px;
+}
+.teacher_post{
+    width: 15%;
+    min-width: 70px;
+}
+.teacher_note{
+    width: 15%;
+    min-width: 70px;
+}
+.teacher_teacher_id{
+    width: 15%;
+    min-width: 70px;
+}
+.student_text{
     width: 70%;
-    min-width: 100px;
+    min-width: 50px;
     position: relative;
     text-align: left;
 }
 
 .teacher_text{
     width: 60%;
-    margin: 5px;
+   
     position: absolute;
     top: 30px; /* 上を基準 */
     left: 0;      
@@ -99,6 +125,104 @@ td{
     left: 1%;
     width: 100%;
 }
+.active_box{
+    display: none;
+}
+
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+
+
+
+
+
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 各ラベル */
+    label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* 入力フィールド */
+    input[type="text"],
+    input[type="email"],
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* 必須項目のマーク */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 12px;
+    }
+
+    /* 横並びレイアウト */
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .input-row-subjects {
+        display: flex;
+        justify-content:left;
+        
+        flex-wrap: wrap;
+    }
+    .input-row div {
+        flex: 1;
+    }
+
+    /* 入力フィールドに対するエラーメッセージ */
+    #subject-error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #e74c3c;
+    }
+
+    /* ボタンのスタイル */
+    .btn {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #2980b9;
+    }
+
+    /* チェックボックスのスタイル */
+    #subject-checkboxes input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    /* 小さなフォントサイズ */
+    .text-sm {
+        font-size: 12px;
+    }
+
 
 </style>
 <div class="content-wrapper">
@@ -111,98 +235,316 @@ td{
         </ol>
     </section>
     <section class="content">
-       <div class="assessment_box">
-            <table class="assessment_table">
+        <div class="box">
+           
+<form method="POST">
+    <div class="input-row">
+        <div>
+            <label for="form_teacher_teacher_id">ID <span class="text-sm text-danger">必須</span></label>
+            <input type="text" required name="form_teacher_teacher_id" id="form_teacher_teacher_id">
+        </div>
+        <div>
+            <label for="form_teacher_name">名前 <span class="text-sm text-danger">必須</span></label>
+            <input type="text" required name="form_teacher_name" id="form_teacher_name">
+        </div>
+        
+    </div>
+
+    <div class="input-row">
+        <div>
+            <label for="form_teacher_post">郵便番号</label>
+            <input pattern="\d+" placeholder="数字" type="text" name="form_teacher_post" id="form_teacher_post">
+        </div>
+        <div>
+            <label for="form_teacher_address">住所</label>
+            <input type="text" name="form_teacher_address" id="form_teacher_address">
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div>
+            <label for="form_teacher_mail">メールアドレス <span class="text-sm text-danger">必須</span></label>
+            <input type="email" required name="form_teacher_mail" id="form_teacher_mail">
+        </div>
+        <div>
+            <label for="form_teacher_phone1">電話番号</label>
+            <input pattern="\d+" placeholder="数字" type="text" name="form_teacher_phone1" id="form_teacher_phone1">
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div>
+            <label for="form_teacher_note">メモ
+
+            </label>
+            <input type="text" name="form_teacher_note" id="form_teacher_note">
+        </div>
+        
+    </div>
+   
+       
+    {% csrf_token %}
+    <input type="button" value="保存" class="btn btn-primary" onclick="createTeacher()">
+</form>
+            
+
+        </div>
+        <div class="assessment_box">
+            <table class="teacher_table" style="border-collapse:collapse;border:none;" >
                 <thead>
                 <tr >
-                    <td class="assessment_th assessment_check">
-                        <input type="checkbox">
+                    <td class="teacher_th teacher_check">
+                        <input type="checkbox" id="teacher_check" name="teacher_check">
                     </td>
-                    <td class="assessment_th assessment_status">
-                        処理
+                    <td class="teacher_th teacher_teacher_id">
+                        ID
                     </td>
-                    <td class="assessment_th"> 
-                        日付
+                    <td class="teacher_th teacher_name"> 
+                        名前
                     </td>
-                    <td class="assessment_th"> 
-                        時限
+                    <td class="teacher_th teacher_post"> 
+                        郵便番号
                     </td>
-                    <td class="assessment_th"> 
-                        教室
+                    <td class="teacher_th teacher_address"> 
+                        住所
                     </td>
-                    <td class="assessment_th"> 
-                        内容
+
+                    <td  class="teacher_th teacher_mail"> 
+                        メールアドレス
                     </td>
-                </tr>
+                    <td class="teacher_th teacher_phone1"> 
+                        電話番号
+                    </td>
+                    <td class="teacher_th teacher_note"> 
+                        メモ
+                    </td>
+                   
+                </tr> 
             </thead>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td red_td assessment_status">
-                        未処理
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-            </table>
-        </div>
- 
-     
-
-        <!-- /.row (main row) -->
-    </section>
+        </table>
+            <div id="teacher-list">
+                <!-- JavaScript will insert rows here -->
+            </div>
+       
+    </div>
+</section>
 </div>
+
+
+<script>
+const addTableListeners = () =>{
+    const tables = document.querySelectorAll('.teacher_table');
+    tables.forEach(function(table) {
+        table.addEventListener('click', function() {
+            const form = table.nextElementSibling;
+            if (form && form.classList.contains('active_box')) {
+                // 現在の表示状態を確認し、切り替える
+                const isVisible = form.style.display === 'block';
+
+                // すべてのフォームを非表示に
+                document.querySelectorAll('.active_box').forEach(function(box) {
+                    box.style.display = 'none';
+                });
+
+                // クリックしたテーブルのフォームを表示/非表示に切り替え
+                form.style.display = isVisible ? 'none' : 'block';
+            }
+        });
+    });
+}
+
+ 
+
+     function createTeacher() {
+        var form = document.querySelector('form');
+        const data = {
+            teacher_id: document.getElementById('form_teacher_teacher_id').value,
+            name: document.getElementById('form_teacher_name').value,
+            mail: document.getElementById('form_teacher_mail').value,
+            post: document.getElementById('form_teacher_post').value,
+            address: document.getElementById('form_teacher_address').value,
+            phone1: document.getElementById('form_teacher_phone1').value,
+            note: document.getElementById('form_teacher_note').value,
+        };
+        if (!form.checkValidity()) {
+        form.reportValidity(); // フォームエラーを表示する（ブラウザのデフォルトバリデーションを使用）
+        return; // バリデーションに失敗した場合、処理を中断
+    }
+
+        fetch("{% url 'classmanager:ajax_create_teacher' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                loadTeacherList();  // 成功後にリストを再読み込み
+            } else {
+                alert(data.message || '教師情報の保存に失敗しました');
+            }
+        });
+    }
+    function loadTeacherList() {
+    fetch("{% url 'classmanager:ajax_get_teacherlist' %}")
+        .then(response => response.json())
+        .then(data => {
+            const teacherListDiv = document.getElementById('teacher-list');
+            teacherListDiv.innerHTML = ''; // 現在のリストをクリア
+            for (let teacher of data.teacherlist) {
+                const teacherFields = teacher.fields;
+                const teacherPk = teacher.pk;
+
+                const row = document.createElement('div');
+                row.setAttribute('data-teacher-id', teacherPk);
+                row.innerHTML = `
+                    <table class="teacher_table" style="border-collapse:collapse;border:none;">
+                        <tr>
+                            <td class="teacher_td teacher_check">
+                                <input type="checkbox" id="teacher_check" name="teacher_check">
+                            </td>
+                            <td class="teacher_td teacher_teacher_id">
+                                ${teacherFields.teacher_id}
+                            </td>
+                            <td class="teacher_td teacher_name">
+                                ${teacherFields.name}
+                            </td>
+                            
+                            <td class="teacher_td teacher_post">
+                                ${teacherFields.post}
+                            </td>
+                            <td class="teacher_td teacher_address">
+                                ${teacherFields.address}
+                            </td>
+                            <td class="teacher_td teacher_mail">
+                                ${teacherFields.mail}
+                            </td>
+                            <td class="teacher_td teacher_phone1">
+                                ${teacherFields.phone1}
+                            </td>
+                            <td class="teacher_td teacher_note">
+                                ${teacherFields.note}
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="active_box box" style="display: none;">
+                        <form>
+                            <div class="input-row">
+                                 <div>
+                                    <label for="form_teacher_teacher_id">ID</label>
+                                    <input type="text" required value="${teacherFields.teacher_id}" name="form_teacher_teacher_id" id="form_teacher_teacher_id_${teacherPk}">
+                                </div>
+                                <div>
+                                    <label for="form_teacher_name">名前</label>
+                                    <input type="text" required value="${teacherFields.name}" name="form_teacher_name" id="form_teacher_name_${teacherPk}">
+                                </div>
+                                <div>
+                                    <label for="form_teacher_mail">メールアドレス</label>
+                                    <input type="email" value="${teacherFields.mail}" name="form_teacher_mail" id="form_teacher_mail_${teacherPk}">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div>
+                                    <label for="form_teacher_post">郵便番号</label>
+                                    <input type="text" value="${teacherFields.post}" name="form_teacher_post" id="form_teacher_post_${teacherPk}">
+                                </div>
+                                <div>
+                                    <label for="form_teacher_address">住所</label>
+                                    <input type="text" value="${teacherFields.address}" name="form_teacher_address" id="form_teacher_address_${teacherPk}">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div>
+                                    <label for="form_teacher_phone">電話番号</label>
+                                    <input type="text" value="${teacherFields.phone1}" name="form_teacher_phone" id="form_teacher_phone_${teacherPk}">
+                                </div>
+                                <div>
+                                    <label for="form_teacher_note">メモ</label>
+                                    <textarea name="form_teacher_note" id="form_teacher_note_${teacherPk}">${teacherFields.note}</textarea>
+                                </div>
+                            </div>
+                            <div style="display:inline;">
+                                <input type="button" value="保存" class="btn btn-primary" onclick="updateTeacher(${teacherPk})">
+                                <input type="button" value="削除" class="btn btn-danger" onclick="deleteTeacher(${teacherPk})">
+                            </div>
+                        </form>
+                    </div>
+                `;
+
+                teacherListDiv.appendChild(row);
+            }
+        addTableListeners();
+        });
+}
+
+function updateTeacher(teacherId) {
+    // 各フィールドから値を取得
+    const form = document.querySelector(`#teacher-list div[data-teacher-id="${teacherId}"] form`);
+    const teacher_id = document.getElementById(`form_teacher_teacher_id_${teacherId}`).value;
+    const name = document.getElementById(`form_teacher_name_${teacherId}`).value;
+    const mail = document.getElementById(`form_teacher_mail_${teacherId}`).value;
+    const post = document.getElementById(`form_teacher_post_${teacherId}`).value;
+    const address = document.getElementById(`form_teacher_address_${teacherId}`).value;
+    const phone = document.getElementById(`form_teacher_phone_${teacherId}`).value;
+    const note = document.getElementById(`form_teacher_note_${teacherId}`).value;
+    if (!form.checkValidity()) {
+        form.reportValidity(); // フォームエラーを表示する（ブラウザのデフォルトバリデーションを使用）
+        return; // バリデーションに失敗した場合、処理を中断
+    }
+    // Ajaxでの更新処理を行う
+    $.ajax({
+        url: '{% url "classmanager:ajax_get_update_teacher" %}',
+        type: 'POST',
+        data: {
+            'teacher_id': teacherId,
+            'teacher_teacher_id':teacher_id,
+            'teacher_name': name,
+            'teacher_mail': mail,
+            'teacher_post': post,
+            'teacher_address': address,
+            'teacher_phone': phone,
+            'teacher_note': note,
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("教師情報が更新されました。");
+                loadTeacherList(); // 更新後のリストの再読み込み
+            } else {
+                alert("更新に失敗しました。");
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+
+// 削除処理の例 (deleteTeacher関数)
+function deleteTeacher(teacherId) {
+    $.ajax({
+        url: '{% url "classmanager:ajax_get_deleteteacherlist" %}',
+        type: 'POST',
+        data: {
+            'teacher_id': teacherId,
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("教師情報が削除されました。");
+                loadTeacherList(); // 更新後のリストの再読み込み
+            } else {
+                alert("削除に失敗しました。");
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+    // ページが読み込まれたときに教師リストを読み込む
+    loadTeacherList();
+</script>
 {% endblock content %}

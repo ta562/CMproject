@@ -1,12 +1,19 @@
 from django.db import models
 from accounts.models import ManagerUser
 from accountsclassroom.models import ClassroomUser
+from datetime import datetime
+
 
 
 class Student(models.Model):
     manageruser=models.ForeignKey(
         ManagerUser,
         verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    classroomuser=models.ForeignKey(
+        ClassroomUser,
+        verbose_name='教室',
         on_delete=models.CASCADE,blank=True,null=True
     )
     name=models.CharField(
@@ -95,28 +102,16 @@ class SchoolSubject(models.Model):
         on_delete=models.CASCADE, blank=True, null=True
     )
 
-class StudentSubject(models.Model):
-    student=models.ForeignKey(
-        Student,
-        verbose_name='生徒',
-        on_delete=models.CASCADE, blank=True, null=True
-    )
-
-    subject=models.ForeignKey(
-        Subject,
-        verbose_name='科目',
-        on_delete=models.CASCADE, blank=True, null=True
-    )
-
-    posted_at=models.DateTimeField(
-        verbose_name='投稿日時',
-        auto_now_add=True,blank=True,null=True
-        )
 
 class Teacher(models.Model):
     manageruser=models.ForeignKey(
         ManagerUser,
         verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    classroomuser=models.ForeignKey(
+        ClassroomUser,
+        verbose_name='教室',
         on_delete=models.CASCADE,blank=True,null=True
     )
     teacher_id=models.CharField(
@@ -151,3 +146,49 @@ class Teacher(models.Model):
         verbose_name='投稿日時',
         auto_now_add=True,blank=True,null=True
         )
+
+class Period(models.Model):
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    title=models.CharField(
+        verbose_name='タイトル',
+        max_length=200,blank=True,null=True
+    )
+    start_time = models.TimeField(
+        verbose_name='開始時間',blank=True,null=True
+    )
+    end_time = models.TimeField(
+        verbose_name='終了時間',blank=True,null=True
+    )
+
+class ClassSchedule(models.Model):
+    student = models.ForeignKey(
+        Student,
+        verbose_name='生徒',
+        on_delete=models.CASCADE
+    )
+  
+    teacher = models.ForeignKey(
+        Teacher,
+        verbose_name='教師',
+        on_delete=models.CASCADE
+    )
+  
+    classroomuser=models.ForeignKey(
+        ClassroomUser,
+        verbose_name='教室',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    period=models.ForeignKey(
+        Period,
+        verbose_name='時限',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    date = models.DateField(
+        verbose_name='日付',blank=True,null=True
+    )
+    
+   

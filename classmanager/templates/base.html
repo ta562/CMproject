@@ -36,7 +36,34 @@
             <![endif]-->
             <!-- Google Font -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet" />
+        
     </head>
+    <style>
+        .main-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;  /* Ensures the wrapper is above other content */
+    /* Optional: Set a specific height and apply overflow-y: auto; to enable scrolling within the wrapper */
+   
+    
+    background-color: #fff; /* If necessary, set a background color to cover underlying content */
+}
+
+.main-sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Ensures the wrapper is above other content */
+    /* Optional: Set a specific height and apply overflow-y: auto; to enable scrolling within the wrapper */
+    
+   
+    background-color: #fff; /* If necessary, set a background color to cover underlying content */
+}
+    </style>
     <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
         <div class="wrapper">
             <header class="main-header">
@@ -161,7 +188,8 @@
                             
                             <ul class="treeview-menu">
                                 <li class="active"><a href="{% url 'classmanager:lessonlist' %}"><i class="fa fa-circle-o"></i> 授業リスト</a></li>
-                                <li class="active"><a href=""><i class="fa fa-circle-o"></i> 生徒リスト</a></li>
+                                <li class="active"><a href="{% url 'classmanager:timetable' %}"><i class="fa fa-circle-o"></i> 時間割
+                                </a></li>
                                 
                             </ul>
                         </li>
@@ -380,6 +408,9 @@
         <script src="{% static 'AdminLTE-2.4.12/dist/js/pages/dashboard.js' %}"></script>
         <!-- AdminLTE for demo purposes -->
         <script src="{% static 'AdminLTE-2.4.12/dist/js/demo.js' %}"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
 
     </body>
     

@@ -253,6 +253,11 @@ td{
             <input type="text" required name="form_student_name" id="form_student_name">
         </div>
         <div>
+            <label for="form_student_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
+            <select required name="form_student_classroomuser" id="form_student_classroomuser">
+            </select>
+        </div>
+        <div>
             <label for="form_student_mail">配信用メールアドレス <span class="text-sm text-danger">必須</span></label>
             <input type="email" required name="form_student_mail" id="form_student_mail">
         </div>
@@ -393,6 +398,27 @@ const addTableListeners = () =>{
 const StudentListElement = document.getElementById('student-list');
 const printList = () => {
     $.ajax({
+        'url': '{% url "classmanager:classroom_users_endpoint" %}',  // Make sure this points to the correct view
+        'type': 'GET',
+        
+    }).done(response => {
+        // Assuming response.classroom_users is an array of objects with `id` and `username`
+        const classroomUserSelect = document.getElementById('form_student_classroomuser');
+
+        // Clear existing options
+        classroomUserSelect.innerHTML = '';
+
+        // Populate the select element with new options
+        response.classroom_users.forEach((user) => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.username;
+            classroomUserSelect.appendChild(option);
+        });
+    }).fail(error => {
+        console.error('Error fetching classroom users:', error);
+    });
+    $.ajax({
         'url': '{% url "classmanager:ajax_get_printstudentlist" %}',
         'type': 'GET',
         'data': {'title': 'post'},
@@ -530,6 +556,9 @@ row.innerHTML = `
             <td class="student_td red_td student_name">
                 ${studentFields.name}
             </td>
+            <td class="student_td  student_classroomuser">
+                ${studentFields.classroomuser}
+            </td>
             <td class="student_td student_mail">
                 ${studentFields.mail}
             </td>
@@ -553,6 +582,11 @@ row.innerHTML = `
                         <div >
                             <label for="form_student_name">名前 <span class="text-sm text-danger ">必須</span></label>
                             <input type="text" required value="${studentFields.name}" name="form_student_name" id="form_student_name">
+                        </div>
+                        <div>
+                             <label for="form_student_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
+                            <select required name="form_student_classroomuser" id="form_student_classroomuser">
+                            </select>
                         </div>
                         <div>
                             <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
@@ -593,11 +627,34 @@ row.innerHTML = `
             `;
 
             StudentListElement.appendChild(row);
+            
         });
 
         addTableListeners();
     });
 }
+
+
+// function fillClassroomUserSelect(studentId, selectedUser) {
+//     $.ajax({
+//         'url': '{% url "classmanager:classroom_users_endpoint" %}',
+//         'type': 'GET',
+//     }).done(response => {
+//         const classroomUserSelect = document.getElementById('form_student_classroomuser');
+//         classroomUserSelect.innerHTML = ''; // 既存のオプションを削除
+
+//         response.classroom_users.forEach((user) => {
+//             const option = document.createElement('option');
+//             option.value = user.id;
+//             option.textContent = user.username;
+//             classroomUserSelect.appendChild(option);
+//         });
+//     }).fail(error => {
+//         console.error('教室ユーザーの取得エラー:', error);
+//     });
+// }
+
+
 function createStudent() {
     var form = document.querySelector('form');
     const checkboxes = document.querySelectorAll('input[name="subjects"]:checked');
@@ -616,7 +673,7 @@ function createStudent() {
         form.reportValidity();
         return;
     }
-
+    const studentClassroomUser = document.getElementById('form_student_classroomuser').value;
     const studentName = document.getElementById('form_student_name').value;
     const studentMail = document.getElementById('form_student_mail').value;
     const studentPost = document.getElementById('form_student_post').value;
@@ -627,7 +684,7 @@ function createStudent() {
     const studentGrade = document.getElementById('form_student_grade').value;
     const studentSchoolClass = document.getElementById('form_student_schoolclass').value;
     const studentStage = document.getElementById('form_student_stage').value;
-    console.log(studentStage)
+   
 
     // 選択された科目のIDを取得
     const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(checkbox => checkbox.value);
@@ -636,6 +693,7 @@ function createStudent() {
     const csrftoken = Cookies.get('csrftoken'); 
 
     const postBody = {
+            student_classroomuser : studentClassroomUser,
             student_name: studentName,
             student_mail: studentMail,
             student_post: studentPost,
@@ -646,7 +704,7 @@ function createStudent() {
             student_grade: studentGrade,
             student_schoolclass: studentSchoolClass,
             student_stage: studentStage,
-            // student_subjects: selectedSubjects.join(',') // カンマ区切りで送信
+            student_subjects: selectedSubjects // カンマ区切りで送信
     };
 
     $.ajax({
@@ -654,10 +712,9 @@ function createStudent() {
         type: 'POST',
         dataType: 'json',
         headers: {
-            "Content-Type": "application/json",
             "X-CSRFToken": csrftoken, 
         },
-        data: postBody,
+        data: JSON.stringify(postBody),
         success: function(response) {
             if (response.success) {
                 printList();
@@ -876,14 +933,10 @@ function createStudentSchool(studentPk) {
         alert('少なくとも1つの科目を選択してください！');
         return;
     }
-    const csrftoken = Cookies.get('csrftoken'); 
+
     $.ajax({
         url: '/ajax/create_student_school/',  // This should match the Django URL pattern
-        type: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken, 
-        },
+        type: 'GET',
         data: {
             'student_id': studentPk,
             'student_stage': stage,
