@@ -2,6 +2,16 @@
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
     
 <style>
 
@@ -67,6 +77,10 @@ td{
     min-width: 70px;
 }
 .teacher_subject{
+    width: 15%;
+    min-width: 70px;
+}
+.teacher_classroomuser{
     width: 15%;
     min-width: 70px;
 }
@@ -247,6 +261,11 @@ td{
             <label for="form_teacher_name">名前 <span class="text-sm text-danger">必須</span></label>
             <input type="text" required name="form_teacher_name" id="form_teacher_name">
         </div>
+        <div>
+            <label for="form_teacher_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
+            <select required name="form_teacher_classroomuser" id="form_teacher_classroomuser">
+            </select>
+        </div>
         
     </div>
 
@@ -301,6 +320,9 @@ td{
                     </td>
                     <td class="teacher_th teacher_name"> 
                         名前
+                    </td>
+                    <td class="teacher_th teacher_classroomuser">
+                        教室
                     </td>
                     <td class="teacher_th teacher_post"> 
                         郵便番号
@@ -360,6 +382,7 @@ const addTableListeners = () =>{
         const data = {
             teacher_id: document.getElementById('form_teacher_teacher_id').value,
             name: document.getElementById('form_teacher_name').value,
+            classroomuser: document.getElementById('form_teacher_classroomuser').value,
             mail: document.getElementById('form_teacher_mail').value,
             post: document.getElementById('form_teacher_post').value,
             address: document.getElementById('form_teacher_address').value,
@@ -390,15 +413,46 @@ const addTableListeners = () =>{
         });
     }
     function loadTeacherList() {
-    fetch("{% url 'classmanager:ajax_get_teacherlist' %}")
-        .then(response => response.json())
-        .then(data => {
+        $.ajax({
+            'url': '{% url "classmanager:classroom_users_endpoint" %}',  // Make sure this points to the correct view
+            'type': 'GET',
+            
+        }).done(response => {
+            // Assuming response.classroom_users is an array of objects with `id` and `username`
+            const classroomUserSelect = document.getElementById('form_teacher_classroomuser');
+    
+            // Clear existing options
+            classroomUserSelect.innerHTML = '';
+    
+            // Populate the select element with new options
+            response.classroom_users.forEach((user) => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = user.username;
+                classroomUserSelect.appendChild(option);
+            });
+        }).fail(error => {
+            console.error('Error fetching classroom users:', error);
+        });
+        $.ajax({
+            'url': '{% url "classmanager:ajax_get_teacherlist" %}',
+            'type':'GET',
+            'data':{'title':'post'},
+        }).done(response=>{
+            let teacherlist=response.teacherlist;
+
+        
+   
             const teacherListDiv = document.getElementById('teacher-list');
             teacherListDiv.innerHTML = ''; // 現在のリストをクリア
-            for (let teacher of data.teacherlist) {
+            for (let teacher of teacherlist) {
                 const teacherFields = teacher.fields;
                 const teacherPk = teacher.pk;
-
+                const classroomUserSelectHtml = (response.classroom_users || []).map(user => {
+                    const isSelected = (user.id === teacherFields.classroomuser) ? 'selected' : '';
+                    return `<option value="${user.id}" ${isSelected}>${user.username}</option>`;
+                }).join('');
+                console.log(teacher.fields)
                 const row = document.createElement('div');
                 row.setAttribute('data-teacher-id', teacherPk);
                 row.innerHTML = `
@@ -413,7 +467,9 @@ const addTableListeners = () =>{
                             <td class="teacher_td teacher_name">
                                 ${teacherFields.name}
                             </td>
-                            
+                            <td class="teacher_td  teacher_classroomuser">
+                ${teacherFields.classroomusername}
+            </td>
                             <td class="teacher_td teacher_post">
                                 ${teacherFields.post}
                             </td>
@@ -443,9 +499,12 @@ const addTableListeners = () =>{
                                     <input type="text" required value="${teacherFields.name}" name="form_teacher_name" id="form_teacher_name_${teacherPk}">
                                 </div>
                                 <div>
-                                    <label for="form_teacher_mail">メールアドレス</label>
-                                    <input type="email" value="${teacherFields.mail}" name="form_teacher_mail" id="form_teacher_mail_${teacherPk}">
-                                </div>
+                                 <label for="form_teacher_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
+                                <select required name="form_teacher_classroomuser" id="form_teacher_classroomuser_${teacherPk}">
+                                    ${classroomUserSelectHtml}
+                                </select>
+                            </div>
+                               
                             </div>
                             <div class="input-row">
                                 <div>
@@ -458,6 +517,10 @@ const addTableListeners = () =>{
                                 </div>
                             </div>
                             <div class="input-row">
+                             <div>
+                                    <label for="form_teacher_mail">メールアドレス</label>
+                                    <input type="email" value="${teacherFields.mail}" name="form_teacher_mail" id="form_teacher_mail_${teacherPk}">
+                                </div>
                                 <div>
                                     <label for="form_teacher_phone">電話番号</label>
                                     <input type="text" value="${teacherFields.phone1}" name="form_teacher_phone" id="form_teacher_phone_${teacherPk}">
@@ -486,6 +549,7 @@ function updateTeacher(teacherId) {
     const form = document.querySelector(`#teacher-list div[data-teacher-id="${teacherId}"] form`);
     const teacher_id = document.getElementById(`form_teacher_teacher_id_${teacherId}`).value;
     const name = document.getElementById(`form_teacher_name_${teacherId}`).value;
+    const classroomuser = document.getElementById(`form_teacher_classroomuser_${teacherId}`).value;
     const mail = document.getElementById(`form_teacher_mail_${teacherId}`).value;
     const post = document.getElementById(`form_teacher_post_${teacherId}`).value;
     const address = document.getElementById(`form_teacher_address_${teacherId}`).value;
@@ -501,6 +565,7 @@ function updateTeacher(teacherId) {
         type: 'POST',
         data: {
             'teacher_id': teacherId,
+            'teacher_classroomuser':classroomuser,
             'teacher_teacher_id':teacher_id,
             'teacher_name': name,
             'teacher_mail': mail,

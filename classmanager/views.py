@@ -404,6 +404,7 @@ def ajax_create_teacher(request):
         new_teacher = Teacher.objects.create(
             manageruser=request.user,
             teacher_id=teacher_id,
+            classroomuser_id=body.get('classroomuser'),
             name=body.get('name'),
             mail=body.get('mail'),
             post=body.get('post'),
@@ -417,19 +418,42 @@ def ajax_create_teacher(request):
     
 def ajax_get_teacherlist(request):
     teachers = Teacher.objects.filter(manageruser_id=request.user).order_by('-posted_at')
-    teacherlist = serializers.serialize('python', teachers)
+    manager_classrooms = ManagerClassroom.objects.filter(manager=request.user)
+
+    classroom_users = ClassroomUser.objects.filter(
+        id__in=manager_classrooms.values_list('classroom_id', flat=True)
+    )
+    classroom_user_list = [
+        {'id': user.id, 'username': user.username} for user in classroom_users
+    ]
+    teacherlist = []
+    for teacher in teachers:
+        serialized_teacher = serializers.serialize('python', [teacher])[0]
+        # classroomuserのusernameを安全に追加
+        if teacher.classroomuser is not None:
+            serialized_teacher['fields']['classroomusername'] = teacher.classroomuser.username
+        else:
+            serialized_teacher['fields']['classroomusername'] = None
+        teacherlist.append(serialized_teacher)
     
+
+    
+   
     data = {
         'teacherlist': teacherlist,
+        'classroom_users': classroom_user_list
     }
     return JsonResponse(data)
 
 @csrf_exempt  # ここではcsrf_exemptを使用するが、通常は推奨されない。適切にCSRFトークンを扱う必要がある。
 def ajax_get_update_teacher(request):
     if request.method == 'POST':
+        classroomuser_id = request.POST.get('teacher_classroomuser')
         teacher_id = request.POST.get('teacher_id')
         try:
             teacher = Teacher.objects.get(id=teacher_id)
+            teacher.classroomuser = ClassroomUser.objects.get(id=int(classroomuser_id))
+            
             teacher.teacher_id=request.POST.get('teacher_teacher_id')
             teacher.name = request.POST.get('teacher_name')
             teacher.mail = request.POST.get('teacher_mail')
