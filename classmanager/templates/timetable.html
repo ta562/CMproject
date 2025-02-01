@@ -12,11 +12,21 @@
 
     
 <style>
-.content-wrapper{
-  
+
+.content {
+    display: flex;
+    flex-wrap: wrap; /* 画面幅が狭くなったらアイテムを折り返す */
 }
-.content{
-    
+
+.calendar, .form_table {
+    flex: 1; /* コンテナ内で均等にスペースを取る */
+    min-width: 300px; /* 各要素の最低幅を設定（必要に応じて調整） */
+}
+
+@media (max-width: 768px) { /* 画面幅が768px以下（例えばタブレットやモバイル）になった場合の設定 */
+    .calendar, .form_table {
+        flex-basis: 100%; /* 横幅を100%にして縦に並べる */
+    }
 }
 .form{
     border: 5px solid #fafafa;
@@ -166,10 +176,9 @@ td{
     }
 
     /* 入力フィールド */
-    input[type="text"],
-    input[type="email"],
+
     select {
-        width: 100%;
+        width: 70%;
         padding: 8px;
         font-size: 14px;
         border: 1px solid #ccc;
@@ -207,29 +216,90 @@ td{
         color: #e74c3c;
     }
 
-    /* ボタンのスタイル */
-    .btn {
-        background-color: #3498db;
-        color: white;
-        padding: 10px 15px;
-        font-size: 14px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .btn:hover {
-        background-color: #2980b9;
-    }
+   
 
     /* チェックボックスのスタイル */
     #subject-checkboxes input[type="checkbox"] {
         margin-right: 10px;
     }
 
-    /* 小さなフォントサイズ */
-    .text-sm {
-        font-size: 12px;
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
+    }
+
+    #schedule-form {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #333;
+        display: inline-block;
+        width: 100px;
+    }
+
+    select.form-control {
+        width: calc(100% - 110px);
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group select {
+        margin-left: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    #close-form-btn {
+        margin-top: 10px;
+        width: 100%;
     }
 
 </style>
@@ -241,18 +311,47 @@ td{
             <li class="active">授業一覧</li>
         </ol>
     </section>
-    <section class="content">
-        <div class="box">
-            <div class="form-group">
+    <section>
+    <div class="form-group">
                 <label for="classroom-select">教室</label>
                 <select id="classroom-select" class="form-control">
                     <!-- 学生のオプションをここに -->
                 </select>
             </div>
-            <div id="calendar">
+    </section>
+    <section class="content">
+            
+            <div id="calendar" class="calendar">
                 <!-- Calendar will be rendered here -->
             </div>
-            <br>
+            <div class="form_table">
+                <div id="scheduleFormContainer" style="display: none;">
+                    <h5 class="form-title">新しいスケジュール</h5>
+                    <form id="schedule-form">
+                        <div class="form-group" style="display: flex; align-items: center;">
+                            <label for="student-select" style="margin-right: 10px;">生徒</label>
+                            <select id="student-select" class="form-control">
+                                <!-- 学生のオプションをここに -->
+                            </select>
+                        </div>
+                       
+                        <div class="form-group">
+                            <label for="teacher-select">教師</label>
+                            <select id="teacher-select" class="form-control">
+                                <!-- 教師のオプションをここに -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="period-select">時限</label>
+                            <select id="period-select" class="form-control">
+                                <!-- 教師のオプションをここに -->
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary" id="new-schedule-btn">スケジュールを追加</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" id="close-form-btn">閉じる</button>
+                </div>
             <table id="schedule-table" class="schedule-table">
                 <thead>
                     <tr>
@@ -280,34 +379,9 @@ td{
             </table>
 
             <!-- Form (initially hidden) -->
-            <div id="scheduleFormContainer" style="display: none;">
-                <h5 class="form-title">新しいスケジュール</h5>
-                <form id="schedule-form">
-                    <div class="form-group">
-                        <label for="student-select">生徒</label>
-                        <select id="student-select" class="form-control">
-                            <!-- 学生のオプションをここに -->
-                        </select>
-                    </div>
-                   
-                    <div class="form-group">
-                        <label for="teacher-select">教師</label>
-                        <select id="teacher-select" class="form-control">
-                            <!-- 教師のオプションをここに -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="period-select">時限</label>
-                        <select id="period-select" class="form-control">
-                            <!-- 教師のオプションをここに -->
-                        </select>
-                    </div>
-                    
-                    <button type="button" class="btn btn-primary" id="new-schedule-btn">スケジュールを追加</button>
-                </form>
-                <button type="button" class="btn btn-secondary" id="close-form-btn">閉じる</button>
+            
             </div>
-        </div>
+        
     </section>
 </div>
 
@@ -344,18 +418,25 @@ td{
          });
      }
  }); 
-  $(document).ready(function() {
-    $('#calendar').fullCalendar({
-        selectable: true,
-        selectHelper: true,
-        select: function(start, end) {
-            selectedDate = start; // 選択した日付をキャプチャ
-            $('#scheduleFormContainer').css('display', 'block');
-        }
-    });
 
+ $(document).ready(function() {
+    var selectedDate;
+
+    // カレンダー初期化
+    $('#calendar').fullCalendar({
+    selectable: true,
+    selectHelper: true,
+    select: function(start, end) {
+        selectedDate = start.format('YYYY-MM-DD');
+        console.log('Selected date:', selectedDate);
+        loadTable();
+        $('#scheduleFormContainer').show();
+    }
+});
+    // 初期スケジュールロード
     loadSchedules();
 
+    // 新しいスケジュールの追加
     $('#new-schedule-btn').click(function() {
         var student_id = $('#student-select').val();
         var teacher_id = $('#teacher-select').val();
@@ -371,15 +452,15 @@ td{
                 teacher_id: teacher_id,
                 classroomuser_id: classroom_id,
                 period_id: period_id,
-                date: selectedDate.format('YYYY-MM-DD'),
+                date: selectedDate
             }),
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': '{{ csrf_token }}' 
             },
             success: function(response) {
-                if(response.success) {
+                if (response.success) {
                     alert('新しいスケジュールを作成しました');
-                    $('#scheduleFormContainer').css('display', 'none');
+                    $('#scheduleFormContainer').hide();
                     loadSchedules();
                 } else {
                     alert('エラー: ' + response.message);
@@ -389,23 +470,41 @@ td{
     });
 
     $('#close-form-btn').click(function() {
-        $('#scheduleFormContainer').css('display', 'none');
+        $('#scheduleFormContainer').hide();
     });
 
-    function loadSchedules() {
+    $('#classroom-select').change(function() {
+        loadSchedules();
+    });
+
+    function loadTable() {
+        const selectedClassroomId = $('#classroom-select').val();
+
         $.ajax({
             url: '{% url "classmanager:get_class_schedules" %}',
             type: 'GET',
+            data: {
+                classroomuser_id: selectedClassroomId,
+                date: selectedDate
+            },
             success: function(data) {
-                $('#calendar').fullCalendar('removeEvents');
+                
+
+                $('#schedule-table tbody').empty(); // 既存のテーブル行をクリア
+
                 data.forEach(function(schedule) {
-                    let event = {
-                        id: schedule.id,
-                        title: schedule.student_name,
-                        start: schedule.date,
-                        allDay: true
-                    };
-                    $('#calendar').fullCalendar('renderEvent', event, true);
+                    // イベントとしてFullCalendarに追加
+                    
+
+                    // テーブルにも追加
+                    const row = `<tr>
+                        <td><input type="checkbox"></td>
+                        <td>${schedule.student_name}</td>
+                        <td>${schedule.teacher_name}</td>
+                        <td>${schedule.date}</td>
+                        <td>${schedule.period_title}</td>
+                    </tr>`;
+                    $('#schedule-table tbody').append(row);
                 });
             },
             error: function(error) {
@@ -413,10 +512,48 @@ td{
             }
         });
     }
+    // スケジュールロード関数
+    function loadSchedules() {
+        const selectedClassroomId = $('#classroom-select').val();
 
+        $.ajax({
+            url: '{% url "classmanager:get_class_schedules" %}',
+            type: 'GET',
+            data: {
+                classroomuser_id: selectedClassroomId,
+                
+            },
+            success: function(data) {
+                $('#calendar').fullCalendar('removeEvents');
+
+                $('#schedule-table tbody').empty(); // 既存のテーブル行をクリア
+
+                data.forEach(function(schedule) {
+                    // イベントとしてFullCalendarに追加
+                    $('#calendar').fullCalendar('renderEvent', {
+                        id: schedule.id,
+                        title: schedule.student_name,
+                        start: moment(schedule.date), // 日付をmomentで解釈する
+                        allDay: true
+                    }, true);
+
+                    // テーブルにも追加
+                    const row = `<tr>
+                        <td><input type="checkbox"></td>
+                        <td>${schedule.student_name}</td>
+                        <td>${schedule.teacher_name}</td>
+                        <td>${schedule.date}</td>
+                        <td>${schedule.period_title}</td>
+                    </tr>`;
+                    $('#schedule-table tbody').append(row);
+                });
+            },
+            error: function(error) {
+                console.error('スケジュールの取得中にエラー:', error);
+            }
+        });
+    }
 });
-
-     
 
 </script>
 {% endblock content %}

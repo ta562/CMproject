@@ -541,27 +541,33 @@ def create_class_schedule(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)})
     return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
-
 def get_class_schedules(request):
     try:
-        schedules = ClassSchedule.objects.all()
-        print('test')
-        
-        
+        classroomuser_id = request.GET.get('classroomuser_id')
+        date = request.GET.get('date')
+
+        # 教室と日付でスケジュールをフィルタリング
+        if classroomuser_id and date:
+            schedules = ClassSchedule.objects.filter(classroomuser_id=classroomuser_id, date=date)
+        elif classroomuser_id:
+            schedules = ClassSchedule.objects.filter(classroomuser_id=classroomuser_id)
+        elif date:
+            schedules = ClassSchedule.objects.filter(date=date)
+        else:
+            schedules = ClassSchedule.objects.all()
+
         data = [{
             'id': schedule.id,
-            'student_name': schedule.student.name,  # 生徒名の取得
-            'teacher_name': schedule.teacher.name,  # 教師名の取得
-            'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',  # 教室名を取得（存在する場合）
-            'period_title': schedule.period.title if schedule.period else '',  # 時限のタイトルを取得（存在する場合）
-            'date': schedule.date.strftime('%Y-%m-%d') if schedule.date else '',  # 日付をフォーマット
-            
+            'student_name': schedule.student.name,
+            'teacher_name': schedule.teacher.name,
+            'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',
+            'period_title': schedule.period.title if schedule.period else '',
+            'date': schedule.date.strftime('%Y-%m-%d') if schedule.date else '',
         } for schedule in schedules]
-        print('test2')
+
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 def ajax_get_printtimetableoption(request):
     # ユーザーが ManagerUser であることを確認します（必要に応じて調整してください）
