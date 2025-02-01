@@ -1,5 +1,238 @@
 {% extends './base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    
+<style>
+.content-wrapper{
+  
+}
+.content{
+    
+}
+.form{
+    border: 5px solid #fafafa;
+  padding: 1em;
+    width: 100%;
+  text-align: center;
+  background-color: #ffffff;
+}
+.student_box{
+    
+}
+.schedule-table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
+  
+}
+td{
+    
+}
+.schedule_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.schedule_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 15px;
+   
+}
+.red_td{
+    background-color: #f7e7db;
+}
+.blue_td{
+    background-color: #d9eef3;
+}
+.schedule_check{
+    width:2%;
+    min-width: 25px;
+}
+.schedule_teacher{
+    width: 10%;
+    min-width: 70px;
+}
+.schedule_classroomuser{
+    width: 10%;
+    min-width: 70px;
+}
+.schedule_teacher{
+    width: 15%;
+    min-width: 70px;
+}
+.schedule_period{
+    width: 8%;
+    min-width: 70px;
+}
+.schedule_date{
+    width: 15%;
+    min-width: 70px;
+}
+.student_subject{
+    width: 15%;
+    min-width: 70px;
+}
+.student_school{
+    text-align: left;
+    min-width: 70px;
+}
+.student_text{
+    width: 70%;
+    min-width: 50px;
+    position: relative;
+    text-align: left;
+}
+
+.teacher_text{
+    width: 60%;
+   
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 0;      
+}
+.teacher_text textarea,.manager_text textarea{
+  width: 80%;
+  height: 85px;
+}
+.manager_text{
+    width: 50%;
+    margin: 5px;
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 50%;      
+}
+.approval_button{
+    position:absolute;
+    top: 60%;
+    right: 1%;
+    width: 7%;
+}
+.detail_button{
+    position:absolute;
+    top: 20%;
+    right: 1%;
+    width: 7%;
+}
+.lesson_data{
+    position:absolute;
+    top: 5%;
+    left: 1%;
+    width: 100%;
+}
+.active_box{
+    display: none;
+}
+
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+
+
+
+
+
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 各ラベル */
+    label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* 入力フィールド */
+    input[type="text"],
+    input[type="email"],
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* 必須項目のマーク */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 12px;
+    }
+
+    /* 横並びレイアウト */
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .input-row-subjects {
+        display: flex;
+        justify-content:left;
+        
+        flex-wrap: wrap;
+    }
+    .input-row div {
+        flex: 1;
+    }
+
+    /* 入力フィールドに対するエラーメッセージ */
+    #subject-error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #e74c3c;
+    }
+
+    /* ボタンのスタイル */
+    .btn {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #2980b9;
+    }
+
+    /* チェックボックスのスタイル */
+    #subject-checkboxes input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    /* 小さなフォントサイズ */
+    .text-sm {
+        font-size: 12px;
+    }
+
+</style>
 <div class="content-wrapper">
     <section class="content-header">
         <h1>授業一覧</h1>
@@ -19,17 +252,26 @@
             <div id="calendar">
                 <!-- Calendar will be rendered here -->
             </div>
-            <table id="schedule-table" class="subject_table">
+            <br>
+            <table id="schedule-table" class="schedule-table">
                 <thead>
                     <tr>
-                        <td>生徒</td>
-                        <td>科目</td>
-                        <td>教師</td>
-                        <td>開始時間</td>
-                        <td>終了時間</td>
-                        <td>場所</td>
-                        <td>メモ</td>
-                        <td>編集</td>
+                        <td class="schedule_th schedule_check">
+                            <input type="checkbox" id="student_check" name="student_check">
+                        </td>
+                        <td class="schedule_th schedule_student">
+                            生徒
+                        </td>
+                        <td class="schedule_th schedule_teacher">
+                            教師
+                        </td>
+                        <td class="schedule_th schedule_date">
+                            日付
+                        </td>
+                        <td class="schedule_th schedule_period">
+                            時限
+                        </td>
+                      
                     </tr>
                 </thead>
                 <tbody>

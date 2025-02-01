@@ -35,6 +35,7 @@ def check_teacher_id(request):
         teacher_id = data.get('teacher_id', None)
         
         if teacher_id:
+            
             print('test2')
             # ログインユーザーのクラスルームを取得
             classroom_user = request.user
