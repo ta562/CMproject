@@ -1,6 +1,14 @@
 {% extends 'baselite.html' %}
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
     
 <style>
@@ -104,105 +112,59 @@ td{
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">      
-        <h1>生徒一覧</h1>
-        <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>生徒</a></li>
-            <li class="active">生徒一覧</li>
-        </ol>
+        <h1>教師選択</h1>
     </section>
     <section class="content">
-       <div class="assessment_box">
-            <table class="assessment_table">
-                <thead>
-                <tr >
-                    <td class="assessment_th assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_th assessment_status">
-                        処理
-                    </td>
-                    <td class="assessment_th"> 
-                        日付
-                    </td>
-                    <td class="assessment_th"> 
-                        時限
-                    </td>
-                    <td class="assessment_th"> 
-                        教室
-                    </td>
-                    <td class="assessment_th"> 
-                        内容
-                    </td>
-                </tr>
-            </thead>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td red_td assessment_status">
-                        未処理
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
-            </table>
+        <div class="teacherselect_box">
+            <input type="text" id="teacher_id_input" placeholder="教師のIDを入力">
+            <button id="confirm_button">確定</button>
         </div>
- 
-     
-
-        <!-- /.row (main row) -->
     </section>
 </div>
+
+<!-- jQueryを読み込む -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#confirm_button').click(function() {
+        var teacherID = $('#teacher_id_input').val();
+
+        $.ajax({
+            url: '/check_teacher_id/',
+            type: 'POST',
+            data: JSON.stringify({ teacher_id: teacherID }),
+            contentType: 'application/json',
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+            },
+            success: function(data) {
+                if (data.success) {
+                    window.location.href = `/report_create/${data.teacher_id}/`;
+                } else {
+                    alert('教師IDが正しくありません。');
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('サーバーとの通信に問題が発生しました。');
+            }
+        });
+    });
+
+    function getCSRFToken() {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === ('csrftoken=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
 {% endblock content %}
