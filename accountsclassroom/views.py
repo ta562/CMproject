@@ -92,11 +92,17 @@ class LoginClassroomView(LoginView):
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
-
+    
     def form_valid(self, form):
         """Security check complete. Log the user in."""
         auth_login(self.request, form.get_user(),'accountsclassroom.backends.ClassroomAuthBackend')
+        self.request.session['class_room_user'] = { 'id': form.get_user().id, 'username': form.get_user().username } 
         return HttpResponseRedirect(self.get_success_url())
+
+    # def form_valid(self, form):
+    #     """Security check complete. Log the user in."""
+    #     auth_login(self.request, form.get_user(),'accountsclassroom.backends.ClassroomAuthBackend')
+    #     return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

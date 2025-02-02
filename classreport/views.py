@@ -23,7 +23,6 @@ class ReportCreateView(TemplateView):
 class TeacherSelectView(TemplateView):
     template_name='teacherselect.html'
 
-@csrf_exempt
 def check_teacher_id(request):
     if request.method == 'POST':
         
@@ -38,16 +37,14 @@ def check_teacher_id(request):
             
             print('test2')
             # ログインユーザーのクラスルームを取得
-            classroom_user = request.user
-            print(classroom_user+'test')
+            classroom_user = request.session['class_room_user']
             try:
-                teacher = Teacher.objects.get(teacher_id=teacher_id, classroomuser=classroom_user)
+                teacher = Teacher.objects.get(teacher_id=teacher_id, classroomuser=classroom_user['id'])
                 return JsonResponse({'success': True, 'teacher_id': teacher_id})
             except Teacher.DoesNotExist:
                 return JsonResponse({'success': False, 'message': '教師IDが見つかりません。'})
     
     return JsonResponse({'success': False, 'message': '不正なリクエストです。'})
-
 class ReportCreateView(View):
     template_name = 'reportcreate.html'
 
