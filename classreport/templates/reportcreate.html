@@ -5,6 +5,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
+
 <style>
     .tabs {
         display: flex;
@@ -83,9 +84,34 @@
     }
 
     /* フォームのスタイル */
-    form {
-        margin-top: 20px;
+  .nasi{
+        background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 900px; /* 最大幅を指定 */
     }
+    h4 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+ 
+  font-weight: bold;
+}
+.form-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 左寄せ */
+  gap: 20px; /* アイテム間の間隔 */
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 左寄せ */
+  gap: 5px; /* アイテム間の間隔 */
+}
 
     label {
         display: block;
@@ -175,6 +201,7 @@
 .selectable-image {
     width: 100px;
     height: auto;
+
     cursor: pointer;
     border: 2px solid transparent;
     transition: border-color 0.3s;
@@ -183,40 +210,69 @@
 input[type="radio"]:checked + label .selectable-image {
     border-color: blue;
 }
+
+.tab.report-saved {
+    background-color: rgb(255, 255, 255);
+}
+
+.tab-content.report-saved {
+    background-color: #333; /* フォームの暗い背景 */
+    color: #fff; /* テキストを白にして読みやすくする */
+}
+
 </style>
 
 <div class="content-wrapper">
     <section class="content">
         <div class="studentselecter_box">
             <span>教師 </span><span id="teacher-name"></span>
+            <span>時限 </span><span id="period-title"></span>
             <div class="tabs">
                 <button id="add-tab-button" class="tab">＋</button>
             </div>
             <div id="tab-contents">
                 <!-- ここにテンプレートとしてのフォームを準備 -->
                 <div id="form-template" class="tab-content">
+                    <h4>♦生徒情報</h4>
                     <table class="student-info">
                         <!-- Student情報がここに表示されます -->
                     </table>
-                    <form>
+                <div>
+                    <h4>♦お知らせ</h4>
+                    <label for="">前回の教師から</label>
+                    <label for="">管理者から</label>
+                </div>
+
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <h4>♦事前チェック</h4>
+                        <div class="form-group">
+                        <div class="flex">
+                        <label for="form-attendance">出欠:</label> 
+                            <select name="form-attendance" id="form-attendance">
+                                <option value="出席">出席</option>
+                                <option value="欠席">欠席</option>
+                            </select>
+                        </div>
+                        <div class="flex">
                         <label for="form-behindtime">遅刻:</label> 
                             <select name="form-behindtime" id="form-behindtime">
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
                                 <option value="30分以上">30分以上</option>
                             </select>
+                        </div>
+                        <div class="flex">
                         <label for="form-earlytime">早退:</label> 
                             <select name="form-earlytime" id="form-earlytime">
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
                                 <option value="30分以上">30分以上</option>
                             </select>
-                        <label for="form-attendance">出欠:</label> 
-                            <select name="form-attendance" id="form-attendance">
-                                <option value="出席">出席</option>
-                                <option value="欠席">欠席</option>
-                            </select>
-                        <label for="form-achievement">達成度:</label> 
+                        </div>
+                        <div class="flex">
+                        <label for="form-achievement">宿題達成度:</label> 
                             <select name="form-achievement" id="form-achievement">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -224,6 +280,16 @@ input[type="radio"]:checked + label .selectable-image {
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
+                        </div>
+                        </div>
+                    
+                    <h4>♦指導評価</h4>
+                  
+                    <label for="form-teachermessage">指導後コメント:</label> 
+                    <input type="text" name="form-teachermessage" id="form-teachermessage">
+                    
+                    <div class="form-group">
+                        <div class="flex">
                         <label for="form-poster">姿勢:</label> 
                             <select name="form-poster" id="form-poster">
                                 <option value="1">1</option>
@@ -232,6 +298,9 @@ input[type="radio"]:checked + label .selectable-image {
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
+                        </div>
+                        
+                        <div class="flex">
                         <label for="form-understand">理解:</label> 
                             <select name="form-understand" id="form-understand">
                                 <option value="1">1</option>
@@ -240,6 +309,8 @@ input[type="radio"]:checked + label .selectable-image {
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
+                        </div>
+                    </div>
                         <label for="form-parentsmessage">保護者用評価:</label> 
                         <div class="image-options">
                             
@@ -265,8 +336,6 @@ input[type="radio"]:checked + label .selectable-image {
                                 </label>
                             
                         </div>
-                        <label for="form-teachermessage">指導後コメント:</label> 
-                            <input type="text" name="form-teachermessage" id="form-teachermessage">
                         <label for="form-nextlesson">次の授業:</label> 
                             <input type="text" name="form-nextlesson" id="form-nextlesson">
                         <label for="form-homework">次の宿題:</label> 
@@ -274,6 +343,7 @@ input[type="radio"]:checked + label .selectable-image {
                         <!-- 他のフィールドを追加 -->
                         <button type="button" class="save-button">提出</button>
                     </form>
+                    
                 </div>
             </div>
         </div>
@@ -282,19 +352,36 @@ input[type="radio"]:checked + label .selectable-image {
 
 <script>
 $(document).ready(function () {
+    // CSRFトークンを取得する関数
+    function getCsrfToken() {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.startsWith('csrftoken=')) {
+            return cookie.substring('csrftoken='.length);
+        }
+    }
+    return null;
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+    }
+});
+
     var teacherId = '{{ teacher_id }}';
+    var periodId='{{period_id}}';
 
     // Ajax to get teacher and schedule information
     $.ajax({
         url: '{% url "classreport:get_teacher_and_schedules" %}',
         method: 'GET',
         dataType: 'json',
-        data: { teacher_id: teacherId },
+        data: { teacher_id: teacherId , period_id:periodId},
         success: function (response) {
-            // Set the Teacher's name
             $('#teacher-name').text(response.teacher_name);
-
-            // Initialize tabs and forms for all students
+            $('#period-title').text(response.period_title);
             initializeTabs(response.students);
         },
         error: function (error) {
@@ -302,7 +389,6 @@ $(document).ready(function () {
         }
     });
 
-    // Initialize the tabs and forms
     function initializeTabs(students) {
         var firstTab = true;
         $.each(students, function(index, student) {
@@ -310,44 +396,62 @@ $(document).ready(function () {
             firstTab = false;
         });
 
-        // Add event listener for the tab adding button
         $('#add-tab-button').click(function() {
-            // Logic for adding a new tab, if needed
+            // Logic for adding a new tab
         });
     }
 
-    // Create a new tab and form for each student
     function createNewTab(student, isActive) {
-        var newTab = $('<div>').addClass('tab').attr('data-tab', student.name).text(student.name);
-        $('.tabs').prepend(newTab);
+    var newTab = $('<div>').addClass('tab').attr('data-tab', student.student_id).text(student.name);
+    $('.tabs').prepend(newTab);
 
-        var newForm = $('#form-template').clone().removeAttr('id').attr('data-student', student.name).hide();
-        $('#tab-contents').append(newForm);
+    var newForm = $('#form-template').clone().removeAttr('id').attr('data-student-id', student.student_id).hide();
+    $('#tab-contents').append(newForm);
 
-        if (isActive) {
-            newTab.addClass('active');
-            newForm.show().addClass('active');
+    if (isActive) {
+        newTab.addClass('active');
+        newForm.show().addClass('active');
+    }
+
+    newTab.click(function () {
+        activateTab($(this), newForm);
+    });
+
+    populateStudentInfo(newForm, student);
+}
+
+
+function activateTab(tab, form) {
+    $('.tab, .tab-content').removeClass('active');
+    tab.addClass('active');
+    form.show().addClass('active').siblings('.tab-content').hide();
+
+    var studentId = form.attr('data-student-id');
+    var savedData = Cookies.getJSON('form_' + studentId) || {};  // 'name' ではなく 'student_id' を使用
+    fillForm(form, savedData);
+}
+
+
+function fillForm(form, data) {
+    $.each(data, function (key, value) {
+        form.find('[name="' + key + '"]').val(value);
+        if (form.find('[name="' + key + '"]').is(':radio')) {
+            form.find('[name="' + key + '"][value="' + value + '"]').prop('checked', true);
         }
+    });
+}
 
-        newTab.click(function () {
-            activateTab($(this), newForm);
-        });
+$('.tab').on('click', function () {
+    var activeForm = $('.tab-content.active');
+    var formData = {};
+    activeForm.find('form').serializeArray().forEach(function (item) {
+        formData[item.name] = item.value;
+    });
 
-        populateStudentInfo(newForm, student);
-    }
+    var activeStudentId = activeForm.attr('data-student-id');
+    Cookies.set('form_' + activeStudentId, formData);
+});
 
-    // Activate a tab and show the corresponding form
-    function activateTab(tab, form) {
-        $('.tab, .tab-content').removeClass('active');
-        tab.addClass('active');
-        form.show().addClass('active').siblings('.tab-content').hide();
-
-        var studentName = form.attr('data-student');
-        var savedData = Cookies.getJSON('form_' + studentName) || {};
-        fillForm(form, savedData);
-    }
-
-    // Populate the student information in the form
     function populateStudentInfo(form, student) {
         var infoHTML = `
             <tr><td>
@@ -370,35 +474,55 @@ $(document).ready(function () {
         form.find('.student-info').html(infoHTML);
     }
 
-    // Save form data to cookies
-    $(document).on('click', '.save-button', function () {
-        var form = $(this).closest('.tab-content');
-        var formData = form.find('form').serializeArray().reduce(function(obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
+    $(document).on('click', '.save-button', function() {
+        var form = $(this).closest('form');
+        
+        var studentId = form.closest('.tab-content').attr('data-student-id');
+        var teacherId = '{{ teacher_id }}';
+        console.log(teacherId)
+        var periodId = '{{ period_id }}';
+        var data = {
+            student_id: studentId,
+            teacher_id: teacherId,// 現在のログインユーザー
+            period_id: periodId,
+            behindtime: form.find('[name="form-behindtime"]').val(),
+            earlytime: form.find('[name="form-earlytime"]').val(),
+            attendance: form.find('[name="form-attendance"]').val(),
+            achievement: form.find('[name="form-achievement"]').val(),
+            teachermessage: form.find('[name="form-teachermessage"]').val(),
+            poster: form.find('[name="form-poster"]').val(),
+            understand: form.find('[name="form-understand"]').val(),
+            parentsmessage: form.find('[name="form-parentsmessage"]:checked').val(),
+            nextlesson: form.find('[name="form-nextlesson"]').val(),
+            homework: form.find('[name="form-homework"]').val(),
+            date: new Date().toISOString().split('T')[0] // 現在の日付
+        };
+        console.log('ajax');
+        $.ajax({
+            url: '{% url "classreport:save_report" %}', // 適切なURLをセットアップ
+            method: 'POST',
+            data: data,
+            success: function(response) {
+                console.log('save');
+                form.find('.save-button').prop('disabled', true);
 
-        var studentName = form.attr('data-student');
-        Cookies.set('form_' + studentName, formData, { expires: 1 });
+                var tab = form.closest('.tab-content').prev('.tab');
+
+                activateTabWithSubmission(tab);
+            },
+            error: function(error) {
+                console.error('Error:', error);
+            }
+        });
     });
 
-    // Fill form inputs with saved data
-    function fillForm(form, data) {
-        $.each(data, function(key, value) {
-            form.find('[name=' + key + ']').val(value);
-        });
+    function activateTabWithSubmission(tab) {
+        tab.addClass('report-saved');
+        $(`.tab-content[data-student-id="${tab.data('tab')}"]`).addClass('report-saved');
+        console.log('tabcolor')
     }
 });
 
-function scrollToTab(tab) {
-    var tabContainer = $('.tabs');
-    var tabOffset = tab.offset().left;
-    var tabWidth = tab.outerWidth();
-
-    tabContainer.animate({
-        scrollLeft: tabOffset - tabContainer.offset().left - (tabContainer.width() / 2) + (tabWidth / 2)
-    }, 'fast');
-}
 </script>
 
 {% endblock content %}

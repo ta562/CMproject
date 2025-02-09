@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from classmanager.models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period
+from classmanager.models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
 from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
@@ -49,12 +49,13 @@ def check_teacher_id(request):
 class ReportCreateView(View):
     template_name = 'reportcreate.html'
 
-    def get(self, request, teacher_id):
+    def get(self, request, teacher_id, period_id):
         classroom_user = request.session['class_room_user']
         try:
             teacher = Teacher.objects.get(teacher_id=teacher_id, classroomuser=classroom_user['id'])
             context = {'teacher_name': teacher.name,
-                       'teacher_id': teacher.teacher_id
+                       'teacher_id': teacher.teacher_id,
+                       'period_id': period_id
                        }
         except Teacher.DoesNotExist:
             context = {'teacher_name': '不明な教師'}
@@ -63,6 +64,7 @@ class ReportCreateView(View):
 
 def get_teacher_and_schedules(request):
     teacher_id = request.GET.get('teacher_id', None)
+    period_id = request.GET.get('period_id', None)
     if teacher_id is None:
         return JsonResponse({'error': 'Teacher ID not provided'}, status=400)
     
@@ -72,9 +74,9 @@ def get_teacher_and_schedules(request):
         
         # Get the current date
         today = timezone.now().date()
-        
+        period=Period.objects.get(id=period_id)
         # Filter schedules for the current day and related teacher
-        schedules = ClassSchedule.objects.filter(date=today, teacher=teacher).select_related('student')
+        schedules = ClassSchedule.objects.filter(date=today, teacher=teacher,period=period_id).select_related('student')
 
         # Collect student and school data
         student_data = []
@@ -82,6 +84,9 @@ def get_teacher_and_schedules(request):
             student = schedule.student
             student_school = StudentSchool.objects.filter(student=student).first()
             student_dict = {
+                'schedule_id':schedule.id,
+                
+                'student_id':student.id,
                 'name': student.name,
                 'school': student_school.school if student_school else '',
                 'stage': student_school.stage if student_school else '',
@@ -94,7 +99,91 @@ def get_teacher_and_schedules(request):
 
         return JsonResponse({
             'teacher_name': teacher_data[0]['fields']['name'],
+            'period_title': period.title,
             'students': student_data
         }, safe=False)
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Teacher not found'}, status=404)
+    
+
+def get_period_options(request):
+    if request.session.get('class_room_user') is None:
+        return JsonResponse({'success': False, 'message': 'ユーザーが認証されていません。'})
+    
+    classroom_user_id = request.session['class_room_user']['id']
+    
+    try:
+        manager_classroom = ManagerClassroom.objects.get(classroom_id=classroom_user_id)
+        periods = Period.objects.filter(manageruser=manager_classroom.manager)
+        
+        period_options = [
+            {
+                'id': period.id,
+                'title': period.title,
+                'start_time': period.start_time.strftime('%H:%M'),
+                'end_time': period.end_time.strftime('%H:%M')
+            }
+            for period in periods
+        ]
+        
+        return JsonResponse({'success': True, 'periods': period_options})
+        
+    except ManagerClassroom.DoesNotExist:
+        return JsonResponse({'success': False, 'message': '管理クラスルームが見つかりません。'})
+    
+
+
+def save_report(request):
+    if request.method == 'POST':
+        
+        try:
+            student_id = request.POST.get('student_id')
+            teacher_id = request.POST.get('teacher_id')
+            classroomuser_id = request.session['class_room_user']['id']
+            period_id = request.POST.get('period_id')
+
+            student = Student.objects.get(id=student_id)
+            teacher = Teacher.objects.get(teacher_id=teacher_id)
+            period = Period.objects.get(id=period_id)
+            print('fjdk')
+            report, created = Report.objects.get_or_create(
+                student=student,
+                teacher=teacher,
+                classroomuser_id=classroomuser_id,
+                period=period,
+                date=timezone.now().date(),
+                defaults={
+                    'behindtime': request.POST.get('behindtime'),
+                    'earlytime': request.POST.get('earlytime'),
+                    'managermessage': '',  # 必要なら追加のロジック
+                    'teachermessage': request.POST.get('teachermessage'),
+                    'nextlesson': request.POST.get('nextlesson'),
+                    'homework': request.POST.get('homework'),
+                    'poster': request.POST.get('poster'),
+                    'understand': request.POST.get('understand'),
+                    'achievement': request.POST.get('achievement'),
+                    'attendance': request.POST.get('attendance'),
+                    'parentsmessage': request.POST.get('parentsmessage')
+                }
+               
+            )
+
+            if not created:
+                # Update existing report instead
+                report.behindtime = request.POST.get('behindtime')
+                report.earlytime = request.POST.get('earlytime')
+                report.teachermessage = request.POST.get('teachermessage')
+                report.nextlesson = request.POST.get('nextlesson')
+                report.homework = request.POST.get('homework')
+                report.poster = request.POST.get('poster')
+                report.understand = request.POST.get('understand')
+                report.achievement = request.POST.get('achievement')
+                report.attendance = request.POST.get('attendance')
+                report.parentsmessage = request.POST.get('parentsmessage')
+                report.save()
+                print('createdt')
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

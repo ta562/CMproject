@@ -134,8 +134,39 @@ td{
 
 <script>
 $(document).ready(function() {
+    // 時限のオプションを取得してドロップダウンを更新する関数
+    function loadPeriodOptions() {
+        $.ajax({
+            url: '/get_period_options/',
+            type: 'GET',
+            success: function(data) {
+                if (data.success) {
+                    var select = $('#search-period-select');
+                    select.empty(); // 既存のオプションをクリア
+                    
+                    data.periods.forEach(function(period) {
+                        var option = $('<option></option>')
+                            .attr('value', period.id)
+                            .text(`${period.title} (${period.start_time} - ${period.end_time})`);
+                        select.append(option);
+                    });
+                } else {
+                    alert('時限の情報を取得できませんでした。');
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('時限の情報をロード中にエラーが発生しました。');
+            }
+        });
+    }
+
+    // ページ読み込み時に時限オプションをロード
+    loadPeriodOptions();
+
+    // 確定ボタンの動作
     $('#confirm_button').click(function() {
         var teacherID = $('#teacher_id_input').val();
+        var selectedPeriodID = $('#search-period-select').val(); // 選択された時限IDを取得
 
         $.ajax({
             url: '/check_teacher_id/',
@@ -147,7 +178,7 @@ $(document).ready(function() {
             },
             success: function(data) {
                 if (data.success) {
-                    window.location.href = `/report_create/${data.teacher_id}/`;
+                    window.location.href = `/report_create/${data.teacher_id}/${selectedPeriodID}`;
                 } else {
                     alert('教師IDが正しくありません。');
                 }
