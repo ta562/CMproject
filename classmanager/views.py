@@ -541,20 +541,29 @@ def create_class_schedule(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)})
     return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
 def get_class_schedules(request):
     try:
         classroomuser_id = request.GET.get('classroomuser_id')
         date = request.GET.get('date')
+        student_id = request.GET.get('student_id')
+        teacher_id = request.GET.get('teacher_id')
+        period_id = request.GET.get('period_id')
 
-        # 教室と日付でスケジュールをフィルタリング
-        if classroomuser_id and date:
-            schedules = ClassSchedule.objects.filter(classroomuser_id=classroomuser_id, date=date)
-        elif classroomuser_id:
-            schedules = ClassSchedule.objects.filter(classroomuser_id=classroomuser_id)
-        elif date:
-            schedules = ClassSchedule.objects.filter(date=date)
-        else:
-            schedules = ClassSchedule.objects.all()
+        # 指定された条件に従ってスケジュールをフィルタリング
+        filters = {}
+        if classroomuser_id:
+            filters['classroomuser_id'] = classroomuser_id
+        if date:
+            filters['date'] = date
+        if student_id:
+            filters['student_id'] = student_id
+        if teacher_id:
+            filters['teacher_id'] = teacher_id
+        if period_id:
+            filters['period_id'] = period_id
+
+        schedules = ClassSchedule.objects.filter(**filters)
 
         data = [{
             'id': schedule.id,
@@ -570,24 +579,28 @@ def get_class_schedules(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 def ajax_get_printtimetableoption(request):
-    # ユーザーが ManagerUser であることを確認します（必要に応じて調整してください）
-    manager_id = request.user.id
+    # classroomuser_idをリクエストから取得
+    classroomuser_id = request.GET.get('classroomuser_id')
     
-    # ログイン中の ManagerUser に関連する教室と時限をフィルタリングします
+    # classroomuser_idが提供されていれば、それに基づいて生徒と教師をフィルタリング
+    if classroomuser_id:
+        student_list = Student.objects.filter(classroomuser_id=classroomuser_id)
+        teacher_list = Teacher.objects.filter(classroomuser_id=classroomuser_id)
+    else:
+        student_list = Student.objects.none()
+        teacher_list = Teacher.objects.none()
+
+    # 既存のデータ取得コード
+    manager_id = request.user.id
     classrooms = ManagerClassroom.objects.filter(manager_id=manager_id).select_related('classroom')
     periods = Period.objects.filter(manageruser_id=manager_id)
 
-    # JSON 形式で送信するためにデータをシリアライズ化します
-    classroom_list = [{'id': classroom.classroom.id, 'username': classroom.classroom.username} for classroom in classrooms]
-    period_list = [{'id': period.id, 'title': period.title} for period in periods]
-
     data = {
-        'classroom_list': classroom_list,
-        'period_list': period_list,
-        # 以下の行を追加して、既存の学生、科目、教師のリストも取得します
-        'student_list': [{'id': student.id, 'name': student.name} for student in Student.objects.filter(manageruser_id=manager_id)],
-        'subject_list': [{'id': subject.id, 'title': subject.title} for subject in Subject.objects.filter(manageruser_id=manager_id)],
-        'teacher_list': [{'id': teacher.id, 'name': teacher.name} for teacher in Teacher.objects.filter(manageruser_id=manager_id)],
+        'classroom_list': [{'id': classroom.classroom.id, 'username': classroom.classroom.username} for classroom in classrooms],
+        'period_list': [{'id': period.id, 'title': period.title} for period in periods],
+        'student_list': [{'id': student.id, 'name': student.name} for student in student_list],
+        'teacher_list': [{'id': teacher.id, 'name': teacher.name} for teacher in teacher_list],
     }
 
     return JsonResponse(data)
+

@@ -465,18 +465,16 @@ const printList = () => {
     return `<option value="${user.id}" ${isSelected}>${user.username}</option>`;
 }).join('');
 
-            const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
-
-            const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
+    const filteredEntries = Object.entries(schoolDictnew).filter(([key, value]) => value.student === studentPk);
+    const schoolFormsHtml = filteredEntries.map(([key, schoolInfo]) => {
     const relatedSubjects = schoolSubjectDict[key] || [];
 
-    const subjectHtml = allSubjectList.map(subject => {
+    let subjectHtml = ''
+    allSubjectList.forEach(subject => {
         const isChecked = relatedSubjects.includes(subject.title) ? 'checked' : '';
         
-        return `
-        <div class="input-row-subjects">
-        <label>
-            <input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}</label></div>`;
+        subjectHtml+= `       
+            <input type="checkbox" value="${subject.id}" ${isChecked}> ${subject.title}`;
     });
 
     // 学年セレクトオプションを構築

@@ -1,23 +1,21 @@
+<!-- reportcreate.html -->
 {% extends 'baselite.html' %}
+{% load static %}
 {% block content %}
-<!-- Content Wrapper. Contains page content -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
-    
 <style>
-    /* 既存のスタイル */
     .tabs {
         display: flex;
         cursor: pointer;
         margin-bottom: 10px;
-        overflow-x: auto;  /* 横スクロールを許可 */
-        white-space: nowrap; /* タブを横並びにする */
     }
     .tab {
         padding: 10px 20px;
         background: #ddd;
         margin-right: 5px;
         border-radius: 5px 5px 0 0;
-        flex-shrink: 0; /* タブが縮小しないようにする */
     }
     .tab.active {
         background: #fff;
@@ -29,55 +27,253 @@
     .tab-content.active {
         display: block;
     }
-    .modal {
-        display: none;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background-color: #fefefe;
-        padding: 20px;
-        border-radius: 5px;
-    }
-    .modal.open {
+</style>
+
+<style>
+    /* タブのスタイル */
+    .tabs {
         display: flex;
+        cursor: pointer;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
     }
+
+    .tab {
+        padding: 10px 20px;
+        background: #ddd;
+        margin-right: 5px;
+        border-radius: 5px 5px 0 0;
+        font-weight: bold;
+    }
+
+    .tab.active {
+        background: #fff;
+        border-bottom: 2px solid #fff;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 学生情報テーブル */
+    .student-info {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+    }
+
+    .student-info td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .student-info td:first-child {
+        width: 150px;
+        font-weight: bold;
+    }
+
+    /* フォームのスタイル */
+    form {
+        margin-top: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    button.save-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s;
+    }
+
+    button.save-button:hover {
+        background-color: #218838;
+    }
+
+    /* ボタンのスタイル */
+    #add-tab-button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #add-tab-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* タブにアクティブ状態を付与 */
+    .tabs {
+        justify-content: start;
+    }
+
+    .tab.active {
+        background-color: #f1f1f1;
+        border-bottom: 2px solid #007bff;
+    }
+
+    /* スクロールバーのデザイン */
+    .tabs {
+        overflow-x: auto;
+    }
+
+    .tabs::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .tabs::-webkit-scrollbar-thumb {
+        background-color: #007bff;
+        border-radius: 10px;
+    }
+
+    .tabs::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+
+    }
+    .image-options {
+    display: flex;
+    gap: 10px;
+}
+
+.selectable-image {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+input[type="radio"]:checked + label .selectable-image {
+    border-color: blue;
+}
 </style>
 
 <div class="content-wrapper">
     <section class="content">
         <div class="studentselecter_box">
+            <span>教師 </span><span id="teacher-name"></span>
             <div class="tabs">
-                <div class="tab active" data-tab="tanaka">田中</div>
-                <div class="tab" data-tab="yamada">山田</div>
-                <div class="tab" data-tab="kimura">木村</div>
-                <div id="add-tab-button" class="tab">＋</div>
+                <button id="add-tab-button" class="tab">＋</button>
             </div>
-            <div class="tab-content active" id="tanaka">
-                <p>田中の授業情報です。</p>
-            </div>
-            <div class="tab-content" id="yamada">
-                <p>山田の授業情報です。</p>
-            </div>
-            <div class="tab-content" id="kimura">
-                <p>木村の授業情報です。</p>
-            </div>
-            <!-- モーダルウィンドウ -->
-            <div id="studentModal" class="modal">
-                <div class="modal-content">
-                    <h3>生徒を選択してください</h3>
-                    <ul>
-                        <li onclick="addStudentTab('sato')">佐藤</li>
-                        <li onclick="addStudentTab('suzuki')">鈴木</li>
-                        <li onclick="addStudentTab('nijimura')">虹村</li>
-                    </ul>
-                    <button onclick="closeModal()">閉じる</button>
+            <div id="tab-contents">
+                <!-- ここにテンプレートとしてのフォームを準備 -->
+                <div id="form-template" class="tab-content">
+                    <table class="student-info">
+                        <!-- Student情報がここに表示されます -->
+                    </table>
+                    <form>
+                        <label for="form-behindtime">遅刻:</label> 
+                            <select name="form-behindtime" id="form-behindtime">
+                                <option value="10分">10分</option>
+                                <option value="20分">20分</option>
+                                <option value="30分以上">30分以上</option>
+                            </select>
+                        <label for="form-earlytime">早退:</label> 
+                            <select name="form-earlytime" id="form-earlytime">
+                                <option value="10分">10分</option>
+                                <option value="20分">20分</option>
+                                <option value="30分以上">30分以上</option>
+                            </select>
+                        <label for="form-attendance">出欠:</label> 
+                            <select name="form-attendance" id="form-attendance">
+                                <option value="出席">出席</option>
+                                <option value="欠席">欠席</option>
+                            </select>
+                        <label for="form-achievement">達成度:</label> 
+                            <select name="form-achievement" id="form-achievement">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        <label for="form-poster">姿勢:</label> 
+                            <select name="form-poster" id="form-poster">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        <label for="form-understand">理解:</label> 
+                            <select name="form-understand" id="form-understand">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        <label for="form-parentsmessage">保護者用評価:</label> 
+                        <div class="image-options">
+                            
+                                <input type="radio" id="option1" name="form-parentsmessage" value="1">
+                                <label for="option1">
+                                    <img src="{% static 'img/option1.png' %}" alt="option1" class="selectable-image">
+                                </label>
+                                <input type="radio" id="option2" name="form-parentsmessage" value="2">
+                                <label for="option2">
+                                    <img src="{% static 'img/option2.png' %}" alt="option2" class="selectable-image">
+                                </label>
+                                <input type="radio" id="option3" name="form-parentsmessage" value="3">
+                                <label for="option3">
+                                    <img src="{% static 'img/option3.png' %}" alt="option3" class="selectable-image">
+                                </label>
+                                <input type="radio" id="option4" name="form-parentsmessage" value="4">
+                                <label for="option4">
+                                    <img src="{% static 'img/option4.png' %}" alt="option4" class="selectable-image">
+                                </label>
+                                <input type="radio" id="option5" name="form-parentsmessage" value="5">
+                                <label for="option5">
+                                    <img src="{% static 'img/option5.png' %}" alt="option5" class="selectable-image">
+                                </label>
+                            
+                        </div>
+                        <label for="form-teachermessage">指導後コメント:</label> 
+                            <input type="text" name="form-teachermessage" id="form-teachermessage">
+                        <label for="form-nextlesson">次の授業:</label> 
+                            <input type="text" name="form-nextlesson" id="form-nextlesson">
+                        <label for="form-homework">次の宿題:</label> 
+                            <input type="text" name="form-homework" id="form-homework">
+                        <!-- 他のフィールドを追加 -->
+                        <button type="button" class="save-button">提出</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -85,82 +281,124 @@
 </div>
 
 <script>
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        if(tab.id !== 'add-tab-button') {
-            // 全てのタブとコンテンツを不活性化
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+$(document).ready(function () {
+    var teacherId = '{{ teacher_id }}';
 
-            // 選択されたタブとコンテンツを活性化
-            tab.classList.add('active');
-            document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
-            
-            // スクロールをタブに合わせる
-            scrollToTab(tab);
+    // Ajax to get teacher and schedule information
+    $.ajax({
+        url: '{% url "classreport:get_teacher_and_schedules" %}',
+        method: 'GET',
+        dataType: 'json',
+        data: { teacher_id: teacherId },
+        success: function (response) {
+            // Set the Teacher's name
+            $('#teacher-name').text(response.teacher_name);
+
+            // Initialize tabs and forms for all students
+            initializeTabs(response.students);
+        },
+        error: function (error) {
+            console.error('Error:', error);
         }
     });
-});
 
-document.getElementById('add-tab-button').addEventListener('click', () => {
-    // モーダルを開く
-    document.getElementById('studentModal').classList.add('open');
-});
+    // Initialize the tabs and forms
+    function initializeTabs(students) {
+        var firstTab = true;
+        $.each(students, function(index, student) {
+            createNewTab(student, firstTab);
+            firstTab = false;
+        });
 
-function closeModal() {
-    document.getElementById('studentModal').classList.remove('open');
-}
+        // Add event listener for the tab adding button
+        $('#add-tab-button').click(function() {
+            // Logic for adding a new tab, if needed
+        });
+    }
 
-function addStudentTab(studentId) {
-    const studentNames = {
-        sato: "佐藤",
-        suzuki: "鈴木",
-        nijimura: "虹村"
-    };
+    // Create a new tab and form for each student
+    function createNewTab(student, isActive) {
+        var newTab = $('<div>').addClass('tab').attr('data-tab', student.name).text(student.name);
+        $('.tabs').prepend(newTab);
 
-    // 新しいタブ要素を作成
-    const newTab = document.createElement('div');
-    newTab.className = 'tab';
-    newTab.setAttribute('data-tab', studentId);
-    newTab.innerText = studentNames[studentId];
-    
-    // 新しいコンテンツ要素を作成
-    const newTabContent = document.createElement('div');
-    newTabContent.className = 'tab-content';
-    newTabContent.setAttribute('id', studentId);
-    newTabContent.innerHTML = `<p>${studentNames[studentId]}の授業情報です。</p>`;
+        var newForm = $('#form-template').clone().removeAttr('id').attr('data-student', student.name).hide();
+        $('#tab-contents').append(newForm);
 
-    // タブとコンテンツを追加
-    document.querySelector('.tabs').insertBefore(newTab, document.getElementById('add-tab-button'));
-    document.querySelector('.studentselecter_box').appendChild(newTabContent);
+        if (isActive) {
+            newTab.addClass('active');
+            newForm.show().addClass('active');
+        }
 
-    // 新しいタブにもクリックイベントを付加する
-    newTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        newTab.click(function () {
+            activateTab($(this), newForm);
+        });
 
-        newTab.classList.add('active');
-        newTabContent.classList.add('active');
+        populateStudentInfo(newForm, student);
+    }
 
-        // スクロールをタブに合わせる
-        scrollToTab(newTab);
+    // Activate a tab and show the corresponding form
+    function activateTab(tab, form) {
+        $('.tab, .tab-content').removeClass('active');
+        tab.addClass('active');
+        form.show().addClass('active').siblings('.tab-content').hide();
+
+        var studentName = form.attr('data-student');
+        var savedData = Cookies.getJSON('form_' + studentName) || {};
+        fillForm(form, savedData);
+    }
+
+    // Populate the student information in the form
+    function populateStudentInfo(form, student) {
+        var infoHTML = `
+            <tr><td>
+                    名前: ${student.name}
+                </td>
+                <td>
+                    学校名: ${student.school}
+                </td>
+                <td>
+                    教育段階: ${student.stage}
+                </td>
+                <td>
+                    学年: ${student.grade}
+                </td>
+                <td>
+                    組: ${student.schoolclass}
+                </td>
+            </tr>
+        `;
+        form.find('.student-info').html(infoHTML);
+    }
+
+    // Save form data to cookies
+    $(document).on('click', '.save-button', function () {
+        var form = $(this).closest('.tab-content');
+        var formData = form.find('form').serializeArray().reduce(function(obj, item) {
+            obj[item.name] = item.value;
+            return obj;
+        }, {});
+
+        var studentName = form.attr('data-student');
+        Cookies.set('form_' + studentName, formData, { expires: 1 });
     });
 
-    // モーダルを閉じる
-    closeModal();
-}
+    // Fill form inputs with saved data
+    function fillForm(form, data) {
+        $.each(data, function(key, value) {
+            form.find('[name=' + key + ']').val(value);
+        });
+    }
+});
 
-// タブが選択されたときに自動的にスクロール
 function scrollToTab(tab) {
-    const tabContainer = document.querySelector('.tabs');
-    const tabOffset = tab.offsetLeft;
-    const tabWidth = tab.offsetWidth;
-    
-    // タブの位置が左側に来るようにスクロール
-    tabContainer.scrollTo({
-        left: tabOffset - tabContainer.offsetLeft - (tabContainer.offsetWidth / 2) + (tabWidth / 2),
-        behavior: 'smooth'
-    });
+    var tabContainer = $('.tabs');
+    var tabOffset = tab.offset().left;
+    var tabWidth = tab.outerWidth();
+
+    tabContainer.animate({
+        scrollLeft: tabOffset - tabContainer.offset().left - (tabContainer.width() / 2) + (tabWidth / 2)
+    }, 'fast');
 }
 </script>
+
 {% endblock content %}

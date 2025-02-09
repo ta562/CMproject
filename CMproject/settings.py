@@ -96,6 +96,8 @@ AUTHENTICATION_BACKENDS = [
     
 ]
 
+SESSION_COOKIE_AGE = 12000
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",

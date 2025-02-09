@@ -190,5 +190,86 @@ class ClassSchedule(models.Model):
     date = models.DateField(
         verbose_name='日付',blank=True,null=True
     )
+    flag = models.BooleanField(
+        default=True
+    )
+    
     
    
+class Report(models.Model):
+    flag = models.BooleanField(
+        default=True
+    )
+    student = models.ForeignKey(
+        Student,
+        verbose_name='生徒',
+        on_delete=models.CASCADE
+    )
+  
+    teacher = models.ForeignKey(
+        Teacher,
+        verbose_name='教師',
+        on_delete=models.CASCADE
+    )
+  
+    classroomuser=models.ForeignKey(
+        ClassroomUser,
+        verbose_name='教室',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    behindtime=models.CharField(
+        verbose_name='遅刻',
+        max_length=200,blank=True,null=True
+    )
+    earlytime=models.CharField(
+        verbose_name='早退',
+        max_length=200,blank=True,null=True
+    )
+    managermessage=models.CharField(
+        verbose_name='マネージャーメッセージ',
+        max_length=200,blank=True,null=True
+    )
+    teachermessage=models.CharField(
+        verbose_name='教師メッセージ',
+        max_length=200,blank=True,null=True
+    )
+    nextlesson=models.CharField(
+        verbose_name='次の授業',
+        max_length=200,blank=True,null=True
+    )
+    homework=models.CharField(
+        verbose_name='次の宿題',
+        max_length=200,blank=True,null=True
+    )
+    poster=models.CharField(
+        verbose_name='姿勢',
+        max_length=200,blank=True,null=True
+    )
+    understand=models.CharField(
+        verbose_name='理解',
+        max_length=200,blank=True,null=True
+    )
+    achievement=models.CharField(
+        verbose_name='達成度',
+        max_length=200,blank=True,null=True
+    )
+    attendance=models.CharField(
+        verbose_name='出席',
+        max_length=200,blank=True,null=True
+    )
+    parentsmessage=models.CharField(
+        verbose_name='保護者へのメッセージ',
+        max_length=200,blank=True,null=True
+    )
+    period=models.ForeignKey(
+        Period,
+        verbose_name='時限',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    date = models.DateField(
+        verbose_name='日付',blank=True,null=True
+    )
+    posted_at=models.DateTimeField(
+        verbose_name='投稿日時',
+        auto_now_add=True,blank=True,null=True
+        )

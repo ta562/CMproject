@@ -7,5 +7,6 @@ urlpatterns = [
     path('teacherselect',views.TeacherSelectView.as_view(),name='teacherselect'),
     path('check_teacher_id/', views.check_teacher_id, name='check_teacher_id'),
     path('report_create/<str:teacher_id>/', views.ReportCreateView.as_view(), name='report_create'),
+    path('api/teacher-schedules/', views.get_teacher_and_schedules, name='get_teacher_and_schedules'),
 
 ]
