@@ -7,8 +7,9 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from .models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period
+from .models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
+
 from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
@@ -603,4 +604,31 @@ def ajax_get_printtimetableoption(request):
     }
 
     return JsonResponse(data)
+
+def get_reports(request):
+    user = request.user
+    manager_classrooms = user.managerclassroom_set.all()
+    classroom_users = [mc.classroom for mc in manager_classrooms]
+
+    reports = Report.objects.filter(classroomuser__in=classroom_users, student__manageruser=user).order_by('-posted_at')
+
+    report_data = []
+    for report in reports:
+        report_data.append({
+            'flag': '未処理' if report.flag else '処理済み',
+            'date': report.date,
+            'time': report.period.title,
+            'classroom': f"{report.classroomuser.username}, {report.teacher.name}",
+            'attendance': report.attendance,
+            'behindtime': report.behindtime,
+            'earlytime': report.earlytime,
+            'poster': report.poster,
+            'understand': report.understand,
+            'achievement': report.achievement,
+            'parentsmessage': report.parentsmessage,
+            'teachermessage': report.teachermessage,
+            'managermessage': report.managermessage,
+        })
+
+    return JsonResponse({'reports': report_data})
 

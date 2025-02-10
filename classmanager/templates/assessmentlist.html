@@ -66,6 +66,15 @@ td{
     width: 80px;
     min-width: 80px;
 }
+
+.assessment_date{
+    width: 80px;
+    min-width: 80px;
+}
+.assessment_classroom{
+    width: 80px;
+    min-width: 80px;
+}
 .assessment_text{
     width: 70%;
     min-width: 100px;
@@ -145,20 +154,21 @@ td{
                     </td>
                 </tr>
             </thead>
-                <tr>
+            <tbody>
+                <!-- <tr>
                     <td class="assessment_td assessment_check">
                         <input type="checkbox">
                     </td>
                     <td class="assessment_td red_td assessment_status">
                         未処理
                     </td>
-                    <td class="assessment_td assessment_time"> 
+                    <td class="assessment_td assessment_date"> 
                         2024-6-30
                     </td>
                     <td class="assessment_td assessment_time"> 
                         12:00~13:00
                     </td>
-                    <td class="assessment_td assessment_time"> 
+                    <td class="assessment_td assessment_classroom"> 
                         南教室<br>田中
                     </td>
                     <td class="assessment_td assessment_text">
@@ -175,38 +185,8 @@ td{
                         <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
                     </td>
 
-                </tr>
-                <tr>
-                    <td class="assessment_td assessment_check">
-                        <input type="checkbox">
-                    </td>
-                    <td class="assessment_td blue_td assessment_status">
-                        処理済
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        2024-6-30
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        12:00~13:00
-                    </td>
-                    <td class="assessment_td assessment_time"> 
-                        南教室<br>田中
-                    </td>
-                    <td class="assessment_td assessment_text">
-                        <div class="lesson_data">出欠[  ]  遅刻[  分]  早退[  分]  姿勢[   ]  理解[   ]  保護者評価[   ]</div>
-                        <div class="teacher_text" >
-                            <div>教師から保護者へのメッセージ</div>
-                            <textarea>生徒Aさんは、授業中に積極的に質問をし、理解を深めようとする姿勢が見られます。授業に対する関心が高く、他の生徒とのディスカッションにも積極的に参加しています。</textarea>
-                        </div>
-                        <div class="manager_text">
-                            <div>管理者から次回へのメッセージ</div>
-                            <textarea>問題ありません</textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary approval_button" >承認</button>                    
-                        <button type="button" class="btn btn-secondary detail_button" >詳細</button>                    
-                    </td>
-
-                </tr>
+                </tr> -->
+               </tbody>
             </table>
         </div>
  
@@ -215,4 +195,59 @@ td{
         <!-- /.row (main row) -->
     </section>
 </div>
+
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: '{% url "classmanager:get_reports" %}',
+            type: 'GET',
+            success: function(response) {
+                const reports = response.reports;
+                const tbody = $('.assessment_table tbody');
+                tbody.empty();  // 以前のエントリをクリア
+                
+                reports.forEach(function(report) {
+                    tbody.append(`
+                        <tr>
+                            <td class="assessment_td assessment_check">
+                                <input type="checkbox">
+                            </td>
+                            <td class="assessment_td ${report.flag === '未処理' ? 'red_td' : ''} assessment_status">
+                                ${report.flag}
+                            </td>
+                            <td class="assessment_td assessment_date">
+                                ${report.date}
+                            </td>
+                            <td class="assessment_td assessment_time">
+                                ${report.time}
+                            </td>
+                            <td class="assessment_td assessment_classroom">
+                                ${report.classroom}
+                            </td>
+                            <td class="assessment_td assessment_text">
+                                <div class="lesson_data">
+                                    出欠[ ${report.attendance} ] 遅刻[ ${report.behindtime}分 ] 早退[ ${report.earlytime}分 ] 姿勢[ ${report.poster} ] 理解[ ${report.understand} ] 保護者評価[ ${report.achievement} ]
+                                </div>
+                                <div class="teacher_text">
+                                    <div>教師から保護者へのメッセージ</div>
+                                    <textarea>${report.teachermessage}</textarea>
+                                </div>
+                                <div class="manager_text">
+                                    <div>管理者から次回へのメッセージ</div>
+                                    <textarea>${report.managermessage}</textarea>
+                                </div>
+                                <button type="button" class="btn btn-primary approval_button">承認</button>
+                                <button type="button" class="btn btn-secondary detail_button">詳細</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function(error) {
+                console.error('レポートの取得中にエラーが発生しました:', error);
+            }
+        });
+    });
+    </script>
 {% endblock content %}

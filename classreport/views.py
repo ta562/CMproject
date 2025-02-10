@@ -65,6 +65,7 @@ class ReportCreateView(View):
 def get_teacher_and_schedules(request):
     teacher_id = request.GET.get('teacher_id', None)
     period_id = request.GET.get('period_id', None)
+    classroom_user = request.session['class_room_user']
     if teacher_id is None:
         return JsonResponse({'error': 'Teacher ID not provided'}, status=400)
     
@@ -75,8 +76,9 @@ def get_teacher_and_schedules(request):
         # Get the current date
         today = timezone.now().date()
         period=Period.objects.get(id=period_id)
+        print(today)
         # Filter schedules for the current day and related teacher
-        schedules = ClassSchedule.objects.filter(date=today, teacher=teacher,period=period_id).select_related('student')
+        schedules = ClassSchedule.objects.filter(date=today, teacher=teacher,period=period_id,classroomuser_id=classroom_user['id']).select_related('student')
 
         # Collect student and school data
         student_data = []
@@ -167,7 +169,7 @@ def save_report(request):
                 }
                
             )
-
+            print(report.id)
             if not created:
                 # Update existing report instead
                 report.behindtime = request.POST.get('behindtime')
@@ -187,3 +189,4 @@ def save_report(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+

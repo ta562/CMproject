@@ -212,11 +212,11 @@ input[type="radio"]:checked + label .selectable-image {
 }
 
 .tab.report-saved {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(83, 83, 83);
 }
 
 .tab-content.report-saved {
-    background-color: #333; /* フォームの暗い背景 */
+    background-color: rgb(83, 83, 83); /* フォームの暗い背景 */
     color: #fff; /* テキストを白にして読みやすくする */
 }
 
@@ -258,6 +258,7 @@ input[type="radio"]:checked + label .selectable-image {
                         <div class="flex">
                         <label for="form-behindtime">遅刻:</label> 
                             <select name="form-behindtime" id="form-behindtime">
+                                <option value="なし">なし</option>
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
                                 <option value="30分以上">30分以上</option>
@@ -266,6 +267,7 @@ input[type="radio"]:checked + label .selectable-image {
                         <div class="flex">
                         <label for="form-earlytime">早退:</label> 
                             <select name="form-earlytime" id="form-earlytime">
+                                <option value="なし">なし</option>
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
                                 <option value="30分以上">30分以上</option>
@@ -504,11 +506,12 @@ $('.tab').on('click', function () {
             data: data,
             success: function(response) {
                 console.log('save');
-                form.find('.save-button').prop('disabled', true);
+                // form.find('.save-button').prop('disabled', true);
 
-                var tab = form.closest('.tab-content').prev('.tab');
+                // var tab = form.closest('.tab-content').prev('.tab');
 
-                activateTabWithSubmission(tab);
+                // activateTabWithSubmission(tab);
+                activateTabWithSubmission();
             },
             error: function(error) {
                 console.error('Error:', error);
@@ -516,7 +519,8 @@ $('.tab').on('click', function () {
         });
     });
 
-    function activateTabWithSubmission(tab) {
+    function activateTabWithSubmission() {
+        const tab=$('.tab.active');
         tab.addClass('report-saved');
         $(`.tab-content[data-student-id="${tab.data('tab')}"]`).addClass('report-saved');
         console.log('tabcolor')
