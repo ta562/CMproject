@@ -31,7 +31,25 @@ class StudentRegistrationView(TemplateView):
     template_name='studentregistration.html'
 
 class TimetableView(TemplateView):
-    template_name='timetable.html'
+    template_name = 'timetable.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get the current logged-in ManagerUser
+        manager_user = self.request.user
+
+        # Find classrooms linked to this manager
+        linked_classrooms = ManagerClassroom.objects.filter(manager=manager_user)
+
+        # Get all ClassroomUsers linked through ManagerClassroom
+        classroom_users = ClassroomUser.objects.filter(
+            id__in=linked_classrooms.values_list('classroom_id', flat=True)
+        )
+
+        # Add classroom_users to the context
+        context['classroom_users'] = classroom_users
+        return context
 
 from django.http import JsonResponse
 
@@ -628,7 +646,26 @@ def get_reports(request):
             'parentsmessage': report.parentsmessage,
             'teachermessage': report.teachermessage,
             'managermessage': report.managermessage,
+            'id':report.id,
         })
 
     return JsonResponse({'reports': report_data})
 
+def approve_report(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        managermessage = request.POST.get('manager_message')
+        teachermessage = request.POST.get('teacher_message')
+
+        try:
+            report = Report.objects.get(id=report_id)
+            if report.flag:
+                report.managermessage = managermessage
+                report.teachermessage = teachermessage
+                report.flag = False
+                report.save()
+                return JsonResponse({'success': True})
+        except Report.DoesNotExist:
+            return JsonResponse({'success': False})
+
+    return JsonResponse({'success': False})

@@ -134,8 +134,8 @@
                             <ul class="treeview-menu">
                                 <li class="active"><a href="{% url 'classmanager:manager' %}"><i class="fa fa-circle-o"></i> ダッシュボード</a></li>
                                 <li class="active"><a href="{% url 'classmanager:assessmentlist' %}"><i class="fa fa-circle-o"></i> 指導評価チェック</a></li>
-                                <li class="active"><a href=""><i class="fa fa-circle-o"></i> 連絡</a></li>
-                                <li class="active"><a href=""><i class="fa fa-circle-o"></i> お知らせ</a></li>
+                                <!-- <li class="active"><a href=""><i class="fa fa-circle-o"></i> 連絡</a></li>
+                                <li class="active"><a href=""><i class="fa fa-circle-o"></i> お知らせ</a></li> -->
                             </ul>
                         </li>
                         
@@ -148,8 +148,8 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'accountsclassroom:signup_classroom' %}"><i class="fa fa-circle-o"></i> 教室登録</a></li>
-                                <li class="active"><a href="{% url 'classmanager:classroomlist' %}"><i class="fa fa-circle-o"></i> 教室リスト</a></li>
+                                <li class="active"><a href="{% url 'accountsclassroom:signup_classroom' %}"><i class="fa fa-circle-o"></i> 教室アカウント登録</a></li>
+                                <li class="active"><a href="{% url 'classmanager:classroomlist' %}"><i class="fa fa-circle-o"></i> 教室管理</a></li>
                                 
                             </ul>
                         </li>
@@ -163,8 +163,8 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'classmanager:teacherregistration' %}"><i class="fa fa-circle-o"></i> 講師登録</a></li>
-                                <li class="active"><a href="{% url 'classmanager:teacherlist' %}"><i class="fa fa-circle-o"></i> 講師リスト</a></li>
+                                <!-- <li class="active"><a href="{% url 'classmanager:teacherregistration' %}"><i class="fa fa-circle-o"></i> 講師登録</a></li> -->
+                                <li class="active"><a href="{% url 'classmanager:teacherlist' %}"><i class="fa fa-circle-o"></i> 教師設定</a></li>
                                 
                             </ul>
                         </li>
@@ -178,8 +178,8 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'classmanager:studentregistration' %}"><i class="fa fa-circle-o"></i> 生徒登録</a></li>
-                                <li class="active"><a href="{% url 'classmanager:studentlist' %}"><i class="fa fa-circle-o"></i> 生徒一覧</a></li>
+                                <!-- <li class="active"><a href="{% url 'classmanager:studentregistration' %}"><i class="fa fa-circle-o"></i> 生徒登録</a></li> -->
+                                <li class="active"><a href="{% url 'classmanager:studentlist' %}"><i class="fa fa-circle-o"></i> 生徒設定</a></li>
                                 
                             </ul>
                         </li>
@@ -416,7 +416,10 @@
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        
     </body>
     
 </html>

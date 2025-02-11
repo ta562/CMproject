@@ -1,32 +1,13 @@
 {% extends './base.html' %}
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
- 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
-    
+
+
 <style>
 
 .content {
     display: flex;
     flex-wrap: wrap; /* 画面幅が狭くなったらアイテムを折り返す */
-}
-
-.calendar, .form_table {
-    flex: 1; /* コンテナ内で均等にスペースを取る */
-    min-width: 300px; /* 各要素の最低幅を設定（必要に応じて調整） */
-}
-
-@media (max-width: 768px) { /* 画面幅が768px以下（例えばタブレットやモバイル）になった場合の設定 */
-    .calendar, .form_table {
-        flex-basis: 100%; /* 横幅を100%にして縦に並べる */
-    }
 }
 .form{
     border: 5px solid #fafafa;
@@ -35,9 +16,7 @@
   text-align: center;
   background-color: #ffffff;
 }
-.student_box{
-    
-}
+
 .schedule-table{
     border: 5px solid #fafafa;
     padding: 1em;
@@ -148,9 +127,9 @@ td{
     display: none;
 }
 
-    .student_table:hover {
-        background-color: #252323; /* マウスオーバー時の背景色 */
-    }
+.student_table:hover {
+    background-color: #252323; /* マウスオーバー時の背景色 */
+}
 
 
 
@@ -305,28 +284,30 @@ td{
 </style>
 <div class="content-wrapper">
     <section class="content-header">
-        <h1>授業一覧</h1>
+        <h1>時間割</h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>授業</a></li>
-            <li class="active">授業一覧</li>
+            <li class="active">時間割</li>
         </ol>
     </section>
     <section>
-        <div class="form-group">
-            <label for="classroom-select">教室</label>
-            <select id="classroom-select" class="form-control">
-                <!-- 学生のオプションをここに -->
+        <div class=" ">
+            <label for="classroom-select">教室選択</label>
+            <select id="classroom-select" class="">
+                {% for classroom_user in classroom_users %}
+                    <option value="{{ classroom_user.id }}">{{ classroom_user.username }}</option>
+                {% endfor %}
             </select>
         </div>
     </section>
     <section class="content">
+        
         <div id="calendar" class="calendar">
             <!-- Calendar will be rendered here -->
         </div>
         <div class="form_table">
             <button type="button" class="btn btn-primary" id="open-form-btn" style="display: none;">新しいスケジュール</button>
-            <button type="button" class="btn btn-secondary" id="close-form-btn" style="display: none;">閉じる</button>
-            <div id="scheduleFormContainer" style="display: none;">
+            <div id="scheduleFormContainer"  style="display: none; z-index: 1000;">
                 
                 <form id="schedule-form">
                     
@@ -375,6 +356,8 @@ td{
                     </div>
 
                     <button type="button" class="btn btn-primary" id="new-schedule-btn">スケジュールを追加</button>
+                    <button type="button" class="btn btn-secondary" id="close-form-btn" style="display: none;">閉じる</button>
+
                 </form>
                 
                 
@@ -434,44 +417,53 @@ td{
     </section>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
 <script>
   var selectedDate; // 選択された日付を保持するグローバル変数
 
- $(document).ready(function() {
+  $(document).ready(function() {
     var selectedDate;
 
     // カレンダー初期化
     $('#calendar').fullCalendar({
         selectable: true,
         selectHelper: true,
+        height: 'auto',
+        contentHeight: 'auto',
+        header: {},
+        views: {
+            month: {
+                eventLimit: true
+            }
+        },
         viewRender: function(view) {
-            // ビュー（カレンダーの表示）が変更されたときに発火
             console.log('ビューが変更されました。現在表示されているビュー: ', view.type);
             console.log('表示されている月: ', view.start.format('YYYY-MM-DD'));
-
             loadcalender();
-            // ここに他の処理を追加できます
         },
         select: function(start, end) {
             selectedDate = start.format('YYYY-MM-DD');
-            console.log('Selected date:', selectedDate);
+            console.log('選択された日付:', selectedDate);
             $('#selected-date-display').text('選択された日付: ' + selectedDate);
             $('#start-date').val(selectedDate);
-            $('#open-form-btn').show(); // 日付選択でボタンを表示
-            $('#scheduleFormContainer').hide();
+            
+            $('#scheduleFormContainer').show().css({
+                position: 'absolute',
+                top: event.clientY-40 + 'px',
+                left: event.clientX-120 + 'px'
+            }).draggable();
+            loadselect()
+            $('#close-form-btn').show();
         }
-        
     });
 
-    // 初期スケジュールロード
-    loadselectfairst()
-    // loadSchedules();
-
-    // 新しいスケジュールの追加
+    // 新しいスケジュール追加
     $('#new-schedule-btn').click(function() {
         var student_id = $('#student-select').val();
         var teacher_id = $('#teacher-select').val();
@@ -488,7 +480,6 @@ td{
         }
     });
 
-    // 繰り返しオプションの変更時に期間の入力フォームを表示/非表示
     $('#repeat-select').change(function() {
         if ($(this).val() === 'weekly' || $(this).val() === 'daily') {
             $('#date-range').show();
@@ -496,6 +487,18 @@ td{
             $('#date-range').hide();
         }
     });
+
+    $('#close-form-btn').click(function() {
+        $('#scheduleFormContainer').hide();
+        $('#close-form-btn').hide();
+    });
+
+    $('#classroom-select').change(function() {
+        filterSchedules();
+        loadselect();
+        loadcalender();
+    });
+
 
     function createSchedule(student_id, teacher_id, classroom_id, period_id, date) {
         $.ajax({
@@ -525,57 +528,14 @@ td{
         });
     }
 
-    function createRecurringSchedule(student_id, teacher_id, classroom_id, period_id, startDate, endDate, repeatType) {
-        var dates = [];
-        var currentDate = moment(startDate);
-        var endMoment = moment(endDate);
-
-        while (currentDate <= endMoment) {
-            if (repeatType === 'weekly' && currentDate.format('dddd') === moment(selectedDate).format('dddd')) {
-                dates.push(currentDate.format('YYYY-MM-DD'));
-            }
-            if (repeatType === 'daily') {
-                dates.push(currentDate.format('YYYY-MM-DD'));
-            }
-            currentDate = currentDate.add(1, 'days');
-        }
-
-        dates.forEach(function(date) {
-            createSchedule(student_id, teacher_id, classroom_id, period_id, date);
-        });
-    }
-
-    $('#open-form-btn').click(function() {
-        $(this).hide(); // ボタンを非表示
-        $('#scheduleFormContainer').show(); 
-        $('#close-form-btn').show();// フォームを表示
-    });
-
-
-    $('#close-form-btn').click(function() {
-        $('#scheduleFormContainer').hide(); // フォームを非表示
-        $('#open-form-btn').show();
-        $('#close-form-btn').hide(); // ボタンを再表示
-    });
-
-    $('#classroom-select').change(function() {
-        filterSchedules(); 
-        loadselect(); 
-        loadcalender();
-    });
-
-
-
     function loadcalender() {
         const selectedClassroomId = $('#classroom-select').val();
-    
 
         $.ajax({
             url: '{% url "classmanager:get_class_schedules" %}',
             type: 'GET',
             data: {
                 classroomuser_id: selectedClassroomId,
-             
             },
             success: function(data) {
                 $('#calendar').fullCalendar('removeEvents');
@@ -584,23 +544,17 @@ td{
                 data.forEach(function(schedule) {
                     $('#calendar').fullCalendar('renderEvent', {
                         id: schedule.id,
-                        title: schedule.student_name,
+                        title: schedule.student_name + '  ' + schedule.period_title,
                         start: moment(schedule.date),
                         allDay: true
-                    })           
-                 })
-        }
-    });
+                    });
+                });
+            }
+        });
     }
 
-
-
-
-
-
-    // 検索フォームにイベントリスナーを追加
     $('#search-date, #search-student-select, #search-teacher-select, #search-period-select').change(function() {
-        filterSchedules();  // フィルターを適用
+        filterSchedules(); 
     });
 
     function filterSchedules() {
@@ -621,12 +575,8 @@ td{
                 period_id: selectedPeriodId
             },
             success: function(data) {
-             
                 $('#schedule-table tbody').empty();
-
                 data.forEach(function(schedule) {
-                  
-
                     const row = `<tr>
                         <td><input type="checkbox"></td>
                         <td>${schedule.student_name}</td>
@@ -643,72 +593,6 @@ td{
         });
     }
 
-    // function loadSchedules() {
-    //     const selectedClassroomId = $('#classroom-select').val();
-    //     console.log(selectedClassroomId);
-    //     $.ajax({
-    //         url: '{% url "classmanager:get_class_schedules" %}',
-    //         type: 'GET',
-    //         data: {
-    //             classroomuser_id: selectedClassroomId,
-    //         },
-    //         success: function(data) {
-    //             $('#calendar').fullCalendar('removeEvents');
-    //             $('#schedule-table tbody').empty();
-
-    //             data.forEach(function(schedule) {
-    //                 $('#calendar').fullCalendar('renderEvent', {
-    //                     id: schedule.id,
-    //                     title: schedule.student_name,
-    //                     start: moment(schedule.date),
-    //                     allDay: true
-    //                 }, true);
-
-    //                 const row = `<tr>
-    //                     <td><input type="checkbox"></td>
-    //                     <td>${schedule.student_name}</td>
-    //                     <td>${schedule.teacher_name}</td>
-    //                     <td>${schedule.date}</td>
-    //                     <td>${schedule.period_title}</td>
-    //                 </tr>`;
-    //                 $('#schedule-table tbody').append(row);
-    //             });
-    //         },
-    //         error: function(error) {
-    //             console.error('スケジュールの取得中にエラー:', error);
-    //         }
-    //     });
-    // }
-
-    function loadselectfairst() {
-        const selectedClassroomId = $('#classroom-select').val();
-
-        $.ajax({
-            url: '{% url "classmanager:ajax_get_printtimetableoption" %}',
-            method: 'GET',
-            data: { classroomuser_id: selectedClassroomId },
-            success: function(data) {
-                populateSelect('#classroom-select', data.classroom_list, 'username');
-                populateSelect('#period-select', data.period_list, 'title');
-                populateSelect('#student-select', data.student_list, 'name');
-                populateSelect('#teacher-select', data.teacher_list, 'name');
-            },
-            error: function(xhr, status, error) {
-                console.error('オプション取得エラー:', error);
-            }
-        });
-
-        function populateSelect(selector, items, displayAttribute) {
-            var select = $(selector);
-            select.empty();
-
-            items.forEach(function(item) {
-                select.append(new Option(item[displayAttribute], item.id));
-            });
-        }
-    }
-
-
     function loadselect() {
         const selectedClassroomId = $('#classroom-select').val();
 
@@ -717,7 +601,6 @@ td{
             method: 'GET',
             data: { classroomuser_id: selectedClassroomId },
             success: function(data) {
-              
                 populateSelect('#period-select', data.period_list, 'title');
                 populateSelect('#student-select', data.student_list, 'name');
                 populateSelect('#teacher-select', data.teacher_list, 'name');
@@ -730,10 +613,10 @@ td{
             }
         });
 
+        
         function populateSelect(selector, items, displayAttribute) {
             var select = $(selector);
             select.empty();
-
             items.forEach(function(item) {
                 select.append(new Option(item[displayAttribute], item.id));
             });

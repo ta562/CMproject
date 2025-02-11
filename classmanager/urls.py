@@ -37,6 +37,7 @@ urlpatterns = [
     path('ajax/get/period_list/', views.ajax_get_printperiodlist, name='ajax_get_printperiodlist'),
     path('classroom_users_endpoint/', views.classroom_users_endpoint, name='classroom_users_endpoint'),
     path('api/get-reports/', views.get_reports, name='get_reports'),
+    path('approve_report/', views.approve_report, name='approve_report'),
   
 ]
     

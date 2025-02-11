@@ -84,6 +84,7 @@ def get_teacher_and_schedules(request):
         student_data = []
         for schedule in schedules:
             student = schedule.student
+            latest_report = Report.objects.filter(student=student).order_by('-date').first()
             student_school = StudentSchool.objects.filter(student=student).first()
             student_dict = {
                 'schedule_id':schedule.id,
@@ -94,6 +95,12 @@ def get_teacher_and_schedules(request):
                 'stage': student_school.stage if student_school else '',
                 'grade': student_school.grade if student_school else '',
                 'schoolclass': student_school.schoolclass if student_school else '',
+
+                'recent_teachermessage': latest_report.teachermessage if latest_report else "",
+                'recent_managermessage': latest_report.managermessage if latest_report else "",
+                'recent_homework': latest_report.homework if latest_report else "",
+                'recent_nextlesson': latest_report.nextlesson if latest_report else "",
+
             }
             student_data.append(student_dict)
         

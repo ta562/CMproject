@@ -48,20 +48,29 @@ td{
    height: 150px;
    
 }
+
+.assessment_check{
+    width: 25px;
+    min-width: 25px;
+}
+.assessment_statusth{
+    width: 80px;
+    min-width: 80px;
+    
+}
+.assessment_status{
+    width: 80px;
+    min-width: 80px;
+    background-color: #97daeb;
+}
+
 .red_td{
     background-color: #f7e7db;
 }
 .blue_td{
     background-color: #d9eef3;
 }
-.assessment_check{
-    width: 25px;
-    min-width: 25px;
-}
-.assessment_status{
-    width: 80px;
-    min-width: 80px;
-}
+
 .assessment_time , .assessment_operation{
     width: 80px;
     min-width: 80px;
@@ -137,7 +146,7 @@ td{
                     <td class="assessment_th assessment_check">
                         <input type="checkbox">
                     </td>
-                    <td class="assessment_th assessment_status">
+                    <td class="assessment_th assessment_statusth">
                         処理
                     </td>
                     <td class="assessment_th"> 
@@ -199,6 +208,34 @@ td{
 
 <script>
     $(document).ready(function() {
+        $(document).on('click', '.approval_button', function() {
+    const row = $(this).closest('tr');
+    const reportId = row.data('report-id');
+    const teacherMessage = row.find('.teacher_text textarea').val();
+    const managerMessage = row.find('.manager_text textarea').val();
+
+    $.ajax({
+        url: '{% url "classmanager:approve_report" %}',
+        type: 'POST',
+        data: {
+            'report_id': reportId,
+            'teacher_message': teacherMessage,
+            'manager_message': managerMessage,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                row.find('.assessment_status').removeClass('red_td').text('処理済み');
+                alert('レポートが更新されました');
+            } else {
+                alert('更新に失敗しました。');
+            }
+        },
+        error: function() {
+            alert('サーバーに接続中にエラーが発生しました。');
+        }
+    });
+});
         $.ajax({
             url: '{% url "classmanager:get_reports" %}',
             type: 'GET',
@@ -209,7 +246,7 @@ td{
                 
                 reports.forEach(function(report) {
                     tbody.append(`
-                        <tr>
+                        <tr data-report-id="${ report.id }">
                             <td class="assessment_td assessment_check">
                                 <input type="checkbox">
                             </td>
