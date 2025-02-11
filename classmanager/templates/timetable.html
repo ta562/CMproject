@@ -542,11 +542,14 @@ td{
                 $('#schedule-table tbody').empty();
 
                 data.forEach(function(schedule) {
+                    const eventColor = schedule.flag ? '#007bff' : '#ffa500'; 
+
                     $('#calendar').fullCalendar('renderEvent', {
                         id: schedule.id,
-                        title: schedule.student_name + '  ' + schedule.period_title,
+                        title: schedule.student_name + '  ' + schedule.period_title+ '  ' + schedule.teacher_name,
                         start: moment(schedule.date),
-                        allDay: true
+                        allDay: true,
+                        color: eventColor
                     });
                 });
             }

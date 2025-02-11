@@ -100,6 +100,7 @@ def get_teacher_and_schedules(request):
                 'recent_managermessage': latest_report.managermessage if latest_report else "",
                 'recent_homework': latest_report.homework if latest_report else "",
                 'recent_nextlesson': latest_report.nextlesson if latest_report else "",
+                'schedule_flag': schedule.flag 
 
             }
             student_data.append(student_dict)
@@ -154,6 +155,7 @@ def save_report(request):
             student = Student.objects.get(id=student_id)
             teacher = Teacher.objects.get(teacher_id=teacher_id)
             period = Period.objects.get(id=period_id)
+            schedule_id = request.POST.get('schedule_id')
             print('fjdk')
             report, created = Report.objects.get_or_create(
                 student=student,
@@ -190,10 +192,56 @@ def save_report(request):
                 report.attendance = request.POST.get('attendance')
                 report.parentsmessage = request.POST.get('parentsmessage')
                 report.save()
-                print('createdt')
+                print()
+            try:
+                class_schedule = ClassSchedule.objects.get(id=schedule_id)
+                class_schedule.flag = False
+                class_schedule.save()
+            except ClassSchedule.DoesNotExist:
+                return JsonResponse({'error': 'Schedule not found'}, status=404)
+
 
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+
+def get_class_schedules(request):
+    try:
+        classroomuser_id = request.session['class_room_user']['id']
+        date = request.GET.get('date')
+        student_id = request.GET.get('student_id')
+        teacher_id = request.GET.get('teacher_id')
+        period_id = request.GET.get('period_id')
+
+        # 指定された条件に従ってスケジュールをフィルタリング
+        filters = {}
+        if classroomuser_id:
+            filters['classroomuser_id'] = classroomuser_id
+        if date:
+            filters['date'] = date
+        if student_id:
+            filters['student_id'] = student_id
+        if teacher_id:
+            filters['teacher_id'] = teacher_id
+        if period_id:
+            filters['period_id'] = period_id
+
+        schedules = ClassSchedule.objects.filter(**filters)
+
+        data = [{
+            'id': schedule.id,
+            'student_name': schedule.student.name,
+            'teacher_name': schedule.teacher.name,
+            'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',
+            'period_title': schedule.period.title if schedule.period else '',
+            'start_time': schedule.period.start_time.strftime('%H:%M') if schedule.period.start_time else '',
+            'end_time': schedule.period.end_time.strftime('%H:%M') if schedule.period.end_time else '',
+            'date': schedule.date.strftime('%Y-%m-%d') if schedule.date else '',
+            'flag': schedule.flag ,
+        } for schedule in schedules]
+
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

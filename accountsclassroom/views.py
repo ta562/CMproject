@@ -8,7 +8,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.decorators import login_not_required, login_required
+
 from django.contrib.auth.forms import (
     AuthenticationForm,
     PasswordChangeForm,

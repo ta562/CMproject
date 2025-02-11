@@ -590,7 +590,10 @@ def get_class_schedules(request):
             'teacher_name': schedule.teacher.name,
             'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',
             'period_title': schedule.period.title if schedule.period else '',
+            'start_time': schedule.period.start_time.strftime('%H:%M') if schedule.period.start_time else '',
+            'end_time': schedule.period.end_time.strftime('%H:%M') if schedule.period.end_time else '',
             'date': schedule.date.strftime('%Y-%m-%d') if schedule.date else '',
+            'flag': schedule.flag ,
         } for schedule in schedules]
 
         return JsonResponse(data, safe=False)

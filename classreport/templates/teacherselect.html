@@ -1,16 +1,7 @@
 {% extends 'baselite.html' %}
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
-    
 <style>
 .content-wrapper{
   
@@ -107,6 +98,281 @@ td{
     left: 1%;
     width: 100%;
 }
+.content {
+    display: flex;
+    flex-wrap: wrap; /* 画面幅が狭くなったらアイテムを折り返す */
+}
+.form{
+    border: 5px solid #fafafa;
+  padding: 1em;
+    width: 100%;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.schedule-table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
+  
+}
+td{
+    
+}
+.schedule_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.schedule_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 15px;
+   
+}
+.red_td{
+    background-color: #f7e7db;
+}
+.blue_td{
+    background-color: #d9eef3;
+}
+.schedule_check{
+    width:2%;
+    min-width: 25px;
+}
+.schedule_teacher{
+    width: 10%;
+    min-width: 70px;
+}
+.schedule_classroomuser{
+    width: 10%;
+    min-width: 70px;
+}
+.schedule_teacher{
+    width: 15%;
+    min-width: 70px;
+}
+.schedule_period{
+    width: 8%;
+    min-width: 70px;
+}
+.schedule_date{
+    width: 15%;
+    min-width: 70px;
+}
+.student_subject{
+    width: 15%;
+    min-width: 70px;
+}
+.student_school{
+    text-align: left;
+    min-width: 70px;
+}
+.student_text{
+    width: 70%;
+    min-width: 50px;
+    position: relative;
+    text-align: left;
+}
+
+.teacher_text{
+    width: 60%;
+   
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 0;      
+}
+.teacher_text textarea,.manager_text textarea{
+  width: 80%;
+  height: 85px;
+}
+.manager_text{
+    width: 50%;
+    margin: 5px;
+    position: absolute;
+    top: 30px; /* 上を基準 */
+    left: 50%;      
+}
+.approval_button{
+    position:absolute;
+    top: 60%;
+    right: 1%;
+    width: 7%;
+}
+.detail_button{
+    position:absolute;
+    top: 20%;
+    right: 1%;
+    width: 7%;
+}
+.lesson_data{
+    position:absolute;
+    top: 5%;
+    left: 1%;
+    width: 100%;
+}
+.active_box{
+    display: none;
+}
+
+.student_table:hover {
+    background-color: #252323; /* マウスオーバー時の背景色 */
+}
+
+
+
+
+
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 各ラベル */
+    label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* 入力フィールド */
+
+    select {
+        width: 70%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* 必須項目のマーク */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 12px;
+    }
+
+    /* 横並びレイアウト */
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .input-row-subjects {
+        display: flex;
+        justify-content:left;
+        
+        flex-wrap: wrap;
+    }
+    .input-row div {
+        flex: 1;
+    }
+
+    /* 入力フィールドに対するエラーメッセージ */
+    #subject-error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #e74c3c;
+    }
+
+   
+
+    /* チェックボックスのスタイル */
+    #subject-checkboxes input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
+    }
+
+    #schedule-form {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #333;
+        display: inline-block;
+        width: 100px;
+    }
+
+    select.form-control {
+        width: calc(100% - 110px);
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group select {
+        margin-left: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    #close-form-btn {
+        margin-top: 10px;
+        width: 100%;
+    }
 
 </style>
 <div class="content-wrapper">
@@ -129,10 +395,88 @@ td{
     </section>
 </div>
 
+<section class="content">
+    
+    <div id="calendar" class="calendar">
+        <!-- Calendar will be rendered here -->
+    </div>
+    <div class="form_table">
+        <button type="button" class="btn btn-primary" id="open-form-btn" style="display: none;">新しいスケジュール</button>
+        <div id="scheduleFormContainer"  style="display: none; z-index: 1000;">
+            
+          
+            
+        </div>
+        <section class="search">
+            <h3>検索</h3>
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="search-date">日付</label>
+                    <input type="date" id="search-date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="search-student-select">生徒</label>
+                    <select id="search-student-select" class="form-control">
+                        <!-- 生徒のオプションをここに -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search-teacher-select">教師</label>
+                    <select id="search-teacher-select" class="form-control">
+                        <!-- 教師のオプションをここに -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search-period-select">時限</label>
+                    <select id="search-period-select" class="form-control">
+                        <!-- 時限のオプションをここに -->
+                    </select>
+                </div>
+            </form>
+        </section>
+        <table id="schedule-table" class="schedule-table">
+            <thead>
+                <tr>
+                    <td class="schedule_th schedule_check">
+                        <input type="checkbox" id="student_check" name="student_check">
+                    </td>
+                    <td class="schedule_th schedule_student">
+                        生徒
+                    </td>
+                    <td class="schedule_th schedule_teacher">
+                        教師
+                    </td>
+                    <td class="schedule_th schedule_date">
+                        日付
+                    </td>
+                    <td class="schedule_th schedule_period">
+                        時限
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Schedule data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+
+
+
+
 <!-- jQueryを読み込む -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    var selectedDate; // 選択された日付を保持するグローバル変数
 $(document).ready(function() {
     // 時限のオプションを取得してドロップダウンを更新する関数
     function loadPeriodOptions() {
@@ -203,6 +547,184 @@ $(document).ready(function() {
         }
         return cookieValue;
     }
+
+    var selectedDate;
+
+// カレンダー初期化
+$('#calendar').fullCalendar({
+    selectable: true,
+    selectHelper: true,
+    height: 'auto',
+    contentHeight: 'auto',
+    header: {
+        left: 'prev,next today', // ナビゲーションボタン
+        center: 'title', // カレンダーのタイトル（現在の月または週）
+        right: 'month,agendaWeek,agendaDay' // 月、週、日表示への切り替えボタン},
+    },
+    views: {
+        month: {
+            eventLimit: true
+        }
+    },
+    viewRender: function(view) {
+        console.log('ビューが変更されました。現在表示されているビュー: ', view.type);
+        console.log('表示されている月: ', view.start.format('YYYY-MM-DD'));
+        loadcalender();
+    },
+    // select: function(start, end) {
+    //     selectedDate = start.format('YYYY-MM-DD');
+    //     console.log('選択された日付:', selectedDate);
+    //     $('#selected-date-display').text('選択された日付: ' + selectedDate);
+    //     $('#start-date').val(selectedDate);
+        
+    //     $('#scheduleFormContainer').show().css({
+    //         position: 'absolute',
+    //         top: event.clientY-40 + 'px',
+    //         left: event.clientX-120 + 'px'
+    //     }).draggable();
+    //     loadselect()
+    //     $('#close-form-btn').show();
+    // }
+});
+
+// 新しいスケジュール追加
+$('#new-schedule-btn').click(function() {
+    var student_id = $('#student-select').val();
+    var teacher_id = $('#teacher-select').val();
+    var classroom_id = $('#classroom-select').val();
+    var period_id = $('#period-select').val();
+    var repeatOption = $('#repeat-select').val();
+    var startDate = $('#start-date').val();
+    var endDate = $('#end-date').val();
+
+    if (repeatOption === 'none') {
+        createSchedule(student_id, teacher_id, classroom_id, period_id, selectedDate);
+    } else if (repeatOption === 'weekly' || repeatOption === 'daily') {
+        createRecurringSchedule(student_id, teacher_id, classroom_id, period_id, startDate, endDate, repeatOption);
+    }
+});
+
+$('#repeat-select').change(function() {
+    if ($(this).val() === 'weekly' || $(this).val() === 'daily') {
+        $('#date-range').show();
+    } else {
+        $('#date-range').hide();
+    }
+});
+
+$('#close-form-btn').click(function() {
+    $('#scheduleFormContainer').hide();
+    $('#close-form-btn').hide();
+});
+
+$('#classroom-select').change(function() {
+    filterSchedules();
+    loadselect();
+    loadcalender();
+});
+
+
+
+function loadcalender() {
+    const selectedClassroomId = $('#classroom-select').val();
+
+    $.ajax({
+        url: '{% url "classreport:get_class_schedules" %}',
+        type: 'GET',
+        data: {
+            classroomuser_id: selectedClassroomId,
+        },
+        success: function(data) {
+            $('#calendar').fullCalendar('removeEvents');
+            $('#schedule-table tbody').empty();
+
+            data.forEach(function(schedule) {
+                const eventColor = schedule.flag ? '#007bff' : '#ffa500'; 
+                $('#calendar').fullCalendar('renderEvent', {
+                    id: schedule.id,
+                    title: schedule.student_name + '  ' + schedule.period_title+ '  ' + schedule.teacher_name,
+                    start: moment(schedule.date),
+                    allDay: true,
+                    color: eventColor
+                });
+            });
+        }
+    });
+}
+
+$('#search-date, #search-student-select, #search-teacher-select, #search-period-select').change(function() {
+    filterSchedules(); 
+});
+
+function filterSchedules() {
+    const selectedClassroomId = $('#classroom-select').val();
+    const selectedDate = $('#search-date').val();
+    const selectedStudentId = $('#search-student-select').val();
+    const selectedTeacherId = $('#search-teacher-select').val();
+    const selectedPeriodId = $('#search-period-select').val();
+
+    $.ajax({
+        url: '{% url "classmanager:get_class_schedules" %}',
+        type: 'GET',
+        data: {
+            classroomuser_id: selectedClassroomId,
+            date: selectedDate,
+            student_id: selectedStudentId,
+            teacher_id: selectedTeacherId,
+            period_id: selectedPeriodId
+        },
+        success: function(data) {
+            $('#schedule-table tbody').empty();
+            data.forEach(function(schedule) {
+                const row = `<tr>
+                    <td><input type="checkbox"></td>
+                    <td>${schedule.student_name}</td>
+                    <td>${schedule.teacher_name}</td>
+                    <td>${schedule.date}</td>
+                    <td>${schedule.period_title}</td>
+                </tr>`;
+                $('#schedule-table tbody').append(row);
+            });
+        },
+        error: function(error) {
+            console.error('スケジュールの取得中にエラー:', error);
+        }
+    });
+}
+
+function loadselect() {
+    const selectedClassroomId = $('#classroom-select').val();
+
+    $.ajax({
+        url: '{% url "classmanager:ajax_get_printtimetableoption" %}',
+        method: 'GET',
+        data: { classroomuser_id: selectedClassroomId },
+        success: function(data) {
+            populateSelect('#period-select', data.period_list, 'title');
+            populateSelect('#student-select', data.student_list, 'name');
+            populateSelect('#teacher-select', data.teacher_list, 'name');
+            populateSelect('#search-period-select', data.period_list, 'title');
+            populateSelect('#search-student-select', data.student_list, 'name');
+            populateSelect('#search-teacher-select', data.teacher_list, 'name');
+        },
+        error: function(xhr, status, error) {
+            console.error('オプション取得エラー:', error);
+        }
+    });
+
+    
+    function populateSelect(selector, items, displayAttribute) {
+        var select = $(selector);
+        select.empty();
+        items.forEach(function(item) {
+            select.append(new Option(item[displayAttribute], item.id));
+        });
+    }
+}
+
+
+
+
 });
 </script>
 {% endblock content %}

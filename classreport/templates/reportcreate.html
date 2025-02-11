@@ -198,6 +198,10 @@
     gap: 10px;
 }
 
+input[type="radio"] {
+            display: none;
+        }
+
 .selectable-image {
     width: 100px;
     height: auto;
@@ -205,6 +209,10 @@
     cursor: pointer;
     border: 2px solid transparent;
     transition: border-color 0.3s;
+}
+
+textarea{
+    width: 100%;
 }
 
 input[type="radio"]:checked + label .selectable-image {
@@ -218,6 +226,79 @@ input[type="radio"]:checked + label .selectable-image {
 .tab-content.report-saved {
     background-color: rgb(83, 83, 83); /* フォームの暗い背景 */
     color: #fff; /* テキストを白にして読みやすくする */
+}
+
+
+@media only screen and (min-width: 992px) {
+    /* PC特有のスタイルはここに */
+    .tabs {
+        /* 例：スペースを多く持たせる */
+        justify-content: flex-start;
+    }
+
+    .student-info td {
+        font-size: 16px;
+    }
+}
+
+/* タブレット用スタイル */
+@media only screen and (max-width: 991px) and (min-width: 768px) {
+    .tabs {
+       
+    }
+
+    .tab {
+        /* 横のマージンを削除 */
+    }
+
+    .student-info td {
+        font-size: 15px;
+    }
+
+    .form-group {
+       
+    }
+    .selectable-image {
+        width: 80px;
+        height: auto;
+    }
+}
+
+/* スマートフォン用スタイル */
+@media only screen and (max-width: 767px) {
+    .tabs {
+     
+      
+    }
+
+    .tab {
+       /* 縦方向のマージンを追加 */
+    }
+
+    .student-info td {
+        font-size: 14px;
+    }
+
+    .form-group {
+     
+    }
+
+    .save-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .image-options {
+        display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    }
+
+    .selectable-image {
+        width: 60px;
+        height: auto;
+    }
 }
 
 </style>
@@ -251,32 +332,32 @@ input[type="radio"]:checked + label .selectable-image {
                         <div class="form-group">
                         <div class="flex">
                         <label for="form-attendance">出欠:</label> 
-                            <select name="form-attendance" id="form-attendance">
+                            <select required name="form-attendance" id="form-attendance">
                                 <option value="出席">出席</option>
                                 <option value="欠席">欠席</option>
                             </select>
                         </div>
                         <div class="flex">
                         <label for="form-behindtime">遅刻:</label> 
-                            <select name="form-behindtime" id="form-behindtime">
+                            <select required name="form-behindtime" id="form-behindtime">
                                 <option value="なし">なし</option>
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
-                                <option value="30分以上">30分以上</option>
+                                <option value="30分~">30分~</option>
                             </select>
                         </div>
                         <div class="flex">
                         <label for="form-earlytime">早退:</label> 
-                            <select name="form-earlytime" id="form-earlytime">
+                            <select required name="form-earlytime" id="form-earlytime">
                                 <option value="なし">なし</option>
                                 <option value="10分">10分</option>
                                 <option value="20分">20分</option>
-                                <option value="30分以上">30分以上</option>
+                                <option value="30分~">30分~</option>
                             </select>
                         </div>
                         <div class="flex">
                         <label for="form-achievement">宿題達成度:</label> 
-                            <select name="form-achievement" id="form-achievement">
+                            <select required name="form-achievement" id="form-achievement">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -290,8 +371,9 @@ input[type="radio"]:checked + label .selectable-image {
                     <h4>♦指導評価</h4>
                   
                     <label for="form-teachermessage">指導後コメント:</label> 
-                    <input type="text" name="form-teachermessage" id="form-teachermessage">
-                    
+                    <textarea required name="form-teachermessage" id="form-teachermessage"></textarea>
+                    <!-- <input type="text" name="form-teachermessage" id="form-teachermessage">
+                     -->
                     <div class="form-group">
                         <div class="flex">
                         <label for="form-poster">姿勢:</label> 
@@ -341,11 +423,12 @@ input[type="radio"]:checked + label .selectable-image {
                             
                         </div>
                         <label for="form-nextlesson">次の授業:</label> 
-                            <input type="text" name="form-nextlesson" id="form-nextlesson">
+                            <input required type="text" name="form-nextlesson" id="form-nextlesson">
                         <label for="form-homework">次の宿題:</label> 
-                            <input type="text" name="form-homework" id="form-homework">
+                            <input required type="text" name="form-homework" id="form-homework">
                         <!-- 他のフィールドを追加 -->
-                        <button type="button" class="save-button">提出</button>
+                        <button type="button" class="save-button ">提出</button>
+                        
                     </form>
                     
                 </div>
@@ -356,6 +439,9 @@ input[type="radio"]:checked + label .selectable-image {
 
 <script>
 $(document).ready(function () {
+
+
+    
     // CSRFトークンを取得する関数
     function getCsrfToken() {
     var cookies = document.cookie.split(';');
@@ -406,11 +492,24 @@ $.ajaxSetup({
     }
 
     function createNewTab(student, isActive) {
-    var newTab = $('<div>').addClass('tab').attr('data-tab', student.student_id).text(student.name);
+    var newTab = $('<div>').addClass('tab').attr('data-schedule-id', student.schedule_id).text(student.name);
+   
+    if (!student.schedule_flag) {
+        newTab.addClass('report-saved');
+    }
+    
     $('.tabs').prepend(newTab);
 
     var newForm = $('#form-template').clone().removeAttr('id').attr('data-student-id', student.student_id).hide();
     $('#tab-contents').append(newForm);
+
+    var saveButton = newForm.find('.save-button');
+    if (!student.schedule_flag) {
+        disableAndMarkSubmitted(saveButton);
+    }
+
+    $('#tab-contents').append(newForm);
+
 
     if (isActive) {
         newTab.addClass('active');
@@ -497,14 +596,42 @@ $('.tab').on('click', function () {
         });
     }
 
+    $(document).on('click', '.selectable-image', function() {
+    // 関連するラジオボタンをチェック状態にする
+    $(this).closest('label').prev('input[type="radio"]').prop('checked', true);
+});
+
     $(document).on('click', '.save-button', function() {
-        var form = $(this).closest('form');
         
+        var form = $(this).closest('form');
+        var isValid = true;
+        
+        form.find(':input[required]').each(function() {
+            if (!this.checkValidity()) {
+                isValid = false;
+                $(this).focus(); // 最初に不正な項目にフォーカスを当てる
+                return false; // eachループを抜ける
+            }
+        });
+
+        if (!form.find('input[name="form-parentsmessage"]:checked').length) {
+            isValid = false;
+            alert("保護者用評価を選択してください。");
+        }
+
+        // フォームが有効でない場合は処理を中止
+        if (!isValid) {
+            return;
+        }
+
+        var button = $(this);
+        var scheduleId = $('.tab.active').attr('data-schedule-id');
         var studentId = form.closest('.tab-content').attr('data-student-id');
         var teacherId = '{{ teacher_id }}';
         console.log(teacherId)
         var periodId = '{{ period_id }}';
         var data = {
+            schedule_id: scheduleId,
             student_id: studentId,
             teacher_id: teacherId,// 現在のログインユーザー
             period_id: periodId,
@@ -527,7 +654,8 @@ $('.tab').on('click', function () {
             data: data,
             success: function(response) {
                 console.log('save');
-
+                showTemporaryMessage("提出されました");
+                disableAndMarkSubmitted(button);
                 activateTabWithSubmission();
             },
             error: function(error) {
@@ -536,12 +664,42 @@ $('.tab').on('click', function () {
         });
     });
 
+
+    
+function showTemporaryMessage(message) {
+    var messageBox = $('<div>').text(message).css({
+        position: 'fixed',
+        top: '10px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: '#f0f0f0',
+        padding: '10px 20px',
+        borderRadius: '5px',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
+        zIndex: 1000
+    });
+    $('body').append(messageBox);
+    setTimeout(function() {
+        messageBox.fadeOut(500, function() {
+            $(this).remove();
+        });
+    }, 2000);
+}
+
+
+function disableAndMarkSubmitted(button) {
+    button.text("提出済み");
+    button.prop('disabled', true);
+    button.addClass('submitted');
+}
+
     function activateTabWithSubmission() {
         const tab=$('.tab.active');
         tab.addClass('report-saved');
         $(`.tab-content[data-student-id="${tab.data('tab')}"]`).addClass('report-saved');
         console.log('tabcolor')
     }
+    
 });
 
 </script>

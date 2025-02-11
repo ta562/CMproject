@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/teacher-schedules/', views.get_teacher_and_schedules, name='get_teacher_and_schedules'),
     path('get_period_options/', views.get_period_options, name='get_period_options'),
     path('save_report/', views.save_report, name='save_report'),
+    path('get-class-schedules-report/', views.get_class_schedules, name='get_class_schedules'),
     
 
 ]
