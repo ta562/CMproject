@@ -4,6 +4,10 @@ from accountsclassroom.models import ClassroomUser
 
 class ManagerUser(AbstractUser):
     post=models.CharField(max_length=200,blank=True,null=True)
+    send_email_address = models.EmailField(verbose_name='配信元メールアドレス', blank=True, null=True)
+    email_setting= models.BooleanField(
+        default=True
+    )
 
 
 # Create your models here.

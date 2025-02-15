@@ -1,6 +1,11 @@
 {% extends './base.html' %}
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
+
+
+<style>
+    
+</style>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -15,85 +20,101 @@
     <section class="content">
         <!-- Small boxes (Stat box) -->
         <div class="row">
+        
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-aqua" >
+                <a href="{% url 'classmanager:assessmentlist' %}" class="small-box-link">
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <h4>指導評価の管理画面</h4>
+                            <p>授業の様子を確認 保護者へ配信</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-android-share"></i>
+                        </div>
+                        <div class="small-box-footer">
+                            管理画面へ移動 <i class="fa fa-arrow-circle-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <a href="{% url 'classmanager:timetable' %}" class="small-box-link">
+                <div class="small-box bg-aqua">
                     <div class="inner">
-                        <h4>指導評価の管理画面</h4>
-                        <p>授業の様子を確認 保護者へ配信</p>
+                        <h4>時間割の管理画面</h4>
+                        <p>時間割の登録 編集</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-android-share"></i>
+                        <i class="fa fa-calendar"></i>
                     </div>
-                    <a href="{% url 'classmanager:assessmentlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></div>
                 </div>
             </div>
+            
             <!-- ./col -->
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-green">
+                <a href="{% url 'classmanager:classroomlist' %}" class="small-box-link">
+                <div class="small-box bg-primary">
                     <div class="inner">
                         <h4>教室の管理画面</h4>
                         <p>教室の登録 編集</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-document"></i>
+                        <i class="fa fa-group"></i>
                     </div>
-                    <a href="{% url 'classmanager:classroomlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></div>
                 </div>
+            </a>
             </div>
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-green">
+                <a href="{% url 'classmanager:teacherlist' %}" class="small-box-link">
+                <div class="small-box bg-primary">
                     <div class="inner">
-                        <h4>講師の管理画面</h4>
-                        <p>講師の登録 編集</p>
+                        <h4>教師の管理画面</h4>
+                        <p>教師の登録 編集</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-document"></i>
+                        <i class="fa fa-address-card-o"></i>
                     </div>
-                    <a href="{% url 'classmanager:teacherlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
+                <a href="{% url 'classmanager:studentlist' %}" class="small-box-link">
                 <div class="small-box bg-primary">
                     <div class="inner">
                         <h4>生徒の管理画面</h4>
                         <p>生徒の登録 編集</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-document"></i>
+                        <i class="fa fa-child"></i>
                     </div>
-                    <a href="{% url 'classmanager:studentlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-info">
+                <a href="{% url 'classmanager:lessonlist' %}"  class="small-box-link">
+                <div class="small-box bg-green">
                     <div class="inner">
                         <h4>授業の管理画面</h4>
                         <p>授業の登録 編集</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-document"></i>
+                        <i class="fa fa-edit"></i>
                     </div>
-                    <a href="{% url 'classmanager:lessonlist' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></div>
                 </div>
+                </a>
             </div>
-            <div class="col-lg-3 col-xs-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h4>時間割の管理画面</h4>
-                        <p>時間割の登録 編集</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-document"></i>
-                    </div>
-                    <a href="{% url 'classmanager:timetable' %}" class="small-box-footer">管理画面へ移動 <i class="fa fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
+            
         </div>
         <!-- /.row -->
         <!-- Main row -->

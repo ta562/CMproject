@@ -38,6 +38,19 @@ urlpatterns = [
     path('classroom_users_endpoint/', views.classroom_users_endpoint, name='classroom_users_endpoint'),
     path('api/get-reports/', views.get_reports, name='get_reports'),
     path('approve_report/', views.approve_report, name='approve_report'),
+    path('update_class_schedule/', views.update_class_schedule, name='update_class_schedule'),
+    path('delete_class_schedule/', views.delete_class_schedule, name='delete_class_schedule'),
+    path('ajax/update-classroom/', views.update_classroom, name='update_classroom'),
+    path('ajax/delete-classroom/', views.delete_classroom, name='delete_classroom'),
+    path('ajax/ajax_update_subject/', views.ajax_update_subject, name='ajax_update_subject'),
+    path('ajax/delete-subject/', views.delete_subject, name='ajax_delete_subject'),
+    path('ajax/update_period/', views.update_period, name='update_period'),
+    path('ajax/delete_period/', views.delete_period, name='delete_period'),
+    path('get_student_subjects/<int:student_id>/', views.get_student_subjects, name='get_student_subjects'),
+    path('get-report-detail/', views.get_report_detail, name='get_report_detail'),
+    path('get-update_report/', views.update_report, name='update_report'),
+
+    
   
 ]
     

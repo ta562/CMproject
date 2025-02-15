@@ -65,11 +65,11 @@ td{
     width:5%;
     min-width: 25px;
 }
-.subject_name{
+.classroom_username{
     width: 10%;
     min-width: 70px;
 }
-.subject_mail{
+.classroom_mail{
     width: 15%;
     min-width: 70px;
 }
@@ -128,9 +128,18 @@ td{
     display: none;
 }
 
-    .student_table:hover {
+    .classroom_table:hover {
         background-color: #252323; /* マウスオーバー時の背景色 */
     }
+    .classroom_table .classroom_td:hover {
+    background-color: #f0f8ff; /* Change to your preferred color */
+    cursor: pointer; /* Optional: changes the cursor to a pointer to improve UX */
+}
+
+/* If you want to highlight the entire row when hovering over a cell */
+.classroom_table tr:hover {
+    background-color: #f0f8ff; /* Change to your preferred hover color */
+}
 </style><div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -149,10 +158,10 @@ td{
                         <td class="classroom_th classroom_check">
                             <input type="checkbox" id="classroom_check" name="classroom_check">
                         </td>
-                        <td class="classroom_th classroom_title">
+                        <td class="classroom_th classroom_username">
                             教室名
                         </td>
-                        <td class="classroom_th classroom_title">
+                        <td class="classroom_th classroom_mail">
                             登録メールアドレス
                         </td>
                     </tr>
@@ -173,31 +182,117 @@ td{
         }).done(response => {
             ClassroomListElement.innerHTML = '';
             let classroomList = response.classroomlist;
-            classroomList.forEach(classroomUser => {
+            classroomList.forEach((classroomUser, index) => {
                 const row = document.createElement('div');
                 row.innerHTML = `
                     <table class="classroom_table" style="border-collapse:collapse;border:none;">
                         <tr>
                             <td class="classroom_td classroom_check">
-                                <input type="checkbox" id="classroom_check" name="classroom_check">
+                                <input type="checkbox" name="classroom_check" onchange="toggleActiveBox(${index})">
                             </td>
-                            <td class="classroom_td classroom_title">
+                            <td class="classroom_td classroom_username">
                                 ${classroomUser.username}
                             </td>
-                            <td class="classroom_td classroom_email">
+                            <td class="classroom_td classroom_mail">
                                 ${classroomUser.email}
                             </td>
                         </tr>
                     </table>
+                    <div class="active_box box" id="active_box_${classroomUser.id}" style="display: none;">
+                        <form>
+                            <div class="input-row">
+                                <div>
+                                    <label for="form_classroom_username">教室名 <span class="text-danger">必須</span></label>
+                                    <input type="text" required value="${classroomUser.username}" name="form_classroom_username">
+                                </div>
+                                <div>
+                                    <label for="form_classroom_mail">登録メールアドレス <span class="text-danger">必須</span></label>
+                                    <input type="email" required value="${classroomUser.email}" name="form_classroom_mail">
+                                </div>
+                            </div>
+                            <div>
+                                <input type="button" value="保存" class="btn btn-primary" onclick="updateClassroom('${classroomUser.id}')">
+                                <input type="button" value="削除" class="btn btn-danger" onclick="deleteClassroom('${classroomUser.id}')">
+                            </div>
+                        </form>
+                    </div>
                 `;
-    
+
                 ClassroomListElement.appendChild(row);
             });
+            addTableListeners();
         });
     };
     
     // Call printClassroomList to initialize the classroom list
     printClassroomList();
+
+    const addTableListeners = () =>{
+    const tables = document.querySelectorAll('.classroom_table');
+    tables.forEach(function(table) {
+        table.addEventListener('click', function() {
+            const form = table.nextElementSibling;
+            if (form && form.classList.contains('active_box')) {
+                // 現在の表示状態を確認し、切り替える
+                const isVisible = form.style.display === 'block';
+
+                // すべてのフォームを非表示に
+                document.querySelectorAll('.active_box').forEach(function(box) {
+                    box.style.display = 'none';
+                });
+
+                // クリックしたテーブルのフォームを表示/非表示に切り替え
+                form.style.display = isVisible ? 'none' : 'block';
+            }
+        });
+    });
+}
+
+
+// 教室情報を更新
+function updateClassroom(userid) {
+    const formElement = document.querySelector(`#active_box_${userid} form`);
+    const newUsername = formElement.querySelector('input[name="form_classroom_username"]').value;
+    const newEmail = formElement.querySelector('input[name="form_classroom_mail"]').value;
+
+    $.ajax({
+        'url': '{% url "classmanager:update_classroom" %}',  // DjangoのURL設定に応じて更新
+        'type': 'POST',
+        'data': {
+            'classroom_id': userid,
+            'new_username': newUsername,
+            'new_email': newEmail,
+            'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRFトークン
+        },
+        'success': response => {
+            alert("更新が成功しました。");
+            printClassroomList();
+        },
+        'error': response => {
+            alert("更新に失敗しました。");
+        }
+    });
+}
+
+// 教室情報を削除
+function deleteClassroom(username) {
+    if (!confirm("この教室を削除してもよろしいですか？")) return;
     
-    </script>
+    $.ajax({
+        'url': '{% url "classmanager:delete_classroom" %}',  // DjangoのURL設定に応じて更新
+        'type': 'POST',
+        'data': {
+            'username': username,
+            'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRFトークン
+        },
+        'success': response => {
+            alert("削除が成功しました。");
+            printClassroomList();
+        },
+        'error': response => {
+            alert("削除に失敗しました。");
+        }
+    });
+}
+</script>
 {% endblock content %}

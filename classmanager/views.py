@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class IndexView(TemplateView):
@@ -152,7 +153,7 @@ def ajax_get_printstudentlist(request):
     students = Student.objects.filter(manageruser_id=request.user).order_by('-posted_at')
     schools = StudentSchool.objects.order_by('-posted_at')
     subjects = SchoolSubject.objects.select_related('subject', 'school').all()
-    all_subjects = Subject.objects.all()  # すべての科目を取得
+    all_subjects = Subject.objects.all().filter(manageruser=request.user)  # すべての科目を取得
 
     manager_classrooms = ManagerClassroom.objects.filter(manager=request.user)
     classroom_users = ClassroomUser.objects.filter(
@@ -330,6 +331,8 @@ def ajax_create_subject(request):
     
     return JsonResponse({'success': False, 'message': '無効なリクエストです'})
 
+
+
 def ajax_get_printsubjectlist(request):
     if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # all subjects related to the logged-in user
@@ -340,9 +343,78 @@ def ajax_get_printsubjectlist(request):
     return JsonResponse({'success': False, 'message': '無効なリクエストです'})
 
 def get_subjects(request):
-    subjects = Subject.objects.all()  # 科目の全リストを取得
+    subjects = Subject.objects.all().filter(manageruser=request.user) # 科目の全リストを取得
     subject_list = [{'id': subject.id, 'title': subject.title} for subject in subjects]
     return JsonResponse({'subjects': subject_list})
+
+
+@csrf_exempt
+def ajax_update_subject(request):
+    if request.method == 'POST':
+        try:
+            subject_id = request.POST.get('subject_id')
+            subject_title = request.POST.get('subject_title')
+
+            subject = Subject.objects.get(id=subject_id)
+            subject.title = subject_title
+            subject.save()
+            return JsonResponse({'success': True})
+        except Subject.DoesNotExist:
+            return JsonResponse({'success': False, 'error': '科目が見つかりませんでした。'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': '無効なリクエストです。'})
+
+
+
+@csrf_exempt
+def update_period(request):
+    if request.method == 'POST':
+        try:
+            period_id = request.POST.get('period_id')
+            period_title = request.POST.get('period_title')
+            start_time = request.POST.get('period_start_time')
+            end_time = request.POST.get('period_end_time')
+
+            period = Period.objects.get(id=period_id)
+            period.title = period_title
+            period.start_time = start_time
+            period.end_time = end_time
+            period.save()
+
+            return JsonResponse({'success': True})
+        except Period.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Period not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@csrf_exempt
+def delete_period(request):
+    if request.method == 'POST':
+        try:
+            period_id = request.POST.get('period_id')
+            period = Period.objects.get(pk=period_id)
+            period.delete()
+            return JsonResponse({'success': True})
+        except Period.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Period not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+
+@csrf_exempt
+def delete_subject(request):
+    if request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        try:
+            subject = Subject.objects.get(pk=subject_id)
+            subject.delete()
+            return JsonResponse({'success': True})
+        except Subject.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Subject not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 def classroom_users_endpoint(request):
     # Assuming `request.user` is the logged-in ManagerUser
@@ -401,14 +473,47 @@ def ajax_get_printclassroomlist(request):
         classrooms = ManagerClassroom.objects.filter(manager=request.user)
         classroom_list = [{
             'username': classroom.classroom.username,
-            'email': classroom.classroom.email
+            'email': classroom.classroom.email,
+            'id': classroom.classroom.id,
         } for classroom in classrooms]
         
         return JsonResponse({'classroomlist': classroom_list}, safe=False)
 
     return JsonResponse({'success': False, 'message': '無効なリクエストです'})
 
+@csrf_exempt
+def update_classroom(request):
+    if request.method == 'POST':
+        classroom_id= request.POST.get('classroom_id')
+        new_username = request.POST.get('new_username')
+        new_email = request.POST.get('new_email')
+        print(classroom_id)
+        print(new_username)
+        print(new_email)
+        try:
+            classroom_user = ClassroomUser.objects.get(id=classroom_id)
+            classroom_user.username = new_username
+            classroom_user.email = new_email
+            classroom_user.save()
+            return JsonResponse({'success': True, 'message': '更新が成功しました。'})
+        except ClassroomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'message': '教室が見つかりません。'})
 
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+@csrf_exempt
+def delete_classroom(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+
+        try:
+            classroom_user = ClassroomUser.objects.get(username=username)
+            classroom_user.delete()
+            return JsonResponse({'success': True, 'message': '削除しました。'})
+        except ClassroomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'message': '教室が見つかりません。'})
+
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
 
 def ajax_create_teacher(request):
     if request.method == 'POST':
@@ -586,6 +691,9 @@ def get_class_schedules(request):
 
         data = [{
             'id': schedule.id,
+            'teacher_id': schedule.teacher.id,
+            'student_id':schedule.student.id,
+            'period_id':schedule.period.id,
             'student_name': schedule.student.name,
             'teacher_name': schedule.teacher.name,
             'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',
@@ -626,6 +734,53 @@ def ajax_get_printtimetableoption(request):
 
     return JsonResponse(data)
 
+
+
+
+@csrf_exempt
+def update_class_schedule(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            schedule_id = data.get('id')
+            student_id = data.get('student_id')
+            teacher_id = data.get('teacher_id')
+            
+            period_id = data.get('period_id')
+            date = data.get('date')
+
+            # スケジュールを取得
+            schedule = ClassSchedule.objects.get(id=schedule_id)
+
+            # スケジュールデータを更新
+            schedule.student = Student.objects.get(id=student_id)
+            schedule.teacher = Teacher.objects.get(id=teacher_id)
+            
+            schedule.period = Period.objects.get(id=period_id)
+            schedule.date = date
+            schedule.save()
+
+            return JsonResponse({'success': True, 'message': 'スケジュールが更新されました。'})
+        except ClassSchedule.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'スケジュールが見つかりません。'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+@csrf_exempt
+def delete_class_schedule(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            schedule_id = data.get('id')
+            ClassSchedule.objects.filter(id=schedule_id).delete()
+
+            return JsonResponse({'success': True, 'message': 'スケジュールが削除されました。'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+
 def get_reports(request):
     user = request.user
     manager_classrooms = user.managerclassroom_set.all()
@@ -636,7 +791,8 @@ def get_reports(request):
     report_data = []
     for report in reports:
         report_data.append({
-            'flag': '未処理' if report.flag else '処理済み',
+            'name': report.student.name,
+            'flag': '未承認' if report.flag else '承認済み',
             'date': report.date,
             'time': report.period.title,
             'classroom': f"{report.classroomuser.username}, {report.teacher.name}",
@@ -662,13 +818,85 @@ def approve_report(request):
 
         try:
             report = Report.objects.get(id=report_id)
-            if report.flag:
-                report.managermessage = managermessage
-                report.teachermessage = teachermessage
-                report.flag = False
-                report.save()
-                return JsonResponse({'success': True})
+            report.managermessage = managermessage
+            report.teachermessage = teachermessage
+            report.flag = False
+            report.save()
+            return JsonResponse({'success': True})
         except Report.DoesNotExist:
             return JsonResponse({'success': False})
 
     return JsonResponse({'success': False})
+
+def update_report(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        try:
+            # レポートを取得
+            report = Report.objects.get(id=report_id)
+            # フォームからのデータを使用して属性を更新
+            report.attendance = request.POST.get('attendance', report.attendance)
+            report.behindtime = request.POST.get('behindtime', report.behindtime)
+            report.earlytime = request.POST.get('earlytime', report.earlytime)
+            report.achievement = request.POST.get('achievement', report.achievement)
+            report.poster = request.POST.get('poster', report.poster)
+            report.understand = request.POST.get('understand', report.understand)
+            report.parentsmessage = request.POST.get('parentsmessage', report.parentsmessage)
+            report.nextlesson = request.POST.get('nextlesson', report.nextlesson)
+            report.homework = request.POST.get('homework', report.homework)
+            report.teachermessage = request.POST.get('teachermessage', report.teachermessage)
+            # データベースに保存
+            report.save()
+
+            return JsonResponse({'success': True})
+        except Report.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'レポートが存在しません。'})
+
+    return JsonResponse({'success': False, 'error': '無効なリクエストです。'})
+
+def get_report_detail(request):
+    report_id = request.GET.get('report_id')
+    try:
+        report = Report.objects.select_related('student').get(id=report_id)  # studentをprefetch
+        student = report.student  # 学生情報の取得
+        student_school = StudentSchool.objects.filter(student=student).first()
+        report_data = {
+            'attendance': report.attendance,
+            'behindtime': report.behindtime,
+            'earlytime': report.earlytime,
+            'achievement': report.achievement,
+            'poster': report.poster,
+            'understand': report.understand,
+            'parentsmessage': report.parentsmessage,
+            'nextlesson': report.nextlesson,
+            'homework': report.homework,
+            'teachermessage': report.teachermessage,
+            'student': {  # 学生情報の追加
+                'name': student.name,
+                'school': student_school.school if student_school else '',  # 仮にschoolプロパティがあると想定
+                'stage': student_school.stage if student_school else '',  # 仮にstageプロパティがあると想定
+                'grade': student_school.grade if student_school else '',  # 仮にgradeプロパティがあると想定
+                'schoolclass': student_school.schoolclass if student_school else ''  # 仮にschoolclassプロパティがあると想定
+            }
+        }
+        return JsonResponse({'success': True, 'report': report_data})
+    except Report.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'レポートが存在しません。'})
+
+def get_student_subjects(request, student_id):
+    try:
+        # 生徒に関連する最新のStudentSchoolを取得
+        latest_school = StudentSchool.objects.filter(student_id=student_id).latest('posted_at')
+        
+        # SchoolSubjectを介して関連するSubjectのタイトルを取得
+        subjects = SchoolSubject.objects.filter(school=latest_school).select_related('subject')
+        
+        # Subjectのタイトルリストを作成
+        subject_titles = [subject.subject.title for subject in subjects if subject.subject]
+
+        return JsonResponse({'subjects': subject_titles}, status=200)
+    except StudentSchool.DoesNotExist:
+        # StudentSchoolが存在しない場合は空のリストを返す
+        return JsonResponse({'subjects': []}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

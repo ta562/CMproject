@@ -32,14 +32,18 @@
 .subject_table{
     border: 5px solid #fafafa;
     padding: 1em;
-    width: 100%;
     text-align: center;
     background-color: #ffffff;
   
 }
-td{
-    
+.period_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    text-align: center;
+    background-color: #ffffff;
+  
 }
+
 
 .period_th{
     border: 2px solid #fafafa;
@@ -95,47 +99,11 @@ td{
     width:5%;
     min-width: 25px;
 }
-.subject_name{
+.subject_title{
     width: 10%;
     min-width: 70px;
-}
-.subject_mail{
-    width: 15%;
-    min-width: 70px;
-}
-.subject_phone{
-    width: 10%;
-    min-width: 70px;
-}
-.subject_address{
-    width: 15%;
-    min-width: 70px;
-}
-.subject_text{
-    width: 70%;
-    min-width: 50px;
-    position: relative;
-    text-align: left;
 }
 
-.teacher_text{
-    width: 60%;
-   
-    position: absolute;
-    top: 30px; /* 上を基準 */
-    left: 0;      
-}
-.teacher_text textarea,.manager_text textarea{
-  width: 80%;
-  height: 85px;
-}
-.manager_text{
-    width: 50%;
-    margin: 5px;
-    position: absolute;
-    top: 30px; /* 上を基準 */
-    left: 50%;      
-}
 .approval_button{
     position:absolute;
     top: 60%;
@@ -244,28 +212,24 @@ td{
 </div>
 <script>
 
-const addTableListeners = () =>{
-    const tables = document.querySelectorAll('.subject_table');
-    tables.forEach(function(table) {
-        table.addEventListener('click', function() {
-            const form = table.nextElementSibling;
-            if (form && form.classList.contains('active_box')) {
-                // 現在の表示状態を確認し、切り替える
-                const isVisible = form.style.display === 'block';
+document.addEventListener('click', function(event) {
+    // Check if the click was on a subject_table or period_table
+    const table = event.target.closest('.subject_table, .period_table');
+    if (table) {
+        const form = table.nextElementSibling;
+        if (form && form.classList.contains('active_box')) {
+            const isVisible = form.style.display === 'block';
 
-                // すべてのフォームを非表示に
-                document.querySelectorAll('.active_box').forEach(function(box) {
-                    box.style.display = 'none';
-                });
+            // Hide all forms
+            document.querySelectorAll('.active_box').forEach(function(box) {
+                box.style.display = 'none';
+            });
 
-                // クリックしたテーブルのフォームを表示/非表示に切り替え
-                form.style.display = isVisible ? 'none' : 'block';
-            }
-        });
-    });
-}
-
-
+            // Toggle the visibility of the clicked table's form
+            form.style.display = isVisible ? 'none' : 'block';
+        }
+    }
+});
 
 function createSubject() {
     var form = document.querySelector('form');
@@ -329,7 +293,7 @@ const printSubjectList = () => {
                     <form>
                         <div>
                             <label for="form_subject_title">科目名 <span class="text-sm text-danger">必須</span></label>
-                            <input type="text" required value="${subjectFields.title}" name="form_subject_title" id="form_subject_title">
+                            <input type="text" required value="${subjectFields.title}" name="form_subject_title" id="form_subject_title_${subjectPk}">
                         </div>
                         <div style="display:inline;">
                             <input type="button" value="保存" class="btn btn-primary" onclick="updateSubject(${subjectPk})">
@@ -393,9 +357,20 @@ const printPeriodList = () => {
     }).done(response => {
         PeriodListElement.innerHTML = '';
         let periodList = response.periodlist;
+        
         periodList.forEach(period => {
             const periodFields = period.fields;
             const periodPk = period.pk;
+
+            // 時間を HH:MM 形式にフォーマットする
+            const formatTime = (time) => {
+                const [hours, minutes] = time.split(':');
+                return `${hours}:${minutes}`;
+            };
+
+            const formattedStartTime = formatTime(periodFields.start_time);
+            const formattedEndTime = formatTime(periodFields.end_time);
+
             const row = document.createElement('div');
             row.setAttribute('data-period-id', periodPk);
             row.innerHTML = `
@@ -408,25 +383,34 @@ const printPeriodList = () => {
                             ${periodFields.title}
                         </td>
                         <td class="period_td period_start_time">
-                            ${periodFields.start_time}
+                            ${formattedStartTime}
                         </td>
                         <td class="period_td period_end_time">
-                            ${periodFields.end_time}
+                            ${formattedEndTime}
                         </td>
                     </tr>
                 </table>
-                <div class="active_box box" style="display: none;">
-                    <form>
-                        <div>
-                            <label for="form_period_title">時限の名前 <span class="text-sm text-danger">必須</span></label>
-                            <input type="text" required value="${periodFields.title}" name="form_period_title" id="form_period_title">
-                        </div>
-                        <div>
-                            <input type="button" value="保存" class="btn btn-primary" onclick="updatePeriod(${periodPk})">
-                            <input type="button" value="削除" class="btn btn-danger" onclick="deletePeriod(${periodPk})">
-                        </div>
-                    </form>
-                </div>
+                
+                    <div class="active_box box" style="display: none;">
+    <form>
+        <div>
+            <label for="form_period_title">時限の名前 <span class="text-sm text-danger">必須</span></label>
+            <input type="text" required value="${periodFields.title}" name="form_period_title" id="form_period_title_${periodPk}">
+        </div>
+        <div>
+            <label for="form_period_start_time">開始時刻 <span class="text-sm text-danger">必須</span></label>
+            <input type="time" required value="${formattedStartTime}" name="form_period_start_time" id="form_period_start_time_${periodPk}">
+        </div>
+        <div>
+            <label for="form_period_end_time">終了時刻 <span class="text-sm text-danger">必須</span></label>
+            <input type="time" required value="${formattedEndTime}" name="form_period_end_time" id="form_period_end_time_${periodPk}">
+        </div>
+        <div>
+            <input type="button" value="保存" class="btn btn-primary" onclick="updatePeriod(${periodPk})">
+            <input type="button" value="削除" class="btn btn-danger" onclick="deletePeriod(${periodPk})">
+        </div>
+    </form>
+</div>
             `;
 
             PeriodListElement.appendChild(row);
@@ -434,11 +418,130 @@ const printPeriodList = () => {
         addTableListeners(); // これが科目と時限の両方に対応するか確認
     });
 };
-
 // Call printSubjectList to initialize the subject list
 printSubjectList();
 printPeriodList();
 
+function updateSubject(subjectId) {
+    // 各フィールドから値を取得
+    
+    const form = document.querySelector(`#subject-list div[data-subject-id="${subjectId}"] form`);
+    const subjectTitle = document.getElementById(`form_subject_title_${subjectId}`).value;
+    
+    if (!form.checkValidity()) {
+        form.reportValidity(); // フォームエラーを表示する（ブラウザのデフォルトバリデーションを使用）
+        return; // バリデーションに失敗した場合、処理を中断
+    }
+    
+    // Ajaxでの更新処理を行う
+    $.ajax({
+        url: '{% url "classmanager:ajax_update_subject" %}',
+        type: 'POST',
+        data: {
+            'subject_id': subjectId,
+            'subject_title': subjectTitle,
+            'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRFトークンを含める
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("科目が更新されました。");
+                printSubjectList(); // 更新後のリストの再読み込み
+            } else {
+                alert(`更新に失敗しました: ${response.error || ''}`);
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+
+function deleteSubject(subjectId) {
+    if (!confirm("本当に削除しますか？")) {
+        return;  // ユーザーがキャンセルを選択した場合、処理を中止
+    }
+    $.ajax({
+        url: '{% url "classmanager:ajax_delete_subject" %}',  // URLは適切なものに修正
+        type: 'POST',
+        data: {
+            'subject_id': subjectId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("科目が削除されました。");
+                printSubjectList();  // 削除したら一覧を更新
+            } else {
+                alert("削除に失敗しました: " + (response.error || ''));
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+
+
+function updatePeriod(periodId) {
+    const form = document.querySelector(`#period-list div[data-period-id="${periodId}"] form`);
+    const periodTitle = form.querySelector('input[name="form_period_title"]').value;
+    const periodStartTime = form.querySelector('input[name="form_period_start_time"]').value;
+    const periodEndTime = form.querySelector('input[name="form_period_end_time"]').value;
+
+    if (!form.checkValidity()) {
+        form.reportValidity(); // Show form errors
+        return;
+    }
+
+    // Send the AJAX request for updating
+    $.ajax({
+        url: '{% url "classmanager:update_period" %}',
+        type: 'POST',
+        data: {
+            'period_id': periodId,
+            'period_title': periodTitle,
+            'period_start_time': periodStartTime,
+            'period_end_time': periodEndTime,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("時限が更新されました。");
+                printPeriodList(); // Refresh the list
+            } else {
+                alert(`更新に失敗しました: ${response.error || ''}`);
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
+
+function deletePeriod(periodId) {
+    if (!confirm("本当に削除しますか？")) {
+        return; // Cancel if the user doesn't confirm
+    }
+    $.ajax({
+        url: '{% url "classmanager:delete_period" %}',
+        type: 'POST',
+        data: {
+            'period_id': periodId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("時限が削除されました。");
+                printPeriodList(); // Refresh the list
+            } else {
+                alert(`削除に失敗しました: ${response.error || ''}`);
+            }
+        },
+        error: function() {
+            alert("通信エラーが発生しました。");
+        }
+    });
+}
 </script>
 
 

@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ja">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -68,8 +68,17 @@
     position: absolute;
     top: 100px;
 }
+.main-sidebar {
+    width: 150px; /* 必要に応じて調整してください */
+    /* 他のスタイルはそのままで良いです */
+}
+
+.content-wrapper {
+    margin-left: 150px; /* 上記と同じ幅に設定します */
+}
+
     </style>
-    <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
+    <body class="hold-transition skin-blue sidebar-mini ">
         <div class="wrapper">
             <header class="main-header">
                 <!-- Logo -->
@@ -132,8 +141,8 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'classmanager:manager' %}"><i class="fa fa-circle-o"></i> ダッシュボード</a></li>
-                                <li class="active"><a href="{% url 'classmanager:assessmentlist' %}"><i class="fa fa-circle-o"></i> 指導評価チェック</a></li>
+                                <li class="active"><a href="{% url 'classmanager:manager' %}"> ダッシュボード</a></li>
+                                <li class="active"><a href="{% url 'classmanager:assessmentlist' %}"> 指導評価チェック</a></li>
                                 <!-- <li class="active"><a href=""><i class="fa fa-circle-o"></i> 連絡</a></li>
                                 <li class="active"><a href=""><i class="fa fa-circle-o"></i> お知らせ</a></li> -->
                             </ul>
@@ -148,15 +157,15 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'accountsclassroom:signup_classroom' %}"><i class="fa fa-circle-o"></i> 教室アカウント登録</a></li>
-                                <li class="active"><a href="{% url 'classmanager:classroomlist' %}"><i class="fa fa-circle-o"></i> 教室管理</a></li>
+                                <li class="active"><a href="{% url 'accountsclassroom:signup_classroom' %}">教室アカウント登録</a></li>
+                                <li class="active"><a href="{% url 'classmanager:classroomlist' %}"> 教室管理</a></li>
                                 
                             </ul>
                         </li>
                       
                         <li class=" treeview">
                             <a href="#">
-                                <i class="fa fa-address-card-o"></i> <span>講師</span>
+                                <i class="fa fa-address-card-o"></i> <span>教師</span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
@@ -164,7 +173,7 @@
                             
                             <ul class="treeview-menu">
                                 <!-- <li class="active"><a href="{% url 'classmanager:teacherregistration' %}"><i class="fa fa-circle-o"></i> 講師登録</a></li> -->
-                                <li class="active"><a href="{% url 'classmanager:teacherlist' %}"><i class="fa fa-circle-o"></i> 教師設定</a></li>
+                                <li class="active"><a href="{% url 'classmanager:teacherlist' %}">教師設定</a></li>
                                 
                             </ul>
                         </li>
@@ -179,7 +188,7 @@
                             
                             <ul class="treeview-menu">
                                 <!-- <li class="active"><a href="{% url 'classmanager:studentregistration' %}"><i class="fa fa-circle-o"></i> 生徒登録</a></li> -->
-                                <li class="active"><a href="{% url 'classmanager:studentlist' %}"><i class="fa fa-circle-o"></i> 生徒設定</a></li>
+                                <li class="active"><a href="{% url 'classmanager:studentlist' %}"> 生徒設定</a></li>
                                 
                             </ul>
                         </li>
@@ -192,8 +201,8 @@
                             </a>
                             
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'classmanager:lessonlist' %}"><i class="fa fa-circle-o"></i> 授業リスト</a></li>
-                                <li class="active"><a href="{% url 'classmanager:timetable' %}"><i class="fa fa-circle-o"></i> 時間割
+                                <li class="active"><a href="{% url 'classmanager:lessonlist' %}">授業リスト</a></li>
+                                <li class="active"><a href="{% url 'classmanager:timetable' %}">時間割
                                 </a></li>
                                 
                             </ul>
