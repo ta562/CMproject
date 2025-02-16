@@ -6,6 +6,7 @@ urlpatterns = [
     path('manager',views.IndexView.as_view(),name='manager'),
     path('',views.LoginSelectView.as_view(),name='loginselect'),
     path('assessmentlist',views.AssessmentListView.as_view(),name='assessmentlist'),
+    path('setting',views.SettingView.as_view(),name='setting'),
     path('studentregistration',views.StudentRegistrationView.as_view(),name='studentregistration'),
     path('studentlist',views.StudentListView.as_view(),name='studentlist'),
     path('teacherregistration',views.TeacherRegistrationView.as_view(),name='teacherregistration'),
@@ -49,6 +50,7 @@ urlpatterns = [
     path('get_student_subjects/<int:student_id>/', views.get_student_subjects, name='get_student_subjects'),
     path('get-report-detail/', views.get_report_detail, name='get_report_detail'),
     path('get-update_report/', views.update_report, name='update_report'),
+    path('update_settings/', views.update_settings, name='update_settings'),
 
     
   

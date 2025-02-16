@@ -17,23 +17,31 @@ import json
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin,TemplateView):
     template_name='index.html'
+    login_url=reverse_lazy("accounts:login")
     
 class LoginSelectView(TemplateView):
     template_name='loginselect.html'
 
-class AssessmentListView(TemplateView):
+class AssessmentListView(LoginRequiredMixin,TemplateView):
     template_name='assessmentlist.html'
+    login_url=reverse_lazy("accounts:login")
 
-class StudentRegistrationView(TemplateView):
+class StudentRegistrationView(LoginRequiredMixin,TemplateView):
     template_name='studentregistration.html'
+    login_url=reverse_lazy("accounts:login")
 
-class TimetableView(TemplateView):
+class SettingView(LoginRequiredMixin,TemplateView):
+    template_name='setting.html'
+    login_url=reverse_lazy("accounts:login")
+class TimetableView(LoginRequiredMixin,TemplateView):
     template_name = 'timetable.html'
-
+    login_url=reverse_lazy("accounts:login")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
@@ -815,18 +823,58 @@ def approve_report(request):
         report_id = request.POST.get('report_id')
         managermessage = request.POST.get('manager_message')
         teachermessage = request.POST.get('teacher_message')
-
+        
         try:
             report = Report.objects.get(id=report_id)
+            logged_in_user = request.user  # 現在のログインユーザーを取得
+            
+            # レポートを更新
             report.managermessage = managermessage
             report.teachermessage = teachermessage
             report.flag = False
             report.save()
+            
+            # メール送信の条件を確認
+            if logged_in_user.email_setting:
+                recipient_email = report.student.mail
+                email_subject = "生徒の成績レポート"
+                email_message = (
+                    f"保護者様、\n\n"
+                    f"{report.student.name}さんのレポートをご確認ください:\n"
+                    f"出席状況: {report.attendance}\n"
+                    f"遅刻: {report.behindtime}\n"
+                    f"早退: {report.earlytime}\n"
+                    f"姿勢: {report.poster}\n"
+                    f"理解度: {report.understand}\n"
+                    f"達成度: {report.achievement}\n"
+                    f"教師からのメッセージ: {teachermessage}\n"
+                    f"管理者からのメッセージ: {managermessage}\n"
+                    f"次回の授業: {report.nextlesson}\n"
+                    f"宿題: {report.homework}\n"
+                    f"\nよろしくお願いします。\n"
+                    f"{logged_in_user.get_full_name()}"
+                )
+                
+                send_email_to_parent(logged_in_user.send_email_address, recipient_email, email_subject, email_message)
+            
             return JsonResponse({'success': True})
         except Report.DoesNotExist:
             return JsonResponse({'success': False})
-
+    
     return JsonResponse({'success': False})
+
+def send_email_to_parent(sender_email, recipient_email, subject, message):
+    try:
+        print(sender_email)
+        send_mail(
+            subject,
+            message,
+            sender_email,
+            [recipient_email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f"メール送信中にエラーが発生しました: {e}")
 
 def update_report(request):
     if request.method == 'POST':
@@ -900,3 +948,33 @@ def get_student_subjects(request, student_id):
         return JsonResponse({'subjects': []}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
+
+@login_required
+def update_settings(request):
+    if request.method == 'POST':
+        user = request.user
+        email_address = request.POST.get('email_address', '')
+        email_setting = request.POST.get('email_setting', 'false') == 'true'
+        user.send_email_address = email_address
+        user.email_setting = email_setting
+        user.save()
+
+        response_data = {
+            'success': True,
+            'message': 'Settings updated successfully!'
+        }
+        return JsonResponse(response_data)
+    
+    elif request.method == 'GET':
+        user = request.user
+        response_data = {
+            'send_email_address': user.send_email_address,
+            'email_setting': user.email_setting
+        }
+        return JsonResponse(response_data)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})

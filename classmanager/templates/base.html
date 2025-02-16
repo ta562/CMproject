@@ -142,12 +142,29 @@
                             
                             <ul class="treeview-menu">
                                 <li class="active"><a href="{% url 'classmanager:manager' %}"> ダッシュボード</a></li>
-                                <li class="active"><a href="{% url 'classmanager:assessmentlist' %}"> 指導評価チェック</a></li>
+                                <li class="active"><a href="{% url 'classmanager:setting' %}">設定</a></li>
+                               
                                 <!-- <li class="active"><a href=""><i class="fa fa-circle-o"></i> 連絡</a></li>
                                 <li class="active"><a href=""><i class="fa fa-circle-o"></i> お知らせ</a></li> -->
                             </ul>
                         </li>
-                        
+                        <li class=" treeview">
+                            <a href="#">
+                                <i class="fa fa-edit"></i> <span>授業</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            
+                            <ul class="treeview-menu">
+                                <li class="active"><a href="{% url 'classmanager:assessmentlist' %}"> 指導評価チェック</a></li>
+                                <li class="active"><a href="{% url 'classmanager:timetable' %}">時間割
+                                <li class="active"><a href="{% url 'classmanager:lessonlist' %}">授業設定</a></li>
+                                
+                                </a></li>
+                                
+                            </ul>
+                        </li>
                         <li class=" treeview">
                             <a href="#">
                                 <i class="fa fa-group"></i> <span>教室</span>
@@ -192,21 +209,7 @@
                                 
                             </ul>
                         </li>
-                        <li class=" treeview">
-                            <a href="#">
-                                <i class="fa fa-edit"></i> <span>授業</span>
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            
-                            <ul class="treeview-menu">
-                                <li class="active"><a href="{% url 'classmanager:lessonlist' %}">授業リスト</a></li>
-                                <li class="active"><a href="{% url 'classmanager:timetable' %}">時間割
-                                </a></li>
-                                
-                            </ul>
-                        </li>
+                        
                     </ul>
                 </section>
                 <!-- /.sidebar -->

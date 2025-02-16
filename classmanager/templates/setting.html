@@ -13,140 +13,158 @@
 
     
 <style>
-.content-wrapper{
-  
-}
-.content{
-    
-}
-.form{
-    border: 5px solid #fafafa;
-  padding: 1em;
-    width: 100%;
-  text-align: center;
-  background-color: #ffffff;
-}
-.subject_box{
-    
-}
-.subject_table{
-    border: 5px solid #fafafa;
-    padding: 1em;
-    text-align: center;
-    background-color: #ffffff;
-  
-}
-.period_table{
-    border: 5px solid #fafafa;
-    padding: 1em;
-    text-align: center;
-    background-color: #ffffff;
-  
-}
-
-
-.period_th{
-    border: 2px solid #fafafa;
-    background-color: #c2c1c1;
-   
-    
-}
-.period_td{
-    
-    border-bottom: 1px solid #b0b0b0;
-    border-right: 2px solid #ffffff;
-   background-color: #fafafa;
-   height: 15px;
-}
-.period_title{
-    width: 10%;
-    min-width: 70px;
-}
-.period_start_time{
-    width: 10%;
-    min-width: 70px;
-}
-.period_end_time{
-    width: 10%;
-    min-width: 70px;
-}
-.period_check{
-    width: 10%;
-    min-width: 70px;
-}
-
-.subject_th{
-    border: 2px solid #fafafa;
-    background-color: #c2c1c1;
-   
-    
-}
-.subject_td{
-    
-    border-bottom: 1px solid #b0b0b0;
-    border-right: 2px solid #ffffff;
-   background-color: #fafafa;
-   height: 15px;
-   
-}
-.red_td{
-    background-color: #f7e7db;
-}
-.blue_td{
-    background-color: #d9eef3;
-}
-.subject_check{
-    width:5%;
-    min-width: 25px;
-}
-.subject_title{
-    width: 10%;
-    min-width: 70px;
-}
-
-.approval_button{
-    position:absolute;
-    top: 60%;
-    right: 1%;
-    width: 7%;
-}
-.detail_button{
-    position:absolute;
-    top: 20%;
-    right: 1%;
-    width: 7%;
-}
-.lesson_data{
-    position:absolute;
-    top: 5%;
-    left: 1%;
-    width: 100%;
-}
-.active_box{
-    display: none;
-}
-
-    .student_table:hover {
-        background-color: #252323; /* マウスオーバー時の背景色 */
+    .content-wrapper {
+        margin: 20px auto;
+        width: 80%;
     }
-</style>
+    
+    .box {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .btn {
+        margin-top: 10px;
+    }
+    
+    .feedback {
+        margin-top: 20px;
+        color: green;
+    }
+    
+    /* スイッチ用のCSS */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    /* スイッチの形を丸くする */
+    .slider.round {
+        border-radius: 34px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+    </style>
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>設定</h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>設定</a></li>
+            <li><a href="#"><i class="fa fa-dashboard"></i> 設定</a></li>
             <li class="active">設定</li>
         </ol>
     </section>
     <section class="content">
         <div class="box">
-           
+            <div class="form-group">
+                <label for="emailAddress">メールアドレス</label>
+                <input type="email" id="emailAddress" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="emailSetting">Eメール通知設定</label>
+                <label class="switch">
+                    <input type="checkbox" id="emailSetting">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <button id="saveSettings" class="btn btn-primary">設定を保存する</button>
         </div>
+        <div id="feedback" class="feedback"></div>
     </section>
 </div>
-<script>
 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Fetch user settings on page load
+    $.ajax({
+        url: '{% url "classmanager:update_settings" %}',
+        type: 'GET',
+        success: function(response) {
+            $('#emailAddress').val(response.send_email_address);
+            $('#emailSetting').prop('checked', response.email_setting);
+        },
+        error: function(xhr, status, error) {
+            $('#feedback').text('An error occurred while fetching data: ' + error);
+        }
+    });
+
+    $('#saveSettings').on('click', function() {
+        var emailAddress = $('#emailAddress').val();
+        var emailSetting = $('#emailSetting').is(':checked');
+
+        $.ajax({
+            url: '{% url "classmanager:update_settings" %}',
+            type: 'POST',
+            data: {
+                'email_address': emailAddress,
+                'email_setting': emailSetting,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                $('#feedback').text(response.message);
+            },
+            error: function(xhr, status, error) {
+                $('#feedback').text('An error occurred: ' + error);
+            }
+        });
+    });
+});
 </script>
 
 

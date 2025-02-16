@@ -11,7 +11,7 @@ UserModel = ManagerUser
 class ManagerAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         print(request.path+'manager')
-        if request.path != '/login':
+        if request.path != '/login' and request.path!='/admin/login/':
             return
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
