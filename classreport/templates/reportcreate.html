@@ -309,7 +309,7 @@ input[type="radio"]:checked + label .selectable-image {
             <span>教師 </span><span id="teacher-name"></span>
             <span>時限 </span><span id="period-title"></span>
             <div class="tabs">
-                <button id="add-tab-button" class="tab">＋</button>
+                <!-- <button id="add-tab-button" class="tab">＋</button> -->
             </div>
             <div id="tab-contents">
                 <!-- ここにテンプレートとしてのフォームを準備 -->
@@ -557,22 +557,17 @@ $('.tab').on('click', function () {
 
     function populateStudentInfo(form, student) {
         var infoHTML = `
-            <tr><td>
-                    名前: ${student.name}
-                </td>
-                <td>
-                    学校名: ${student.school}
-                </td>
-                <td>
-                    教育段階: ${student.stage}
-                </td>
-                <td>
-                    学年: ${student.grade}
-                </td>
-                <td>
+            <h6>
+                    名前: ${student.name}　 
+               
+                    学校名: ${student.school}　 
+                
+                    教育段階: ${student.stage}　 
+               
+                    学年: ${student.grade}　 
+               
                     組: ${student.schoolclass}
-                </td>
-            </tr>
+              </h6>
         `;
         form.find('.student-info').html(infoHTML);
         form.find('label[for=""]').each(function () {
@@ -601,91 +596,95 @@ $('.tab').on('click', function () {
     $(this).closest('label').prev('input[type="radio"]').prop('checked', true);
 });
 
-    $(document).on('click', '.save-button', function() {
-        
-        var form = $(this).closest('form');
-        var isValid = true;
-        
-        form.find(':input[required]').each(function() {
-            if (!this.checkValidity()) {
-                isValid = false;
-                $(this).focus(); // 最初に不正な項目にフォーカスを当てる
-                return false; // eachループを抜ける
-            }
-        });
+$(document).on('click', '.save-button', function() {
 
-        if (!form.find('input[name="form-parentsmessage"]:checked').length) {
-            isValid = false;
-            alert("保護者用評価を選択してください。");
-        }
+// 確認ダイアログを表示
+var userConfirmed = window.confirm("提出してもよろしいですか？");
 
-        // フォームが有効でない場合は処理を中止
-        if (!isValid) {
-            return;
-        }
-
-        var button = $(this);
-        var scheduleId = $('.tab.active').attr('data-schedule-id');
-        var studentId = form.closest('.tab-content').attr('data-student-id');
-        var teacherId = '{{ teacher_id }}';
-        console.log(teacherId)
-        var periodId = '{{ period_id }}';
-        var data = {
-            schedule_id: scheduleId,
-            student_id: studentId,
-            teacher_id: teacherId,// 現在のログインユーザー
-            period_id: periodId,
-            behindtime: form.find('[name="form-behindtime"]').val(),
-            earlytime: form.find('[name="form-earlytime"]').val(),
-            attendance: form.find('[name="form-attendance"]').val(),
-            achievement: form.find('[name="form-achievement"]').val(),
-            teachermessage: form.find('[name="form-teachermessage"]').val(),
-            poster: form.find('[name="form-poster"]').val(),
-            understand: form.find('[name="form-understand"]').val(),
-            parentsmessage: form.find('[name="form-parentsmessage"]:checked').val(),
-            nextlesson: form.find('[name="form-nextlesson"]').val(),
-            homework: form.find('[name="form-homework"]').val(),
-            date: new Date().toISOString().split('T')[0] // 現在の日付
-        };
-        console.log('ajax');
-        $.ajax({
-            url: '{% url "classreport:save_report" %}', // 適切なURLをセットアップ
-            method: 'POST',
-            data: data,
-            success: function(response) {
-                console.log('save');
-                showTemporaryMessage("提出されました");
-                disableAndMarkSubmitted(button);
-                activateTabWithSubmission();
-            },
-            error: function(error) {
-                console.error('Error:', error);
-            }
-        });
-    });
-
-
-    
-function showTemporaryMessage(message) {
-    var messageBox = $('<div>').text(message).css({
-        position: 'fixed',
-        top: '10px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        backgroundColor: '#f0f0f0',
-        padding: '10px 20px',
-        borderRadius: '5px',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
-        zIndex: 1000
-    });
-    $('body').append(messageBox);
-    setTimeout(function() {
-        messageBox.fadeOut(500, function() {
-            $(this).remove();
-        });
-    }, 2000);
+// ユーザーが「いいえ」を選んだ場合、以降の処理を中止
+if (!userConfirmed) {
+    return;
 }
 
+var form = $(this).closest('form');
+var isValid = true;
+
+form.find(':input[required]').each(function() {
+    if (!this.checkValidity()) {
+        isValid = false;
+        $(this).focus(); // 最初に不正な項目にフォーカスを当てる
+        return false; // eachループを抜ける
+    }
+});
+
+if (!form.find('input[name="form-parentsmessage"]:checked').length) {
+    isValid = false;
+    alert("保護者用評価を選択してください。");
+}
+
+// フォームが有効でない場合は処理を中止
+if (!isValid) {
+    return;
+}
+
+var button = $(this);
+var scheduleId = $('.tab.active').attr('data-schedule-id');
+var studentId = form.closest('.tab-content').attr('data-student-id');
+var teacherId = '{{ teacher_id }}';
+var periodId = '{{ period_id }}';
+var data = {
+    schedule_id: scheduleId,
+    student_id: studentId,
+    teacher_id: teacherId, // 現在のログインユーザー
+    period_id: periodId,
+    behindtime: form.find('[name="form-behindtime"]').val(),
+    earlytime: form.find('[name="form-earlytime"]').val(),
+    attendance: form.find('[name="form-attendance"]').val(),
+    achievement: form.find('[name="form-achievement"]').val(),
+    teachermessage: form.find('[name="form-teachermessage"]').val(),
+    poster: form.find('[name="form-poster"]').val(),
+    understand: form.find('[name="form-understand"]').val(),
+    parentsmessage: form.find('[name="form-parentsmessage"]:checked').val(),
+    nextlesson: form.find('[name="form-nextlesson"]').val(),
+    homework: form.find('[name="form-homework"]').val(),
+    date: new Date().toISOString().split('T')[0] // 現在の日付
+};
+
+$.ajax({
+    url: '{% url "classreport:save_report" %}', // 適切なURLをセットアップ
+    method: 'POST',
+    data: data,
+    success: function(response) {
+        console.log('save');
+        showTemporaryMessage("提出されました");
+        disableAndMarkSubmitted(button);
+        activateTabWithSubmission();
+    },
+    error: function(error) {
+        console.error('Error:', error);
+    }
+});
+});
+
+function showTemporaryMessage(message) {
+var messageBox = $('<div>').text(message).css({
+    position: 'fixed',
+    top: '10px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    backgroundColor: '#f0f0f0',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
+    zIndex: 1000
+});
+$('body').append(messageBox);
+setTimeout(function() {
+    messageBox.fadeOut(500, function() {
+        $(this).remove();
+    });
+}, 2000);
+}
 
 function disableAndMarkSubmitted(button) {
     button.text("提出済み");

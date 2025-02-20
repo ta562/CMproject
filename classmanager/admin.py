@@ -4,12 +4,12 @@ from .models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSc
 # Register your models here.
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'mail', 'phone1', 'posted_at')  # 管理画面で表示するフィールド
+    list_display = ('name', 'mail', 'posted_at')  # 管理画面で表示するフィールド
     search_fields = ('name', 'mail')  # 検索バーで使用するフィールド
 
 @admin.register(StudentSchool)
 class StudentSchoolAdmin(admin.ModelAdmin):
-    list_display = ('student', 'school', 'stage', 'grade', 'schoolclass', 'posted_at')
+    list_display = ('student', 'stage', 'grade', 'schoolclass', 'posted_at')
     search_fields = ('student__name', 'school')
 
 @admin.register(Subject)

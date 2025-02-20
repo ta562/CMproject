@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from classmanager.models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
+from classmanager.models import School,StudentPhone,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
 from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
@@ -86,12 +86,13 @@ def get_teacher_and_schedules(request):
             student = schedule.student
             latest_report = Report.objects.filter(student=student).order_by('-date').first()
             student_school = StudentSchool.objects.filter(student=student).first()
+            schoolname=School.objects.get(id=student_school.school_id)
             student_dict = {
                 'schedule_id':schedule.id,
                 
                 'student_id':student.id,
                 'name': student.name,
-                'school': student_school.school if student_school else '',
+                'school': schoolname.name,
                 'stage': student_school.stage if student_school else '',
                 'grade': student_school.grade if student_school else '',
                 'schoolclass': student_school.schoolclass if student_school else '',

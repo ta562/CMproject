@@ -51,6 +51,14 @@ urlpatterns = [
     path('get-report-detail/', views.get_report_detail, name='get_report_detail'),
     path('get-update_report/', views.update_report, name='update_report'),
     path('update_settings/', views.update_settings, name='update_settings'),
+    path('schoollist/', views.SchoollistView.as_view(), name='schoollist'),
+    path('ajax_delete_school/', views.ajax_delete_school, name='ajax_delete_school'),
+    path('ajax_update_school/', views.ajax_update_school, name='ajax_update_school'),
+    path('ajax_create_school/', views.ajax_create_school, name='ajax_create_school'),
+    path('ajax_get_schoollist/', views.ajax_get_schoollist, name='ajax_get_schoollist'),
+    path('ajax/get-schools/', views.get_schools_by_stage, name='get_schools'),
+    path('delete_last_phone/', views.delete_last_phone, name='delete_last_phone'),
+   
 
     
   

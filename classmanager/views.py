@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from .models import Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
+from .models import StudentPhone,School,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
 
 from accountsclassroom.models import ClassroomUser
@@ -19,7 +19,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-
+from django.shortcuts import get_object_or_404
 
 class IndexView(LoginRequiredMixin,TemplateView):
     template_name='index.html'
@@ -38,6 +38,11 @@ class StudentRegistrationView(LoginRequiredMixin,TemplateView):
 
 class SettingView(LoginRequiredMixin,TemplateView):
     template_name='setting.html'
+    login_url=reverse_lazy("accounts:login")
+
+
+class SchoollistView(LoginRequiredMixin,TemplateView):
+    template_name='schoollist.html'
     login_url=reverse_lazy("accounts:login")
 class TimetableView(LoginRequiredMixin,TemplateView):
     template_name = 'timetable.html'
@@ -62,7 +67,8 @@ class TimetableView(LoginRequiredMixin,TemplateView):
 
 from django.http import JsonResponse
 
-class StudentListView(CreateView, ListView):
+class StudentListView(LoginRequiredMixin,CreateView, ListView):
+    login_url=reverse_lazy("accounts:login")
     def get(self, request, *args, **kwargs):
         object = Student.objects.all().order_by('-posted_at')  
         context = {'object': object}
@@ -94,12 +100,13 @@ class StudentListView(CreateView, ListView):
 
 #生徒登録関連
 
-
 def ajax_get_createstudentlist(request):
     if request.method == 'POST':
         print('test')
         body = json.loads(request.body)
         print(body)
+        school_id = School.objects.get(name=body['student_school'])
+
         # Studentを作成
         new_student = Student.objects.create(
             manageruser=request.user,
@@ -108,14 +115,12 @@ def ajax_get_createstudentlist(request):
             mail=body['student_mail'],
             post=body['student_post'],
             address=body['student_address'],
-            phone1=body['student_tel1'],
-            phone2=body['student_tel2']
         )
-        
+
         # StudentSchoolを関連付けて作成
         new_school = StudentSchool.objects.create(
             student=new_student,
-            school=body['student_school'],
+            school=school_id,
             stage=body['student_stage'],
             grade=body['student_grade'],
             schoolclass=body['student_schoolclass'],
@@ -125,38 +130,77 @@ def ajax_get_createstudentlist(request):
         subject_ids = body['student_subjects']
         subject_objects = Subject.objects.filter(id__in=subject_ids)
         for subject in subject_objects:
-            # SchoolSubjectインスタンスを作成して保存
             SchoolSubject.objects.create(
                 subject=subject,
                 school=new_school
             )
 
+        # StudentPhoneを関連付け
+        student_phones = body['student_phones']
+        for phone in student_phones:
+            StudentPhone.objects.create(
+                phone=phone['number'],
+                text=phone['name'],
+                manageruser=request.user,
+                student=new_student
+            )
+
         return JsonResponse({'success': True, 'message': '学生と学校情報が保存されました'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
-
-def ajax_get_updatastudentlist(request):
-    if request.method == 'GET':
-        student_id = request.GET.get('student_id')
-        classroomuser_id = request.GET.get('student_classroomuser')
+    
+@csrf_exempt  # Only for testing purposes in development. Use CSRF protection properly in production.
+def delete_last_phone(request):
+    if request.method == "POST":
+        student_pk = request.POST.get('studentPk')
         
+        # Retrieve the last phone entry for the student
+        last_phone_entry = StudentPhone.objects.filter(student__pk=student_pk).last()
+        
+        if last_phone_entry:
+            last_phone_entry.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        
+        return JsonResponse({'error': 'No phone found for the student'}, status=404)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+@csrf_exempt
+def ajax_get_updatastudentlist(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        phone_data_json = request.POST.get('phone_data', '[]')
+        phone_data = json.loads(phone_data_json)
         
         try:
             student = Student.objects.get(pk=student_id)
-            student.name = request.GET.get('student_name')
-            student.classroomuser = ClassroomUser.objects.get(id=int(classroomuser_id))
-            print(student.classroomuser)
-            student.mail = request.GET.get('student_mail')
-            student.post = request.GET.get('student_post')
-            student.address = request.GET.get('student_address')
-            student.phone1 = request.GET.get('student_tel1')
-            student.phone2 = request.GET.get('student_tel2')
+            
+            student.name = request.POST.get('student_name')
+            student.classroomuser = ClassroomUser.objects.get(id=int(request.POST.get('student_classroomuser')))
+            student.mail = request.POST.get('student_mail')
+            student.post = request.POST.get('student_post')
+            student.address = request.POST.get('student_address')
             student.save()
+            
+            # 以前の電話情報を削除
+            StudentPhone.objects.filter(student=student).delete()
+
+            # 新しい電話情報を保存
+            for phone in phone_data:
+                StudentPhone.objects.create(
+                    student=student,
+                    phone=phone['phoneNumber'],
+                    text=phone['phoneName'],
+                    manageruser=student.manageruser
+                )
+
             return JsonResponse({'success': True, 'message': '学生が更新されました'})
         except Student.DoesNotExist:
             return JsonResponse({'success': False, 'message': '学生が存在しません'})
     else:
         return JsonResponse({'success': False, 'message': '無効なリクエストです'})
+
 def ajax_get_printstudentlist(request):
     students = Student.objects.filter(manageruser_id=request.user).order_by('-posted_at')
     schools = StudentSchool.objects.order_by('-posted_at')
@@ -179,6 +223,34 @@ def ajax_get_printstudentlist(request):
         studentlist.append(serialized_student)
 
     schoollist = serializers.serialize('python', schools)
+    school_map = {school.id: school.name for school in School.objects.all()}
+    for school_data in schoollist:
+        school_id = school_data['fields']['school']
+        school_name = school_map.get(school_id, None)
+        if school_name:
+            school_data['fields']['school'] = school_name
+
+
+    filtered_schools = School.objects.filter(manageruser=request.user)
+    student_phone_list = StudentPhone.objects.filter(student__in=students, manageruser=request.user)
+    student_phone_data = {}
+    for phone in student_phone_list:
+        if phone.student.id not in student_phone_data:
+            student_phone_data[phone.student.id] = []
+        student_phone_data[phone.student.id].append({
+            'id': phone.id,
+            'phone': phone.phone,
+            'text': phone.text
+        })
+    # Serialize the schools with stage filtering
+    school_options = serializers.serialize('python', filtered_schools)
+
+    filtered_school_map = {}
+    for school in filtered_schools:
+        if school.stage not in filtered_school_map:
+            filtered_school_map[school.stage] = []
+        filtered_school_map[school.stage].append({'id': school.id, 'name': school.name})
+
 
     subjectlist = [
         {
@@ -202,7 +274,9 @@ def ajax_get_printstudentlist(request):
         'schoollist': schoollist,
         'subjectlist': subjectlist,
         'all_subjectlist': all_subjectlist,
-        'classroom_users': classroom_user_list
+        'classroom_users': classroom_user_list,
+        'filtered_schools': filtered_school_map,
+        'student_phone_data': student_phone_data,
     }
     return JsonResponse(data)
 
@@ -220,6 +294,7 @@ def ajax_get_deletestudentlist(request):
 
 
 def ajax_get_updatastudentschool(request):
+    print('testhhhhhhhhhhhhhhhhh')
     if request.method == 'GET':
         school_id = request.GET.get('school_id')
         stage = request.GET.get('student_stage')
@@ -228,13 +303,13 @@ def ajax_get_updatastudentschool(request):
         school = request.GET.get('student_school')
         subject_ids_json = request.GET.get('subjects', '[]')
         subject_ids = json.loads(subject_ids_json)
-
+        
         try:
             school_instance = StudentSchool.objects.get(pk=school_id)
             school_instance.stage = stage
             school_instance.grade = grade
             school_instance.schoolclass = schoolclass
-            school_instance.school = school
+            school_instance.school = School.objects.get(pk=school)
             school_instance.save()
 
             # 既存の科目をクリア
@@ -908,6 +983,7 @@ def get_report_detail(request):
         report = Report.objects.select_related('student').get(id=report_id)  # studentをprefetch
         student = report.student  # 学生情報の取得
         student_school = StudentSchool.objects.filter(student=student).first()
+        school_name=School.objects.get(id=student_school.school.id)
         report_data = {
             'attendance': report.attendance,
             'behindtime': report.behindtime,
@@ -921,7 +997,7 @@ def get_report_detail(request):
             'teachermessage': report.teachermessage,
             'student': {  # 学生情報の追加
                 'name': student.name,
-                'school': student_school.school if student_school else '',  # 仮にschoolプロパティがあると想定
+                'school': school_name.name if student_school else '',  # 仮にschoolプロパティがあると想定
                 'stage': student_school.stage if student_school else '',  # 仮にstageプロパティがあると想定
                 'grade': student_school.grade if student_school else '',  # 仮にgradeプロパティがあると想定
                 'schoolclass': student_school.schoolclass if student_school else ''  # 仮にschoolclassプロパティがあると想定
@@ -978,3 +1054,85 @@ def update_settings(request):
         return JsonResponse(response_data)
     
     return JsonResponse({'success': False, 'message': 'Invalid request.'})
+
+@csrf_exempt
+def ajax_get_schoollist(request):
+    # ログインしているマネージャーユーザーを取得
+    manager_user = request.user
+    
+    # 対応する学校のリストを取得
+    schools = School.objects.filter(manageruser=manager_user)
+    
+    school_list = [{
+        'pk': school.pk,
+        'fields': {
+            'name': school.name,
+            'stage': school.stage,
+        }
+    } for school in schools]
+    
+    return JsonResponse({'schools': school_list})
+
+@csrf_exempt
+def ajax_create_school(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        name = data.get('name')
+        stage = data.get('stage')
+
+        manager_user = request.user
+        
+        # 新しいSchoolインスタンスを作成
+        school = School.objects.create(
+            manageruser=manager_user,
+            name=name,
+            stage=stage
+        )
+        
+        return JsonResponse({'success': True, 'message': '学校情報が保存されました。'})
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+@csrf_exempt
+def ajax_update_school(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        school_id = data.get('school_id')
+        name = data.get('name')
+        stage = data.get('stage')
+        
+        # 学校を取得または404エラーを返す
+        school = get_object_or_404(School, pk=school_id, manageruser=request.user)
+        
+        # 学校情報を更新
+        school.name = name
+        school.stage = stage
+        school.save()
+        
+        return JsonResponse({'success': True, 'message': '学校情報が更新されました。'})
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+@csrf_exempt
+def ajax_delete_school(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        school_id = data.get('school_id')
+        
+        # 学校を取得または404エラーを返す
+        school = get_object_or_404(School, pk=school_id, manageruser=request.user)
+        
+        # 学校を削除
+        school.delete()
+        
+        return JsonResponse({'success': True, 'message': '学校情報が削除されました。'})
+    return JsonResponse({'success': False, 'message': '無効なリクエストです。'})
+
+def get_schools_by_stage(request):
+    selected_stage = request.GET.get('stage', '')
+    manager_user = request.user  # Assuming ManagerUser is the logged-in user
+
+    if request.user.is_authenticated:
+        schools = School.objects.filter(stage=selected_stage, manageruser=manager_user)
+        school_names = list(schools.values_list('name', flat=True))
+        return JsonResponse({'schools': school_names})
+
+    return JsonResponse({'schools': []})

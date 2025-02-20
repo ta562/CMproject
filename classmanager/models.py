@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 
+
 class Student(models.Model):
     manageruser=models.ForeignKey(
         ManagerUser,
@@ -32,20 +33,47 @@ class Student(models.Model):
         verbose_name='住所',
         max_length=200,blank=True,null=True
     )
-    phone1=models.CharField(
-        verbose_name='電話番号',
-        max_length=200,blank=True,null=True
-    )
-    phone2=models.CharField(
-        verbose_name='保護者の電話番号',
-        max_length=200,blank=True,null=True
-    )
+    
     posted_at=models.DateTimeField(
         verbose_name='投稿日時',
         auto_now_add=True,blank=True,null=True
         )
 
-
+class StudentPhone(models.Model):
+    phone=models.CharField(
+        verbose_name='名前',
+        max_length=200,blank=True,null=True
+    )
+    text=models.CharField(
+        verbose_name='メモ',
+        max_length=200,blank=True,null=True
+    )
+    student=models.ForeignKey(
+        Student,
+        verbose_name='生徒',
+        on_delete=models.CASCADE,blank=True,null=True
+        
+    )
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+class School(models.Model):
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    name=models.CharField(
+        verbose_name='学校名',
+        max_length=200,blank=True,null=True
+    )
+    stage =models.CharField(
+        verbose_name='教育段階',
+        max_length=200,blank=True,null=True
+    )
+   
 
 class StudentSchool(models.Model):
     student=models.ForeignKey(
@@ -54,10 +82,12 @@ class StudentSchool(models.Model):
         on_delete=models.CASCADE,blank=True,null=True
     )
     
-    school=models.CharField(
-        verbose_name='学校名',
-        max_length=200,blank=True,null=True
+    school=models.ForeignKey(
+        School,
+        verbose_name='学校',
+        on_delete=models.CASCADE,blank=True,null=True
     )
+  
     stage=models.CharField(
         verbose_name='教育段階',
         max_length=200,blank=True,null=True
@@ -101,6 +131,7 @@ class SchoolSubject(models.Model):
         verbose_name='科目',
         on_delete=models.CASCADE, blank=True, null=True
     )
+
 
 
 class Teacher(models.Model):
@@ -194,8 +225,7 @@ class ClassSchedule(models.Model):
         default=True
     )
     
-    
-   
+
 class Report(models.Model):
     flag = models.BooleanField(
         default=True

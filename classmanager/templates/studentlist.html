@@ -289,16 +289,27 @@ td{
         </div>
     </div>
 
-    <div class="input-row">
-        <div>
-            <label for="form_student_tel1">生徒の電話番号</label>
-            <input pattern="\d+" placeholder="数字" type="text" name="form_student_tel1" id="form_student_tel1">
-        </div>
-        <div>
-            <label for="form_student_tel2">保護者の電話番号</label>
-            <input pattern="\d+" placeholder="数字" type="text" name="form_student_tel2" id="form_student_tel2">
+ 
+        <div id="student-phones-container">
+            <h4>電話番号</h4>
+               
+            <div class="student-phone-entry"><div class="input-row">
+                <div>
+                    <label for="student_phone_1">誰の電話番号か</label>
+                    <input type="text" name="student_phone_name_1" id="student_phone_name_1">
+                </div>
+                <div>
+                    <label for="student_phone_number_1">電話番号</label>
+                    <input type="text" name="student_phone_number_1" id="student_phone_number_1" pattern="\d+" placeholder="数字">
+                </div>
+            </div>
         </div>
     </div>
+        <!-- プラスボタン -->
+        <input type="button" value="＋" id="add-phone-btn" class="btn btn-secondary">
+    
+        
+    
 
     <div class="input-row">
         <div>
@@ -307,6 +318,7 @@ td{
                 <option value="小学生">小学生</option>
                 <option value="中学生">中学生</option>
                 <option value="高校生">高校生</option>
+                <option value="大学生">大学生</option>
                 <option value="その他">その他</option>
             </select>
         </div>
@@ -331,7 +343,8 @@ td{
 
     <div>
         <label for="form_student_school">学校名</label>
-        <input type="text" name="form_student_school" id="form_student_school">
+                <select required name="form_student_school" id="form_student_school">
+   </select>
     </div>
     </div>
     <div >
@@ -388,6 +401,8 @@ td{
 </section>
 </div>
 <script>
+
+
 
 const addTableListeners = () =>{
     const tables = document.querySelectorAll('.student_table');
@@ -510,6 +525,7 @@ const printList = () => {
         { value: "小学生", label: "小学生" },
         { value: "中学生", label: "中学生" },
         { value: "高校生", label: "高校生" },
+        { value: "大学生", label: "大学生" },
         { value: "その他", label: "その他" }
     ];
 
@@ -518,6 +534,44 @@ const printList = () => {
         const isSelected = option.value == schoolInfo.stage ? 'selected' : '';
         return `<option value="${option.value}" ${isSelected}>${option.label}</option>`;
     }).join('');
+
+    const currentStage = schoolInfo.stage;
+
+    // Fetch the list of schools for this stage from the response
+    const schoolOptions = (response.filtered_schools[currentStage] || []).map(school => {
+        const isSelected = school.name === schoolInfo.school ? 'selected' : '';
+        return `<option value="${school.id}" ${isSelected}>${school.name}</option>`;
+    }).join('');
+
+    document.querySelectorAll('[id^="form_student_stage_"]').forEach(stageSelect => {
+    stageSelect.addEventListener('change', event => {
+        // 選択された教育段階を取得
+        const selectedStage = event.target.value;
+        
+        // `key`を取得
+        const key = event.target.id.split('_').pop(); // "_{key}"の後ろの部分を取得
+
+        // 対応する学校リストを取得
+        const schoolsForSelectedStage = response.filtered_schools[selectedStage] || [];
+
+        // 新しいschoolSelectHtmlを生成
+        const newSchoolOptions = schoolsForSelectedStage.map(school => {
+            return `<option value="${school.id}">${school.name}</option>`;
+        }).join('');
+
+        // 学校の選択ボックスを更新
+        const schoolSelect = document.getElementById(`form_student_school_${key}`);
+        schoolSelect.innerHTML = newSchoolOptions;
+    });
+});
+
+    // Create school select HTML
+    const schoolSelectHtml = `
+        <label for="form_student_school_${key}">学校</label>
+        <select name="form_student_school" id="form_student_school_${key}">
+            ${schoolOptions}
+        </select>
+    `;
 
     return `
     <div data-school-id=${key} >
@@ -539,8 +593,7 @@ const printList = () => {
             <input type="text" value="${schoolInfo.schoolclass}" name="form_student_schoolclass_${key}" id="form_student_schoolclass_${key}">
         </div>
         <div>
-            <label for="form_student_school_${key}">学校</label>
-            <input type="text" value="${schoolInfo.school}" name="form_student_school_${key}" id="form_student_school_${key}">
+            ${schoolSelectHtml}
         </div>
         </div>
         <div>
@@ -561,12 +614,33 @@ const studentSubjectsHtml = filteredEntries.map(([key, schoolInfo]) => {
     // `key`は学校のIDで、そのIDを使って`schoolSubjectDict`から関連科目を取得
     const subjects = schoolSubjectDict[key] || [];
     // 科目が配列かどうか確認
-    console.log('Subjects for school ID', key, ':', subjects);
 
     // 各科目をHTMLに変換して結合
     return subjects.map(subject => `<span>${subject}</span>`).join('　');
 }).join('<br>');
 
+
+const studentPhonesHtml = (response.student_phone_data[studentPk] || []).map(phoneInfo => {
+    return `<span>${phoneInfo.phone || ''} (${phoneInfo.text || ''})</span>`;
+}).join('<br>');
+
+const phoneFormsHtml=(response.student_phone_data[studentPk] || []).map(phoneInfo => {
+    return `
+    
+    <div class="input-row">
+    <div>
+                <label for="student_phone_${phoneInfo.id || ''}">誰の電話番号か</label>
+                <input type="text" value='${phoneInfo.text || ''}' name="student_phone_name_${phoneInfo.id || ''}" id="student_phone_name_${phoneInfo.id || ''}">
+            </div>
+            <div>
+                <label for="student_phone_number_${phoneInfo.id || ''}">電話番号</label>
+                <input type="text" value='${phoneInfo.phone || ''}' name="student_phone_number_${phoneInfo.id || ''}" pattern="\\d+" placeholder="数字">
+            </div>
+            </div>
+  
+    `
+    ;
+}).join('<br>');
 // テーブルの中で正しい場所に挿入
 const row = document.createElement('div');
 row.setAttribute('data-student-id', studentPk);
@@ -586,7 +660,7 @@ row.innerHTML = `
                 ${studentFields.mail}
             </td>
             <td class="student_td student_phone">
-                ${studentFields.phone1}<br>${studentFields.phone2}
+               ${studentPhonesHtml} <!
             </td>
             <td class="student_td student_address">
                 ${studentFields.post}<br>${studentFields.address}
@@ -628,23 +702,23 @@ row.innerHTML = `
                             <input type="text" value="${studentFields.address}" name="form_student_address" id="form_student_address">
                         </div>
                         </div>
-                        <div class="input-row">
-                        <div>
-                            <label for="form_student_tel1">生徒の電話番号</label>
-                            <input type="text" value="${studentFields.phone1}" name="form_student_tel1" id="form_student_tel1">
+                        <div class="student_phone_add">
+                            <label for="form_student_phone">電話番号</label>
+                            ${phoneFormsHtml}
                         </div>
-                        <div>
-                            <label for="form_student_tel2">保護者の電話番号</label>
-                            <input type="text" value="${studentFields.phone2}" name="form_student_tel2" id="form_student_tel2">
-                        </div>
-                        </div>
+
+                    <input type="button" value="＋" id="add-phone-btn" class="btn btn-secondary" onclick="addformStudentphone(${studentPk})">
+                    <input type="button" value="−" id="remove-phone-btn" class="btn btn-secondary" onclick="removeformStudentphone(${studentPk})">
+                        <br>          
+                        
                          <div style="display:inline;">
                             <input type="button" value="保存" class="btn btn-primary" onclick="updateStudent(${studentPk})">
                             <input type="button" value="削除" class="btn btn-danger" onclick="deleteStudent(${studentPk})">
                         </div>
                         ${schoolFormsHtml}
+                       
                     </form>
-                    <div style="display:inline;">
+                     <div style="display:inline;">
                         <input type="button" value="学校を追加" class="btn btn-info" onclick="addformStudentSchool(${studentPk})">
                     </div>
                 </div>
@@ -659,51 +733,36 @@ row.innerHTML = `
 }
 
 
-// function fillClassroomUserSelect(studentId, selectedUser) {
-//     $.ajax({
-//         'url': '{% url "classmanager:classroom_users_endpoint" %}',
-//         'type': 'GET',
-//     }).done(response => {
-//         const classroomUserSelect = document.getElementById('form_student_classroomuser');
-//         classroomUserSelect.innerHTML = ''; // 既存のオプションを削除
-
-//         response.classroom_users.forEach((user) => {
-//             const option = document.createElement('option');
-//             option.value = user.id;
-//             option.textContent = user.username;
-//             classroomUserSelect.appendChild(option);
-//         });
-//     }).fail(error => {
-//         console.error('教室ユーザーの取得エラー:', error);
-//     });
-// }
 
 
 function createStudent() {
     var form = document.querySelector('form');
     const checkboxes = document.querySelectorAll('input[name="subjects"]:checked');
     const errorMessage = document.getElementById('subject-error-message');
-    
-    // チェックボックスが選択されていない場合
+  
     if (checkboxes.length < 1) {
         errorMessage.style.display = 'block';  // エラーメッセージを表示
         return false;  // フォーム送信をキャンセル
     }
     
-    // チェックボックスが選択されている場合
+   
     errorMessage.style.display = 'none';  // エラーメッセージを非表示
       // フォーム送信を許可
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
+    const phoneEntries = document.querySelectorAll('.student-phone-entry');
+    const studentPhones = Array.from(phoneEntries).map(entry => ({
+        name: entry.querySelector('input[name^="student_phone_name_"]').value,
+        number: entry.querySelector('input[name^="student_phone_number_"]').value
+    }));
     const studentClassroomUser = document.getElementById('form_student_classroomuser').value;
     const studentName = document.getElementById('form_student_name').value;
     const studentMail = document.getElementById('form_student_mail').value;
     const studentPost = document.getElementById('form_student_post').value;
     const studentAddress = document.getElementById('form_student_address').value;
-    const studentTel1 = document.getElementById('form_student_tel1').value;
-    const studentTel2 = document.getElementById('form_student_tel2').value;
+    
     const studentSchool = document.getElementById('form_student_school').value;
     const studentGrade = document.getElementById('form_student_grade').value;
     const studentSchoolClass = document.getElementById('form_student_schoolclass').value;
@@ -722,8 +781,7 @@ function createStudent() {
             student_mail: studentMail,
             student_post: studentPost,
             student_address: studentAddress,
-            student_tel1: studentTel1,
-            student_tel2: studentTel2,
+            student_phones: studentPhones ,
             student_school: studentSchool,
             student_grade: studentGrade,
             student_schoolclass: studentSchoolClass,
@@ -742,6 +800,8 @@ function createStudent() {
         success: function(response) {
             if (response.success) {
                 printList();
+                location.reload();
+
             } else {
                 alert("保存に失敗しました。");
             }
@@ -753,42 +813,44 @@ function createStudent() {
 }
 
 function updateStudent(studentId) {
-    // 対象の学生のフォーム要素を取得
     const form = document.querySelector(`#student-list div[data-student-id="${studentId}"] form`);
-
-    // フォームのバリデーションをチェック
+    
     if (!form.checkValidity()) {
-        form.reportValidity(); // フォームエラーを表示する（ブラウザのデフォルトバリデーションを使用）
-        return; // バリデーションに失敗した場合、処理を中断
+        form.reportValidity();
+        return;
     }
 
-    // 各フィールドから値を取得
     const name = form.querySelector(`#form_student_name`).value;
     const classroomuser = form.querySelector(`#form_student_classroomuser`).value;
     const mail = form.querySelector(`#form_student_mail`).value;
     const post = form.querySelector(`#form_student_post`).value;
     const address = form.querySelector(`#form_student_address`).value;
-    const phone1 = form.querySelector(`#form_student_tel1`).value;
-    const phone2 = form.querySelector(`#form_student_tel2`).value;
+    
+    // 電話番号データの収集
+    const phoneData = [];
+    form.querySelectorAll('.student_phone_add .input-row').forEach(row => {
+        const phoneName = row.querySelector(`input[name^="student_phone_name_"]`).value;
+        const phoneNumber = row.querySelector(`input[name^="student_phone_number_"]`).value;
+        if (phoneName && phoneNumber) {
+            phoneData.push({ phoneName, phoneNumber });
+        }
+    });
 
-    // バリデーションが成功した場合、Ajaxでの更新処理を行う
     $.ajax({
         url: '{% url "classmanager:ajax_get_updatastudentlist" %}',
-        type: 'GET',
+        type: 'POST', // POSTの使用を検討
         data: {
             'student_id': studentId,
-            'student_classroomuser':classroomuser,
+            'student_classroomuser': classroomuser,
             'student_name': name,
             'student_mail': mail,
             'student_post': post,
             'student_address': address,
-            'student_tel1': phone1,
-            'student_tel2': phone2,
+            'phone_data': JSON.stringify(phoneData), // JSON文字列としてデータを送信
         },
         success: function(response) {
             if (response.success) {
-               
-                printList(); // 更新後の学生リストの再読み込み
+                printList();
             } else {
                 alert("更新に失敗しました。");
             }
@@ -803,7 +865,6 @@ const deleteStudent = (studentId) => {
     const userConfirmed = confirm('この学生を削除してもよろしいですか関連する情報がすべて削除されます');
 
     if (userConfirmed) {
-        console.log(studentId);
     $.ajax({
         'url': '{% url "classmanager:ajax_get_deletestudentlist" %}',
         'type': 'GET',
@@ -835,29 +896,28 @@ function addformStudentSchool(studentPk) {
     
     const form = document.createElement('form');
     form.innerHTML = `
-    <div data-school-id=${studentPk}>
+    <div data-school-id="${studentPk}">
         <div>
             <label for="form_student_stage_${studentPk}">教育段階</label>
-
-
-             <select name="form_student_stage" id="form_student_stage_${studentPk}">
-                        <option value="小学生">小学生</option>
-                        <option value="中学生">中学生</option>
-                        <option value="高校生">高校生</option>
-                        <option value="その他">その他</option>
-                    </select>
+            <select name="form_student_stage" id="form_student_stage_${studentPk}">
+                <option value="小学生">小学生</option>
+                <option value="中学生">中学生</option>
+                <option value="高校生">高校生</option>
+                <option value="大学生">大学生</option>
+                <option value="その他">その他</option>
+            </select>
         </div>
         <div>
             <label for="form_student_grade_${studentPk}">学年</label>
-             <select  name="form_student_grade" id="form_student_grade_${studentPk}"">  
-                        <option value="1">1年生</option>
-                        <option value="2">2年生</option>
-                        <option value="3">3年生</option>
-                        <option value="4">4年生</option> 
-                        <option value="5">5年生</option>
-                        <option value="6">6年生</option>
-                        <option value="その他">その他</option>
-                    </select>    
+            <select name="form_student_grade" id="form_student_grade_${studentPk}">
+                <option value="1">1年生</option>
+                <option value="2">2年生</option>
+                <option value="3">3年生</option>
+                <option value="4">4年生</option> 
+                <option value="5">5年生</option>
+                <option value="6">6年生</option>
+                <option value="その他">その他</option>
+            </select>    
         </div>
         <div>
             <label for="form_student_schoolclass_${studentPk}">組</label>
@@ -865,7 +925,8 @@ function addformStudentSchool(studentPk) {
         </div>
         <div>
             <label for="form_student_school_${studentPk}">学校</label>
-            <input type="text" name="form_student_school" id="form_student_school_${studentPk}">
+            <select name="form_student_school" id="form_student_school_${studentPk}">
+            </select>
         </div>
         <div id="subject-checkboxes-${studentPk}">
             <label for="form_student_subjects">選択科目</label>
@@ -874,21 +935,51 @@ function addformStudentSchool(studentPk) {
         <input type="button" value="保存" class="btn btn-primary" onclick="createStudentSchool(${studentPk})">
     </div>
     <div id="subject-error-message" style="color: red; display: none;">
-                        少なくとも1つの科目を選択してください！
-                    </div>
+        少なくとも1つの科目を選択してください！
+    </div>
     `;
 
     container.appendChild(form);
 
     // fetchSubjectsを呼び出してチェックボックスを追加
     addfetchSubjects(studentPk);
+
+    // 新しいStageセレクトボックスの変更イベントを設定
+    const stageSelect = document.getElementById(`form_student_stage_${studentPk}`);
+    const schoolSelect = document.getElementById(`form_student_school_${studentPk}`);
+
+    function updateSchoolsStage(studentPk, stage) {
+        $.ajax({
+            url: '{% url "classmanager:get_schools" %}',
+            data: {
+                'stage': stage
+            },
+            dataType: 'json',
+            success: function(data) {
+                schoolSelect.innerHTML = ''; // 既存の選択肢をクリア
+                data.schools.forEach(function(school) {
+                    schoolSelect.appendChild(new Option(school, school));
+                });
+            }
+        });
+    }
+
+    // 新しいstageセレクトの変更イベントを追加
+    stageSelect.addEventListener('change', function() {
+        const selectedStage = stageSelect.value;
+        updateSchoolsStage(studentPk, selectedStage);
+    });
+
+    // 初期状態で学校を更新
+    const initialStage = stageSelect.value;
+    updateSchoolsStage(studentPk, initialStage);
 }
 function updateStudentSchool(schoolId) {
     const stage = document.getElementById(`form_student_stage_${schoolId}`).value;
     const grade = document.getElementById(`form_student_grade_${schoolId}`).value;
     const schoolClass = document.getElementById(`form_student_schoolclass_${schoolId}`).value;
     const schoolName = document.getElementById(`form_student_school_${schoolId}`).value;
-    
+    console.log(schoolClass)
     const subjects = [];
     document.querySelectorAll(`[data-school-id="${schoolId}"] input[type="checkbox"]:checked`).forEach(checkbox => {
         subjects.push(checkbox.value);
@@ -1065,9 +1156,127 @@ function validateForm() {
     return true;  // フォーム送信を許可
 }
 
+
+let tablephoneCounter=0;
+function addformStudentphone(studentPk) {
+    tablephoneCounter++;
+    const container = document.querySelector(`#student-list div[data-student-id="${studentPk}"] .student_phone_add`);
+    const form = document.createElement('div');
+
+    form.className = `input-row student_phone_${tablephoneCounter}`;
+    form.innerHTML = `
+        <div>
+            <label for="student_phone_${tablephoneCounter}">誰の電話番号か</label>
+            <input type="text" name="student_phone_name_${tablephoneCounter}" id="student_phone_name_${tablephoneCounter}">
+        </div>
+        <div>
+            <label for="student_phone_number_${tablephoneCounter}">電話番号</label>
+            <input type="text" name="student_phone_number_${tablephoneCounter}" id="student_phone_number_${tablephoneCounter}" pattern="\\d+" placeholder="数字">
+        </div>
+    `;
+
+    container.appendChild(form);
+}
+
+
+    function removeformStudentphone(studentPk) {
+    const container = document.querySelector(`#student-list div[data-student-id="${studentPk}"] .student_phone_add`);
+    const addedForms = container.querySelectorAll('.input-row');
+   
+    if (addedForms.length > 0) {
+        // Remove the last added form
+        const lastForm = addedForms[addedForms.length - 1];
+        container.removeChild(lastForm);
+        tablephoneCounter--;
+    } else {
+        // If there are no added forms, delete from the StudentPhone model
+        const studentPhonesHtml = (response.student_phone_data[studentPk] || []);
+        if (studentPhonesHtml.length > 0) {
+            const lastPhone = studentPhonesHtml[studentPhonesHtml.length - 1];
+            // Remove the last phone from the model or server
+
+            $.ajax({
+                url: '{% url "classmanager:delete_last_phone" %}', // Replace with your delete endpoint
+                type: 'POST',
+                data: { 
+                    phoneId: lastPhone.id 
+                },
+                success: function(response) {
+                    // Optionally, reload data or update UI accordingly
+                },
+                error: function(error) {
+                    console.error('Error removing phone:', error);
+                }
+            });
+
+            // Simulate removing it from the list
+            studentPhonesHtml.pop();  
+        }
+    }
+}
+
 printList();
 fetchSubjects();
 
+$(document).ready(function() {
+        function updateSchools(stage) {
+            $.ajax({
+                url: '{% url "classmanager:get_schools" %}',
+                data: {
+                    'stage': stage
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#form_student_school').empty(); // 既存の選択肢をクリア
+                    data.schools.forEach(function(school) {
+                        $('#form_student_school').append(new Option(school, school));
+                    });
+                }
+            });
+        }
+        
+        // ページロード時に現在のstageに基づいて選択肢を更新
+        const initialStage = $('#form_student_stage').val();
+        updateSchools(initialStage);
+
+        // stageが変更されたときの処理
+        $('#form_student_stage').change(function() {
+            const selectedStage = $(this).val();
+            updateSchools(selectedStage);
+        });
+    });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    let phoneCounter = 1; // 初期の電話番号入力フィールドのカウンター
+    const phoneContainer = document.getElementById('student-phones-container');
+    const addPhoneButton = document.getElementById('add-phone-btn');
+
+    addPhoneButton.addEventListener('click', function() {
+        phoneCounter++; // カウンターを増やす
+        const newPhoneEntry = document.createElement('div');
+        newPhoneEntry.classList.add('student-phone-entry');
+        
+        // 新しい電話番号フィールドの生成
+        newPhoneEntry.innerHTML = `
+        <div class="input-row">
+            <div>
+                <label for="student_phone_${phoneCounter}">誰の電話番号か</label>
+                <input type="text" name="student_phone_name_${phoneCounter}" id="student_phone_name_${phoneCounter}">
+            </div>
+            <div>
+                <label for="student_phone_number_${phoneCounter}">電話番号</label>
+                <input type="text" name="student_phone_number_${phoneCounter}" id="student_phone_number_${phoneCounter}" pattern="\\d+" placeholder="数字">
+            </div>
+            </div>
+        `;
+        
+        phoneContainer.appendChild(newPhoneEntry);
+    });
+});
 </script>
 
 
