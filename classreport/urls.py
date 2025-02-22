@@ -11,6 +11,9 @@ urlpatterns = [
     path('get_period_options/', views.get_period_options, name='get_period_options'),
     path('save_report/', views.save_report, name='save_report'),
     path('get-class-schedules-report/', views.get_class_schedules, name='get_class_schedules'),
+    path('get_student_subjects/<int:student_id>/', views.get_student_subjects, name='get_student_subjects'),
+    path('typingpractice',views.TypingPractceView.as_view(),name='typingpractie'),
+
     
 
 ]

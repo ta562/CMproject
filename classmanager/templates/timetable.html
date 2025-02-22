@@ -501,8 +501,8 @@ button{
     const viewportHeight = $(window).height();
 
     // フォームの初期位置を取得
-    let leftPosition = event.clientX;
-    let topPosition = event.clientY;
+    let leftPosition = event.clientX+ window.scrollX;
+    let topPosition = event.clientY+ window.scrollY;
 
     const formWidth = $('#scheduleFormContainer').outerWidth();
     const formHeight = $('#scheduleFormContainer').outerHeight();
@@ -511,8 +511,8 @@ button{
     if (leftPosition + formWidth > viewportWidth) {
         leftPosition = viewportWidth - formWidth - 20; // 少し余裕を持たせる
     }
-    if (topPosition + formHeight > viewportHeight) {
-        topPosition = viewportHeight - formHeight - 20; // 余裕を持たせる
+    if (topPosition + formHeight > viewportHeight+ window.scrollY) {
+        topPosition = viewportHeight+ window.scrollY - formHeight-20; // 余裕を持たせる
     }
             $('#scheduleFormContainer').show().css({
                 position: 'absolute',
@@ -537,7 +537,7 @@ button{
             const viewportWidth = $(window).width();
             const viewportHeight = $(window).height();
             let leftPosition = jsEvent.clientX;
-    let topPosition = jsEvent.clientY;
+    let topPosition = jsEvent.clientY+ window.scrollY;
     updateStudentSubjects(event.student_id);
     
 
@@ -546,8 +546,8 @@ button{
     if (leftPosition + formWidth > viewportWidth) {
         leftPosition = viewportWidth - formWidth - 20; // マージンを設定
     }
-    if (topPosition + formHeight > viewportHeight) {
-        topPosition = viewportHeight - formHeight - 20; // マージンを設定
+    if (topPosition + formHeight > viewportHeight+ window.scrollY) {
+        topPosition = viewportHeight+ window.scrollY - formHeight - 20; // マージンを設定
     }
             // フォームの位置を設定し、表示
             $('#editScheduleFormContainer').show().css({

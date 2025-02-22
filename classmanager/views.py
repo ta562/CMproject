@@ -756,9 +756,10 @@ def get_class_schedules(request):
         student_id = request.GET.get('student_id')
         teacher_id = request.GET.get('teacher_id')
         period_id = request.GET.get('period_id')
+        current_manageruser= request.user
 
         # 指定された条件に従ってスケジュールをフィルタリング
-        filters = {}
+        filters = {'student__manageruser': current_manageruser}
         if classroomuser_id:
             filters['classroomuser_id'] = classroomuser_id
         if date:

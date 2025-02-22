@@ -17,11 +17,16 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+
+
 class ReportCreateView(TemplateView):
     template_name='reportcreate.html'
 
 class TeacherSelectView(TemplateView):
     template_name='teacherselect.html'
+
+class TypingPracticeView(TemplateView):
+    template_name='typingpractice.html'
 
 @csrf_exempt
 def check_teacher_id(request):
@@ -233,6 +238,9 @@ def get_class_schedules(request):
 
         data = [{
             'id': schedule.id,
+            'teacher_id': schedule.teacher.id,
+            'student_id':schedule.student.id,
+            'period_id':schedule.period.id,
             'student_name': schedule.student.name,
             'teacher_name': schedule.teacher.name,
             'classroom_name': schedule.classroomuser.username if schedule.classroomuser else '',
@@ -244,5 +252,24 @@ def get_class_schedules(request):
         } for schedule in schedules]
 
         return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def get_student_subjects(request, student_id):
+    print('get_student_subjects')
+    try:
+        # 生徒に関連する最新のStudentSchoolを取得
+        latest_school = StudentSchool.objects.filter(student_id=student_id).latest('posted_at')
+        
+        # SchoolSubjectを介して関連するSubjectのタイトルを取得
+        subjects = SchoolSubject.objects.filter(school=latest_school).select_related('subject')
+        
+        # Subjectのタイトルリストを作成
+        subject_titles = [subject.subject.title for subject in subjects if subject.subject]
+
+        return JsonResponse({'subjects': subject_titles}, status=200)
+    except StudentSchool.DoesNotExist:
+        # StudentSchoolが存在しない場合は空のリストを返す
+        return JsonResponse({'subjects': []}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

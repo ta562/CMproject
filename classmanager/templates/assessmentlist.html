@@ -624,7 +624,7 @@ function printreport(){
         $('.studentselecter_box').draggable();
 
 // 詳細ボタンのクリックイベントを設定
-$(document).on('click', '.detail_button', function() {
+$(document).on('click', '.detail_button', function(event) {
     const reportId = $(this).closest('tr').data('report-id');
     const detailButtonOffset = $(this).offset(); // ボタンの位置を取得
     $('.save-button').data('report-id', reportId);
@@ -658,8 +658,8 @@ $(document).on('click', '.detail_button', function() {
                 // boxの位置を調整し表示
                 const boxWidth = $('.studentselecter_box').outerWidth();
                 const boxHeight = $('.studentselecter_box').outerHeight();
-                let left = detailButtonOffset.left;
-                let top = detailButtonOffset.top;
+                let left = event.clientX;
+                let top = event.clientY;
 
                 const windowWidth = $(window).width();
                 const windowHeight = $(window).height();
@@ -667,8 +667,8 @@ $(document).on('click', '.detail_button', function() {
                 if (left + boxWidth > windowWidth) {
                     left = windowWidth - boxWidth - 10;
                 }
-                if (top + boxHeight > windowHeight) {
-                    top = windowHeight - boxHeight - 10;
+                if (top + boxHeight > windowHeight+window.scrollY) {
+                    top = windowHeight+window.scrollY - boxHeight - 10;
                 }
 
                 $('.studentselecter_box').css({ 'left': left + 'px', 'top': top + 'px' }).show();

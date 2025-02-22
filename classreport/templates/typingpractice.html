@@ -1,0 +1,589 @@
+{% extends 'basetyping.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+
+.typing{
+    font-size: 4em;
+    text-align: center;
+}
+form{
+    font-size: 2em;
+    text-align: center;
+}
+
+.count {
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+.limit,.tani{
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+    font-size: 3rem
+}
+.wrap{
+    margin-top: 20px;
+    padding: 20px 40px;
+    background-color: #ffebd4;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+.start{
+    font-size: 4em;
+    text-align: center;
+    margin: 20px
+}
+.typed{
+    color: lightgreen;
+}
+
+.mistyped{
+    background-color: #ed958a;
+}
+.tables{
+    text-align: center;
+}
+
+table{
+    margin: auto;
+    font-size: 1rem;
+    width: 50%;
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+
+
+  table th{
+    padding: 10px;
+    border-bottom: solid 4px #d4d6d6;
+    color: #778ca3
+  }
+
+  table td{
+    padding: 10px;
+    border-bottom: solid 1px #d4d6d6;
+  }
+
+  .btnstart {
+	display: block;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	font-size:3rem;
+	margin: auto;
+	padding: 1rem 4rem;
+	font-weight: bold;
+	background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
+	border-radius: 100vh;
+	color: #333;
+	border: 1px solid #999;
+	text-shadow: 0 1px #fff;
+	box-shadow: 0 3px 2px 1px #fcfcfc, 0 4px 6px #cecfd1, 0 -2px 2px #cecfd1, 0 -4px 2px #eee, inset 0 0 2px 2px #cecfd1;
+	transition: 0.5s;
+}
+
+.form{
+    color: #5c5e82;
+      font-size: 2rem;
+
+      text-align-last: center;
+     }
+
+  .selectbox-2 {
+    position: relative;
+    margin-left:20px;
+  }
+
+  .selectbox-2::before,
+  .selectbox-2::after {
+    position: absolute;
+    content: '';
+    pointer-events: none;
+  }
+
+  .selectbox-2::before {
+    right: 0;
+    display: inline-block;
+    width: 2.8em;
+    height: 2em;
+    border-radius: 0 3px 3px 0;
+    background-color: #faa63e;
+    content: '';
+  }
+
+  .selectbox-2::after {
+    position: absolute;
+    top: 50%;
+    right: 1.4em;
+    transform: translate(50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-bottom: 3px solid #fff;
+    border-right: 3px solid #fff;
+    content: '';
+  }
+
+  .selectbox-2 select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 230px;
+    height: 2em;
+    padding: 0.1em 4em .4em .1em;
+    border: 2px solid #faa63e;
+    border-radius: 3px;
+    color: #5c5e82;
+    font-size: 1em;
+    cursor: pointer;
+  }
+
+  .selectbox-2 select:focus {
+    outline: 1px solid #f2d673;
+  }
+  .field {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    }
+  .btn-custom{
+    background-color: #faa63e;
+    color: white;
+  }
+  .btn-custom:hover {
+    background-color: #faa80e;
+    color: #ffffff;
+  }
+  #id_name{
+    color: #5c5e82;
+  }
+
+
+</style>
+
+        <meta charset="utf-8">
+        <meta name="description" content="簡易的なタイピング">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- {% include "photos_title.html"%} -->
+ 
+
+<audio id="id_audio1"    
+    src="{% static "audio/se1.mp3" %}">
+</audio>
+<audio id="id_audio2"    
+    src="{% static "audio/se2.mp3" %}">
+</audio>
+<audio id="id_audio3"    
+    src="{% static "audio/se3.mp3" %}">
+</audio>
+<audio id="id_audio4"    
+    src="{% static "audio/se4.mp3" %}">
+</audio>
+       
+        <div class=" py-3 bg-white">
+        <div class='form'>
+
+        <label for="id_parent"class='selectbox-2'>教材:
+        <select name="parent_category" id="id_parent">
+        <option value="" selected>---------</option>
+        </select></label>
+        <label for="id_category" class='selectbox-2'>カテゴリ:
+        <select name="parent_category" id="id_category">
+        <option value="" selected>---------</option>
+        </select></label>
+        </div>
+        <div class='typing'>
+            <list class="limit" id='limit'>目標時間</list>
+            <list id="count" class="count"></list>
+            <list class="tani">秒</list>
+            <div class='start'>
+            <button id="start" class="btnstart">スタート Enter↲ </button>
+
+        </div>
+            <div id="wrap" class="wrap">
+
+
+                    <div>
+                        <p id="trans" ></p>
+                        <span id="typed" class="typed"></span>
+                        <span id="untyped"></span>
+                        <h1 id="end"></h1>
+                    </div>
+                        <div class="tables">
+                        <table id="tbl1"  >
+
+                        </table>
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+        {% block extrajs %}
+        <!-- <script>
+let untyped='';
+            let typed='';
+            let score=0;
+            var textLists;
+            var transLists
+            var untypedfield=document.getElementById('untyped');
+            const typedfield=document.getElementById('typed');
+            const wrap = document.getElementById('wrap');
+            const start=document.getElementById('start')
+            const limit=document.getElementById('limit')
+            const count=document.getElementById('count')
+            const audio1=document.getElementById('id_audio1')
+            var audio2=document.getElementById('id_audio2')
+            const audio3=document.getElementById('id_audio3')
+            const audio4=document.getElementById('id_audio4')
+            const transfield=document.getElementById('trans');
+            const endfield=document.getElementById('end');
+            var select=document.getElementById('select');
+            const tbl=document.getElementById('tbl1');
+            var parentselect=document.getElementById('parentselect');
+            const studentnameElement = $('#id_name');
+            const parentCategoryElement = $('#id_parent');
+            const categoryElement = $('#id_category');
+            const wordvalueElement = $('#wordvalue');
+            const transvalueElement = $('#transvalue');
+            const mypagelink = $('#mypagelink')
+    
+            mypagelink.click(function(){
+                pk=studentnameElement.val()
+                console.log(pk);
+                window.location.assign("{% url 'photo:score' 123456 %}".replace(/123456/,pk));
+
+              });
+
+            const printselect=()=>{
+              console.log('chans')
+              var category_value=1;
+              console.log(category_value)
+              $.ajax({
+                  url: '{% url 'photo:ajax_get_printlist' %}',
+                  type: 'GET',
+                  data: {
+                    'pk': category_value,
+                        }
+                }).done(response => {
+
+                      var textLists=response.message4;
+                      textId=response.message5;
+                      console.log(textLists)
+
+                      for(let i=0; i<textLists.length; i++){
+                        const select=document.getElementById('id_parent');
+                        let option=document.createElement('option');
+                        option.text=textLists[i];
+                        option.value=textId[i];
+
+                        select.appendChild(option);
+                      }
+                  });
+                };
+
+
+                const changeCategory = (select) => {
+                    categoryElement.children().remove();
+                    $.ajax({
+                        url: '{% url 'photo:ajax_get_printlist' %}',
+                        type: 'GET',
+                        data: {
+                            'pk': parentCategoryElement.val(),
+                        }
+                    }).done(response => {
+                      var textLists=response.message3;
+                      textId=response.message6;
+                      console.log(textLists)
+                      for(let i=0; i<textLists.length; i++){
+                        const select=document.getElementById('id_category');
+                        let option=document.createElement('option');
+                        option.text=textLists[i];
+                        option.value=textId[i];
+
+                        select.appendChild(option);
+                      }
+                        printlist();
+                    });
+                };
+
+                parentCategoryElement.on('change', () => {
+                    changeCategory();
+                    console.log('change');
+                });
+
+                printselect();
+                parentCategoryElement.on("change",()=>{
+                    printlist();
+                })
+
+                categoryElement.on("change",()=>{
+                    printlist();
+                })
+
+            typedfield.textContent='';
+            untypedfield.textContent='スタートを押してください';
+
+            const printlist=()=>{
+                $.ajax({
+                        url: '{% url 'photo:ajax_get_printlist' %}',
+                        type: 'GET',
+                        data: {
+                            'pk': categoryElement.val(),
+                        }
+                    }).done(response => {
+                        var resultDiv=document.getElementById('result');
+                        textLists=response.message;
+                        transLists=response.message2;
+                        console.log(textLists)
+                        console.log(transLists)
+                        let time=count.textContent;
+                        var wordcount=0;
+                        for(i=0;i<textLists.length;i++){
+                            wordcount+=textLists[i].length;
+                            }
+                        let long=Math.round(wordcount*1.5);
+                        count.textContent=long;
+
+                        var table = document.getElementById("tbl1");  // 行の削除
+                        while (table.rows.length > 0) table.deleteRow(0);
+                        for(let i=0; i<textLists.length; i++){
+                            const tbl=document.getElementById('tbl1');
+                            let tr=document.createElement('tr');
+                            let cell=document.createElement('td');
+                            let celltext=document.createTextNode(textLists[i]);
+                            cell.appendChild(celltext);
+                            let cell2=document.createElement('td');
+                            let celltrans=document.createTextNode(transLists[i]);
+                            cell2.appendChild(celltrans);
+                            tr.appendChild(cell);
+                            tr.appendChild(cell2);
+                           tbl.appendChild(tr);
+                        }
+                    } ) 
+                    
+                }
+            
+            mistypetransLists=[];
+            mistypetextLists=[];
+
+            const printmistypelist=()=>{
+                const tbl=document.getElementById('tbl1');
+                let tr=document.createElement('tr');
+                let cell=document.createElement('td');
+                let celltext=document.createTextNode(textLists[counter]);
+                cell.appendChild(celltext);
+                tr.appendChild(cell);
+                let cell2=document.createElement('td');
+                let celltrans=document.createTextNode(transLists[counter]);
+                cell2.appendChild(celltrans);
+                tr.appendChild(cell2);
+                tbl.appendChild(tr);
+
+                mistypetextLists.push(textLists[counter]);
+                mistypetransLists.push(transLists[counter]);
+
+                gameinfo=1;
+            }
+
+            var counter=0;
+            let random;
+
+
+
+            const createText =()=>{
+               {
+
+                typed='';
+                typedfield.textContent=typed;
+                transfield.textContent=transLists[counter];
+                untyped = textLists[counter];
+
+                strHead=untyped.slice(0,1);
+                blank='';
+                for(i = 0; i<untyped.length-1; i++){
+                    blank+='-'
+                    console.log(blank)
+                }
+                untypedfield.textContent=strHead+blank;
+
+
+            };}
+
+
+
+            const keyPress=e=>{
+                console.log(e.key);
+                if(e.key !==untyped.substring(0,1)){
+                    wrap.classList.add('mistyped')
+                    setTimeout(()=>{
+                        wrap.classList.remove('mistyped')
+                    },100)
+                    new Audio("{% static "audio/se2.mp3" %}").play();
+                    
+                    return;
+                }
+
+                score++;
+                typed+=untyped.substring(0,1);
+                untyped=untyped.substring(1);
+                typedfield.textContent=typed;
+                console.log(untyped.length)
+                blank='';
+                for(i = 0; i<untyped.length; i++){
+                    blank+='-'
+                    console.log(blank)
+                }
+                untypedfield.textContent=blank;
+                if(untyped===''){
+                    counter++;
+                    audio1.play();
+                    createText();
+                }
+            };
+            const rankCheck=score=>{
+                let text='';
+                return  `時間切れです\n早く打てるように練習しましょう\n【OK】リトライ / 【キャンセル】終了`
+
+            };
+
+            const rankCheckClear=score=>{
+                let text='';
+                return  `制限時間内にすべての単語を打てました\nおめでとうございます\n【OK】リトライ / 【キャンセル】終了`
+
+            };
+
+            const gameOver=id=>{
+                $('body').css('overflow', '');
+                counter=0;
+                gamestate=0;
+                gameinfo=0;
+                clearInterval(id);
+                audio4.play();
+                transfield.textContent='時間切れ';
+                typedfield.textContent='';
+                untypedfield.textContent='もっと練習しよう！';
+                endfield.textContent='';
+                start.style.display = '';
+                limit.style.display = '';
+                start.textContent='再スタート Enter↲ '
+                printlist();
+             };
+
+
+             const gameClear=id=>{
+                counter=0;
+                gamestate=0;
+                if(gameinfo==0){
+                    clearInterval(id);
+                    $('body').css('overflow', '');
+                $('.field').show();
+                categoryElement.show();
+                parentCategoryElement.show();
+                $("label[for='id_parent']").show();
+                $("label[for='id_category']").show();        
+                typedfield.textContent='よくできました！';
+                audio3.play();
+                untypedfield.textContent='';
+                endfield.textContent='';
+                start.style.display = '';
+                limit.style.display = '';
+                start.textContent='スタート Enter↲ '
+                printlist();
+            }else{
+                $('body').css('overflow', '');
+                typedfield.textContent='';
+                transfield.textContent='間違えた単語があります';
+                untypedfield.textContent='よく確認してから再スタートしてください';
+                endfield.textContent='';
+                start.style.display = '';
+                limit.style.display = '';
+                start.textContent='再スタートEnter↲  '
+            }
+            }
+
+            const scoreSave = () => {
+                $.ajax({
+                    url: '{% url 'photo:ajax_get_saveuserscore' %}',
+                    type: 'GET',
+                    data: {
+                        'category': categoryElement.val(),
+                        'pk': studentnameElement.val(),
+                    }
+                }).done(response => {
+                   console.log(response);
+                });
+            };
+
+
+            const timer=()=>{
+                let time=count.textContent;
+                const id =setInterval(()=>{
+                    time--;
+                    count.textContent=time;
+                    if(time<=0 ){
+
+                        gameOver(id);
+                    }else if(counter==textLists.length ){
+                        if(mistypetextLists.length==0){
+                            gameinfo=0;
+                        }
+                        gameClear(id);
+                    }
+                },1000);
+            };
+            var gamestate=0;
+            var gameinfo=0;
+
+
+
+            const startgame=()=>{
+                $('body').css('overflow', 'hidden');
+                createText();
+                timer();
+                $('.field').hide();
+                categoryElement.hide();
+                parentCategoryElement.hide();
+                $("label[for='id_parent']").hide();
+                $("label[for='id_category']").hide();
+                start.style.display='none';
+                limit.style.display='none';
+                var table = document.getElementById("tbl1");  // 行の削除
+                while (table.rows.length > 0) table.deleteRow(0);
+                endfield.textContent='';
+                document.addEventListener('keypress',keyPress);
+                trans.style.display='';
+                gamestate=1;
+                }
+
+            untypedfield.textContent='';
+            start.addEventListener('click',()=>{
+                startgame();
+            });
+
+            window.document.onkeyup = function(event){
+                if (event.key === 'Enter') {
+                    if(gamestate==0){
+                    startgame();
+                }else{
+                
+                    return false;
+                }
+                }
+            }
+
+            </script> -->
+
+            {% endblock %}
+

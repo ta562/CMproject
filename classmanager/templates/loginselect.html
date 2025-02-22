@@ -4,44 +4,55 @@
 {% load static %}
 {% block content %}
 <style>
-    @media screen and (max-width: 1024px) {
-    /* ここに通常のCSSを書きます。以下は一例です */
-    .menu{
-        flex-flow: column;
+    .menu {
+    display: flex;
+    text-align: center;
+    width: 100%; /* 親要素に合わせる */
+}
+.menuselect{
+    width: 100%;
+    margin: 5px;
+}
+
+@media screen and (max-width: 1024px) {
+    .menu {
+        flex-direction: column;
+        flex-direction: column;  /* 縦方向に並べる */
+  justify-content: center; /* 縦方向（main axis）で中央に配置 */
+  align-items: center;
+        
     }
-    }
-    .menu{
-        display:flex;
-    }
+}
+
+
 </style>
 <div class="text-center m-5">
     <h1 class="text-anchor">ログイン一覧</h1>
 </div>
-<div class="menu">
-    <div class="w-100 border border-opacity-50 border-2 border-secondary mx-5 mb-4 p-2 rounded-2">
-        <div class="">
-            <div class="">
+<div class="menu container-fluid">
+
+  
+    <div class=" menuselect border border-opacity-50 border-2 border-secondary rounded-2">
+        
                 <div class="text-center mt-5">
                     <img src="{% static "img/apple-touch-icon-100x100.png" %}" alt="freee会計" width="100" height="100" >
                     <h class="display-2">教室メニュー</h>
-
                 </div>
-            </div>
+            
             <div class="text-center my-5">
                 <a class="btn btn-primary btn-lg w-75" href="{% url 'accountsclassroom:login_classroom' %}" >ログインする</a>
             </div>
         </div>
-    </div>
-    <div class="w-100 border border-opacity-50 border-2 border-secondary mx-5 mb-4 p-2 rounded-2">
-        <div class="">
-            <div class="">
+   
+    <div class="menuselect border border-opacity-50 border-2 border-secondary  rounded-2">
+        
                 <div class="text-center mt-5">
                     <img src="{% static "img/apple-touch-icon-100x100.png" %}" alt="freee会計" width="100" height="100" >
                     <h class="display-2">管理者メニュー</h>
 
                 </div>
 
-            </div>
+         
             <div class="text-center my-5">
                 <a class="btn btn-primary btn-lg w-75" href="{% url 'accounts:login' %}" >ログインする</a>
             </div>
@@ -49,7 +60,7 @@
         </div>
 
     </div>
-</div>
+
 
 
 {% endblock %}

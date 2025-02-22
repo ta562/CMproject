@@ -34,17 +34,19 @@
     /* タブのスタイル */
     .tabs {
         display: flex;
-        cursor: pointer;
-        margin-bottom: 10px;
-        flex-wrap: wrap;
+    cursor: pointer;
+    margin-bottom: 10px;
+    overflow-x: auto; /* 横スクロール許可 */
+    white-space: nowrap;
     }
 
     .tab {
-        padding: 10px 20px;
-        background: #ddd;
-        margin-right: 5px;
-        border-radius: 5px 5px 0 0;
-        font-weight: bold;
+        flex: 0 0 auto; /* タブの幅を内容に合わせて固定 */
+    padding: 10px 20px;
+    background: #ddd;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+    font-weight: bold;
     }
 
     .tab.active {
@@ -104,6 +106,7 @@
   align-items: center;
   justify-content: flex-start; /* 左寄せ */
   gap: 20px; /* アイテム間の間隔 */
+  flex-wrap: wrap;
 }
 
 .flex {
@@ -280,6 +283,7 @@ input[type="radio"]:checked + label .selectable-image {
     }
 
     .form-group {
+     
      
     }
 
@@ -570,6 +574,7 @@ $('.tab').on('click', function () {
               </h6>
         `;
         form.find('.student-info').html(infoHTML);
+        console.log(student.recent_homework+'宿題')
         form.find('label[for=""]').each(function () {
             var label = $(this);
             switch (label.text().trim()) {
@@ -579,8 +584,8 @@ $('.tab').on('click', function () {
                 case '管理者から':
                     label.text('管理者から: ' + student.recent_managermessage);
                     break;
-                case '前回の宿題':
-                    label.text('前回の宿題: ' + student.recent_homework);
+                case '宿題':
+                    label.text('宿題: ' + student.recent_homework);
                     break;
                 case '今回の授業':
                     label.text('今回の授業: ' + student.recent_nextlesson);

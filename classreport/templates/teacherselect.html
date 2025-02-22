@@ -377,11 +377,9 @@ td{
 </style>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">      
-        <h1>教師選択</h1>
-    </section>
     <section class="content">
         <div class="teacherselect_box">
+            <label for="teacher_id_input">教師選択</label>
             <input type="text" id="teacher_id_input" placeholder="教師のIDを入力">
             
             <button id="confirm_button">確定</button>
@@ -458,6 +456,32 @@ td{
                 <!-- Schedule data will be populated here -->
             </tbody>
         </table>
+    </div>
+    <div id="editScheduleFormContainer" style="display: none; z-index: 1000;">
+            
+        <form id="edit-schedule-form">
+            <h4>イベントの詳細</h4>
+            <div id="edit-selected-date-display" style="margin-top: 10px; font-weight: bold;">
+                選択された日付: 未選択
+            </div>
+            <div class="form-group" style="display: flex; align-items: center;">
+                <label for="edit-student-select" style="margin-right: 10px;">生徒</label>
+                <input id="edit-student-select" class="form-control">
+            </div>
+            <div id="student-subjects-display" style="margin-top: 10px; font-weight: bold;">
+                科目: 選択されていません
+            </div>
+            <div class="form-group">
+                <label for="edit-teacher-select">教師</label>
+                <input id="edit-teacher-select" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="edit-period-select">時限</label>
+                <input id="edit-period-select" class="form-control">
+            </div>
+
+            <button type="button" class="btn btn-secondary " id="close-edit-form-btn">閉じる</button>
+        </form>
     </div>
 </section>
 
@@ -571,6 +595,50 @@ $('#calendar').fullCalendar({
         console.log('表示されている月: ', view.start.format('YYYY-MM-DD'));
         loadcalender();
     },
+    eventClick: function(event, jsEvent) {
+            selectedDate = event.start.format('YYYY-MM-DD');
+            $('#edit-selected-date-display').text('選択された日付: ' + selectedDate);
+            $('#edit-student-select').val(event.student_name);
+            $('#edit-teacher-select').val(event.teacher_name);
+            $('#edit-period-select').val(event.period_title);
+
+            const viewportWidth = $(window).width();
+            const viewportHeight = $(window).height();
+            let leftPosition = jsEvent.clientX;
+    let topPosition = jsEvent.clientY+ window.scrollY;
+    updateStudentSubjects(event.student_id);
+    
+
+    const formWidth = $('#editScheduleFormContainer').outerWidth();
+    const formHeight = $('#editScheduleFormContainer').outerHeight();
+    if (leftPosition + formWidth > viewportWidth) {
+        leftPosition = viewportWidth - formWidth - 20; // マージンを設定
+    }
+    if (topPosition + formHeight > viewportHeight+ window.scrollY) {
+        topPosition = viewportHeight+ window.scrollY - formHeight - 20; // マージンを設定
+    }
+            // フォームの位置を設定し、表示
+            $('#editScheduleFormContainer').show().css({
+                position: 'absolute',
+                top: topPosition + 'px',
+        left: leftPosition + 'px',
+                display: 'none' // 最初は表示しない
+            }).draggable({
+  // タッチイベントを有効にするオプション
+  touch: true
+});
+            $('#editScheduleFormContainer').fadeIn(500);
+            $('#scheduleFormContainer').hide();
+            
+            // 編集フォームのイベントバインディングを更新
+            $('#save-schedule-btn').off('click').on('click', function() {
+                updateSchedule(event.id);
+            });
+
+            $('#delete-schedule-btn').off('click').on('click', function() {
+                deleteSchedule(event.id);
+            });
+        }
     // select: function(start, end) {
     //     selectedDate = start.format('YYYY-MM-DD');
     //     console.log('選択された日付:', selectedDate);
@@ -587,6 +655,29 @@ $('#calendar').fullCalendar({
     // }
 });
 
+function updateStudentSubjects(studentId) {
+        $.ajax({
+            url: `/get_student_subjects/${studentId}/`, // 正しいURLに更新
+            type: 'GET',
+            success: function(data) {
+                if (data.subjects) {
+                    var subjectText = data.subjects.join(', ');
+                    $('#student-subjects-display').text('科目: ' + subjectText);
+                } else {
+                    $('#student-subjects-display').text('科目: データがありません');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('科目の取得中にエラー:', error);
+                $('#student-subjects-display').text('科目: エラーが発生しました');
+            }
+        });
+    }
+
+    $('#close-edit-form-btn').click(function() {
+        $('#editScheduleFormContainer').hide();
+    });
+    
 // 新しいスケジュール追加
 $('#new-schedule-btn').click(function() {
     var student_id = $('#student-select').val();
@@ -645,7 +736,13 @@ function loadcalender() {
                     title: schedule.student_name + '  ' + schedule.period_title+ '  ' + schedule.teacher_name,
                     start: moment(schedule.date),
                     allDay: true,
-                    color: eventColor
+                    color: eventColor,
+                    student_name: schedule.student_name, 
+                    period_title: schedule.period_title, 
+                    teacher_name: schedule.teacher_name, 
+                    student_id: schedule.student_id,  // ここに追加
+                    teacher_id: schedule.teacher_id,
+                    period_id: schedule.period_id  
                 });
             });
         }
