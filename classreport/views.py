@@ -17,16 +17,23 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class ReportCreateView(TemplateView):
     template_name='reportcreate.html'
 
-class TeacherSelectView(TemplateView):
+
+class TeacherSelectView(LoginRequiredMixin,TemplateView):
     template_name='teacherselect.html'
+    login_url=reverse_lazy("accounts:login")
 
 class TypingPracticeView(TemplateView):
     template_name='typingpractice.html'
+
+
+class GameSelectView(TemplateView):
+    template_name='gameselect.html'
 
 @csrf_exempt
 def check_teacher_id(request):

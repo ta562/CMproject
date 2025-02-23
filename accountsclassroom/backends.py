@@ -10,7 +10,7 @@ UserModel = ClassroomUser
 class ClassroomAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         print(request.path+'classroom')
-        if request.path != '/login_classroom':
+        if request.path != '/login_classroom' and request.path != '/login_classroom_game':
             return
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)

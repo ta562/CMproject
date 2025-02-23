@@ -7,6 +7,7 @@ urlpatterns = [
     path('',views.LoginSelectView.as_view(),name='loginselect'),
     path('assessmentlist',views.AssessmentListView.as_view(),name='assessmentlist'),
     path('setting',views.SettingView.as_view(),name='setting'),
+    path('superenglishlist',views.SuperEnglishlistView.as_view(),name='superenglishlist'),
     path('studentregistration',views.StudentRegistrationView.as_view(),name='studentregistration'),
     path('studentlist',views.StudentListView.as_view(),name='studentlist'),
     path('teacherregistration',views.TeacherRegistrationView.as_view(),name='teacherregistration'),
@@ -58,6 +59,13 @@ urlpatterns = [
     path('ajax_get_schoollist/', views.ajax_get_schoollist, name='ajax_get_schoollist'),
     path('ajax/get-schools/', views.get_schools_by_stage, name='get_schools'),
     path('delete_last_phone/', views.delete_last_phone, name='delete_last_phone'),
+    path('register_parent_category/', views.register_parent_category, name='register_parent_category'),
+    path('register_category/', views.register_category, name='register_category'),
+    path('register_english_word/', views.register_english_word, name='register_english_word'),
+    path('get_parent_categories/', views.get_parent_categories, name='get_parent_categories'),
+    path('get_categories/', views.get_categories, name='get_categories'),
+    path('get_english_words/', views.get_english_words, name='get_english_words'),
+
    
 
     

@@ -44,6 +44,11 @@ class SettingView(LoginRequiredMixin,TemplateView):
 class SchoollistView(LoginRequiredMixin,TemplateView):
     template_name='schoollist.html'
     login_url=reverse_lazy("accounts:login")
+
+class SuperEnglishlistView(LoginRequiredMixin,TemplateView):
+    template_name='superenglishlist.html'
+    login_url=reverse_lazy("accounts:login")
+
 class TimetableView(LoginRequiredMixin,TemplateView):
     template_name = 'timetable.html'
     login_url=reverse_lazy("accounts:login")
@@ -1137,3 +1142,63 @@ def get_schools_by_stage(request):
         return JsonResponse({'schools': school_names})
 
     return JsonResponse({'schools': []})
+
+
+from .models import ParentCategory, Category, EnglishWords
+@csrf_exempt
+def register_parent_category(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', None)
+        if title:
+            ParentCategory.objects.create(title=title)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+@csrf_exempt
+def register_category(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', None)
+        parent_id = request.POST.get('parent', None)
+        parent = ParentCategory.objects.get(id=parent_id) if parent_id else None
+        if title:
+            Category.objects.create(title=title, parent=parent)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+@csrf_exempt
+def register_english_word(request):
+    if request.method == 'POST':
+        word = request.POST.get('word', None)
+        trans = request.POST.get('trans', None)
+        category_id = request.POST.get('category', None)
+        category = Category.objects.get(id=category_id) if category_id else None
+        if word and trans:
+            EnglishWords.objects.create(word=word, trans=trans, category=category)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+def get_parent_categories(request):
+    parent_categories = ParentCategory.objects.values()
+    return JsonResponse(list(parent_categories), safe=False)
+
+def get_categories(request):
+    parent_id = request.GET.get('parent_id')
+    
+    if parent_id:
+        categories = Category.objects.filter(parent_id=parent_id)
+    else:
+        categories = Category.objects.all()
+        
+    result = [{'id': c.id, 'title': c.title, 'parent_title': c.parent.title if c.parent else None} for c in categories]
+    return JsonResponse(result, safe=False)
+
+def get_english_words(request):
+    category_id = request.GET.get('category_id')
+    
+    if category_id:
+        english_words = EnglishWords.objects.filter(category_id=category_id)
+    else:
+        english_words = EnglishWords.objects.all()
+        
+    result = [{'word': w.word, 'trans': w.trans, 'category_title': w.category.title if w.category else None} for w in english_words]
+    return JsonResponse(result, safe=False)

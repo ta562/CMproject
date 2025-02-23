@@ -303,3 +303,106 @@ class Report(models.Model):
         verbose_name='投稿日時',
         auto_now_add=True,blank=True,null=True
         )
+    
+class ParentCategory(models.Model):
+    title=models.CharField(
+        verbose_name='親カテゴリ',
+        max_length=200,
+        blank=True, 
+        null=True
+    )    
+    def __str__(self):
+       return self.title
+    
+
+class Category(models.Model):
+    title=models.CharField(
+        verbose_name='カテゴリ',
+        max_length=200, blank=True, null=True)
+    parent=models.ForeignKey(
+        ParentCategory,
+        verbose_name='親カテゴリ',
+        on_delete=models.PROTECT, blank=True, null=True
+        )
+    
+    def __str__(self):
+        return self.title
+
+class EnglishWords(models.Model):
+    word=models.CharField(
+        verbose_name='英語',
+        max_length=200, blank=True, null=True
+        
+
+         )
+    trans=models.CharField(
+        verbose_name='翻訳',
+        max_length=200, blank=True, null=True
+    )
+  
+    category=models.ForeignKey(
+        Category,
+        verbose_name='カテゴリ',
+        on_delete=models.PROTECT, blank=True, null=True
+        )
+    def __str__(self):
+        return self.word
+
+class UserParentCategory(models.Model):
+    title=models.CharField(
+        verbose_name='親カテゴリ',
+        max_length=200,
+        blank=True, 
+        null=True
+    )
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )    
+    def __str__(self):
+       return self.title
+    
+
+class UserCategory(models.Model):
+    title=models.CharField(
+        verbose_name='カテゴリ',
+        max_length=200, blank=True, null=True)
+    parent=models.ForeignKey(
+        ParentCategory,
+        verbose_name='親カテゴリ',
+        on_delete=models.PROTECT, blank=True, null=True
+        )
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    
+    def __str__(self):
+        return self.title
+
+class UserEnglishWords(models.Model):
+    word=models.CharField(
+        verbose_name='英語',
+        max_length=200, blank=True, null=True
+        
+
+         )
+    trans=models.CharField(
+        verbose_name='翻訳',
+        max_length=200, blank=True, null=True
+    )
+  
+    category=models.ForeignKey(
+        Category,
+        verbose_name='カテゴリ',
+        on_delete=models.PROTECT, blank=True, null=True
+        )
+    manageruser=models.ForeignKey(
+        ManagerUser,
+        verbose_name='マネージャー',
+        on_delete=models.CASCADE,blank=True,null=True
+    )
+    def __str__(self):
+        return self.word

@@ -1,0 +1,688 @@
+{% extends './base.html' %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+ 
+
+    
+<style>
+.content-wrapper{
+  
+}
+.content{
+    
+}
+.form{
+    border: 5px solid #fafafa;
+  padding: 1em;
+    width: 100%;
+  text-align: center;
+  background-color: #ffffff;
+}
+.subject_box{
+    
+}
+.subject_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    text-align: center;
+    background-color: #ffffff;
+  
+}
+.period_table{
+    border: 5px solid #fafafa;
+    padding: 1em;
+    text-align: center;
+    background-color: #ffffff;
+  
+}
+
+
+.period_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.period_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 15px;
+}
+.period_title{
+    width: 10%;
+    min-width: 70px;
+}
+.period_start_time{
+    width: 10%;
+    min-width: 70px;
+}
+.period_end_time{
+    width: 10%;
+    min-width: 70px;
+}
+.period_check{
+    width: 10%;
+    min-width: 70px;
+}
+
+.subject_th{
+    border: 2px solid #fafafa;
+    background-color: #c2c1c1;
+   
+    
+}
+.subject_td{
+    
+    border-bottom: 1px solid #b0b0b0;
+    border-right: 2px solid #ffffff;
+   background-color: #fafafa;
+   height: 15px;
+   
+}
+.red_td{
+    background-color: #f7e7db;
+}
+.blue_td{
+    background-color: #d9eef3;
+}
+.subject_check{
+    width:5%;
+    min-width: 25px;
+}
+.subject_title{
+    width: 10%;
+    min-width: 70px;
+}
+
+.approval_button{
+    position:absolute;
+    top: 60%;
+    right: 1%;
+    width: 7%;
+}
+.detail_button{
+    position:absolute;
+    top: 20%;
+    right: 1%;
+    width: 7%;
+}
+.lesson_data{
+    position:absolute;
+    top: 5%;
+    left: 1%;
+    width: 100%;
+}
+.active_box{
+    display: none;
+}
+
+    .student_table:hover {
+        background-color: #252323; /* マウスオーバー時の背景色 */
+    }
+</style>
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>英単語一覧</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa gamepad"></i>ゲーム</a></li>
+            <li class="active">授業一覧</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="box">
+            <h3>親カテゴリ登録</h3>
+            <input type="text" id="parentCategoryTitle" placeholder="親カテゴリ名">
+            <button type="button" onclick="registerParentCategory()">登録</button>
+            
+            <h3>カテゴリ登録</h3>
+            <input type="text" id="categoryTitle" placeholder="カテゴリ名">
+            <select id="categoryParent">
+                <option value="">親カテゴリを選択</option>
+                <!-- オプションはJavaScriptで動的に読み込む -->
+            </select>
+            <button type="button" onclick="registerCategory()">登録</button>
+
+            <h3>英単語登録</h3>
+            <input type="text" id="englishWord" placeholder="英語">
+            <input type="text" id="englishWordTrans" placeholder="翻訳">
+            <select id="wordCategory">
+                <option value="">カテゴリを選択</option>
+                <!-- オプションはJavaScriptで動的に読み込む -->
+            </select>
+            <button type="button" onclick="registerEnglishWord()">登録</button>
+        </div>
+
+        <div class="assessment_box">
+            <h3>登録済みデータ</h3>
+            <div id="parentCategoriesList">
+                <h4>親カテゴリ</h4>
+                <table id="parentCategoriesTable" border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="parentCategories"></tbody>
+                </table>
+            </div>
+            <div id="categoriesList">
+                <h4>カテゴリ</h4>
+                <h4>Filter カテゴリ</h4>
+                <select id="categoriesParentFilter">
+                    <option value="">すべての親カテゴリ</option>
+                </select>
+                <table id="categoriesTable" border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Parent</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories"></tbody>
+                </table>
+            </div>
+            <div id="englishWordsList">
+                <h4>英単語</h4>
+                <h4>Filter 英単語</h4>
+                <select id="englishWordsParentFilter">
+                    <option value="">すべての親カテゴリ</option>
+                </select>
+                <select id="englishWordsCategoryFilter">
+                    <option value="">すべてのカテゴリ</option>
+                </select>
+                <table id="englishWordsTable" border="1">
+                    <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Translation</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="englishWords"></tbody>
+                </table>
+            </div>
+        
+            <!-- Hidden forms for update/delete -->
+            <div id="updateForm" style="display: none;">
+                <h4>編集フォーム</h4>
+                <input type="hidden" id="updateId">
+                <div>
+                    <label for="updateTitle">Title:</label>
+                    <input type="text" id="updateTitle">
+                </div>
+                <div>
+                    <label for="updateParent">Parent Category:</label>
+                    <select id="updateParent">
+                        <option value="">選択</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="updateWord">Word:</label>
+                    <input type="text" id="updateWord">
+                </div>
+                <div>
+                    <label for="updateTrans">Translation:</label>
+                    <input type="text" id="updateTrans">
+                </div>
+                <button type="button" onclick="updateItem()">保存</button>
+                <button type="button" onclick="deleteItem()">削除</button>
+                <button type="button" onclick="closeForm()">キャンセル</button>
+            </div>
+        </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Parent element that will contain all our dynamic tables
+    const assessmentBox = document.querySelector('.assessment_box');
+
+    assessmentBox.addEventListener('click', function(event) {
+        // Only process click events on table rows
+        if (event.target.closest('.item_table')) {
+            const form = event.target.closest('.item_table').nextElementSibling;
+            if (form && form.classList.contains('active_box')) {
+                const isVisible = form.style.display === 'block';
+                document.querySelectorAll('.active_box').forEach(function(box) {
+                    box.style.display = 'none';
+                });
+
+                form.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial data fetch
+    fetchParentCategories();
+    fetchFilteredCategories('');
+    fetchFilteredEnglishWords('');
+
+    // Event listeners for filters
+    document.getElementById('categoriesParentFilter')?.addEventListener('change', function() {
+        fetchFilteredCategories(this.value);
+    });
+
+    document.getElementById('englishWordsParentFilter')?.addEventListener('change', function() {
+        const selectedParentId = this.value;
+        fetchFilteredCategoriesForWords(selectedParentId);
+    });
+
+    document.getElementById('englishWordsCategoryFilter')?.addEventListener('change', function() {
+        fetchFilteredEnglishWords(this.value);
+    });
+});
+
+
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    function registerParentCategory() {
+        var title = document.getElementById('parentCategoryTitle').value;
+        $.ajax({
+            type: 'POST',
+            url: '{% url "classmanager:register_parent_category" %}',
+            data: {
+                'title': title
+            },
+            success: function() {
+                alert('親カテゴリを登録しました。');
+                fetchParentCategories();
+            },
+            error: function() {
+                alert('登録に失敗しました。');
+            }
+        });
+    }
+
+    function registerCategory() {
+        var title = document.getElementById('categoryTitle').value;
+        var parentId = document.getElementById('categoryParent').value;
+        $.ajax({
+            type: 'POST',
+            url: '{% url "classmanager:register_category" %}',
+            data: {
+                'title': title,
+                'parent': parentId
+            },
+            success: function() {
+                alert('カテゴリを登録しました。');
+                fetchCategories();
+            },
+            error: function() {
+                alert('登録に失敗しました。');
+            }
+        });
+    }
+
+    function registerEnglishWord() {
+        var word = document.getElementById('englishWord').value;
+        var trans = document.getElementById('englishWordTrans').value;
+        var categoryId = document.getElementById('wordCategory').value;
+        $.ajax({
+            type: 'POST',
+            url: '{% url "classmanager:register_english_word" %}',
+            data: {
+                'word': word,
+                'trans': trans,
+                'category': categoryId
+            },
+            success: function() {
+                alert('英単語を登録しました。');
+                fetchEnglishWords();
+            },
+            error: function() {
+                alert('登録に失敗しました。');
+            }
+        });
+    }
+
+    function fetchParentCategories() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url "classmanager:get_parent_categories" %}',
+            success: function(data) {
+
+                const categoriesParentFilter = document.getElementById('categoriesParentFilter');
+            const englishWordsParentFilter = document.getElementById('englishWordsParentFilter');
+
+            data.forEach(function(parent) {
+                categoriesParentFilter.innerHTML += `<option value="${parent.id}">${parent.title}</option>`;
+                englishWordsParentFilter.innerHTML += `<option value="${parent.id}">${parent.title}</option>`;
+            });
+                var parentCategoriesSelect = document.getElementById('categoryParent');
+
+                parentCategoriesSelect.innerHTML = '<option value="">親カテゴリを選択</option>';
+
+                data.forEach(function(parent) {
+                    parentCategoriesSelect.innerHTML += '<option value="' + parent.id + '">' + parent.title + '</option>';
+                });
+                const parentCategoriesTable = document.getElementById('parentCategoriesTable');
+                parentCategoriesTable.innerHTML = '';
+                data.forEach(function(parent) {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <table class="item_table" style="border-collapse: collapse; border:none;">
+                            <tr>
+                                <td>${parent.id}</td>
+                                <td>${parent.title}</td>
+                            </tr>
+                        </table>
+                        <div class="active_box" style="display: none;">
+                            <form>
+                                <label for="updateTitle_${parent.id}">Title</label>
+                                <input type="text" id="updateTitle_${parent.id}" placeholder="タイトルを入力" value="${parent.title}">
+                                <button type="button" onclick="updateParentCategory(${parent.id})">保存</button>
+                                <button type="button" onclick="deleteParentCategory(${parent.id})">削除</button>
+                            </form>
+                        </div>
+                    `;
+                    parentCategoriesTable.appendChild(row);
+                    
+                });
+
+            }
+        });
+    }
+
+
+
+    function onParentFilterChange() {
+    const selectedParentId = document.getElementById('englishWordsParentFilter').value;
+    filterCategoryDropdown(selectedParentId);
+    filterEnglishWordsTable();
+}
+
+function filterCategoryDropdown(parentId) {
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_categories" %}',
+        success: function(data) {
+            const englishWordsCategoryFilter = document.getElementById('englishWordsCategoryFilter');
+            englishWordsCategoryFilter.innerHTML = '<option value="">すべてのカテゴリ</option>';
+            
+            const filteredCategories = data.filter(category => category.parent_title == parentId || parentId == '');
+            filteredCategories.forEach(function(category) {
+                englishWordsCategoryFilter.innerHTML += `<option value="${category.id}">${category.title}</option>`;
+            });
+            
+            // Optional: If a category was previously selected, keep it
+            filterEnglishWordsTable();
+        }
+    });
+}
+
+
+function filterCategoriesTable() {
+    const selectedParentId = document.getElementById('categoriesParentFilter').value;
+    
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_categories" %}',
+        success: function(data) {
+            const filteredCategories = data.filter(category => category.parent_title == selectedParentId || selectedParentId == '');
+
+            const categoriesTableBody = document.getElementById('categories');
+            categoriesTableBody.innerHTML = '';
+
+            filteredCategories.forEach(function(category) {
+                const row = `<tr>
+                    <td>${category.id}</td>
+                    <td>${category.title}</td>
+                    <td>${category.parent_title || 'なし'}</td>
+                </tr>`;
+                categoriesTableBody.innerHTML += row;
+            });
+        }
+    });
+}
+
+
+function filterEnglishWordsTable() {
+    const selectedCategoryId = document.getElementById('englishWordsCategoryFilter').value;
+    
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_english_words" %}',
+        success: function(data) {
+            const filteredWords = data.filter(word => word.category_title == selectedCategoryId || selectedCategoryId == '');
+
+            const englishWordsTableBody = document.getElementById('englishWords');
+            englishWordsTableBody.innerHTML = '';
+
+            filteredWords.forEach(function(word) {
+                const row = `<tr>
+                    <td>${word.word}</td>
+                    <td>${word.trans}</td>
+                    <td>${word.category_title || 'なし'}</td>
+                </tr>`;
+                englishWordsTableBody.innerHTML += row;
+            });
+        }
+    });
+}
+
+    function fetchCategories() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url "classmanager:get_categories" %}',
+            success: function(data) {
+                var wordCategorySelect = document.getElementById('wordCategory');
+                wordCategorySelect.innerHTML = '<option value="">カテゴリを選択</option>';
+
+                data.forEach(function(category) {
+                    wordCategorySelect.innerHTML += '<option value="' + category.id + '">' + category.title + '</option>';
+                });          
+                const categoriesTable = document.getElementById('categoriesTable');
+                categoriesTable.innerHTML = '';
+                data.forEach(function(category) {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <table class="item_table" style="border-collapse: collapse; border:none;">
+                            <tr>
+                                <td>${category.id}</td>
+                                <td>${category.title}</td>
+                                <td>${category.parent_title || 'なし'}</td>
+                            </tr>
+                        </table>
+                        <div class="active_box" style="display: none;">
+                            <form>
+                                <label for="updateTitle_${category.id}">Title</label>
+                                <input type="text" id="updateTitle_${category.id}" value="${category.title}">
+                                <label for="updateParent_${category.id}">Parent</label>
+                                <select id="updateParent_${category.id}"></select>
+                                <button type="button" onclick="updateCategory(${category.id})">保存</button>
+                                <button type="button" onclick="deleteCategory(${category.id})">削除</button>
+                            </form>
+                        </div>
+                    `;
+                    categoriesTable.appendChild(row);
+                });
+                     
+            }
+        });
+    }
+
+
+
+
+    function fetchFilteredCategories(parentId) {
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_categories" %}',
+        data: { 'parent_id': parentId },
+        success: function(data) {
+            const categoriesTable = document.getElementById('categoriesTable');
+                categoriesTable.innerHTML = '';
+                data.forEach(function(category) {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <table class="item_table" style="border-collapse: collapse; border:none;">
+                            <tr>
+                                <td>${category.id}</td>
+                                <td>${category.title}</td>
+                                <td>${category.parent_title || 'なし'}</td>
+                            </tr>
+                        </table>
+                        <div class="active_box" style="display: none;">
+                            <form>
+                                <label for="updateTitle_${category.id}">Title</label>
+                                <input type="text" id="updateTitle_${category.id}" value="${category.title}">
+                                <label for="updateParent_${category.id}">Parent</label>
+                                <select id="updateParent_${category.id}"></select>
+                                <button type="button" onclick="updateCategory(${category.id})">保存</button>
+                                <button type="button" onclick="deleteCategory(${category.id})">削除</button>
+                            </form>
+                        </div>
+                    `;
+                    categoriesTable.appendChild(row);
+            });
+        }
+    });
+}
+
+function fetchFilteredCategoriesForWords(parentId) {
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_categories" %}',
+        data: { 'parent_id': parentId },
+        success: function(data) {
+            const categoryFilter = document.getElementById('englishWordsCategoryFilter');
+            categoryFilter.innerHTML = '<option value="">すべてのカテゴリ</option>';
+
+            data.forEach(function(category) {
+                categoryFilter.innerHTML += `<option value="${category.id}">${category.title}</option>`;
+            });
+
+            // Reset the words table based on first category or none
+            const firstCategoryId = data.length > 0 ? data[0].id : '';
+            fetchFilteredEnglishWords(firstCategoryId);
+        }
+    });
+}
+
+function fetchFilteredEnglishWords(categoryId) {
+    $.ajax({
+        type: 'GET',
+        url: '{% url "classmanager:get_english_words" %}',
+        data: { 'category_id': categoryId },
+        success: function(data) {
+            const englishWordsTable = document.getElementById('englishWordsTable');
+                englishWordsTable.innerHTML = '';
+                data.forEach(function(word) {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <table class="item_table" style="border-collapse: collapse; border:none;">
+                            <tr>
+                                <td>${word.word}</td>
+                                <td>${word.trans}</td>
+                                <td>${word.category_title || 'なし'}</td>
+                            </tr>
+                        </table>
+                        <div class="active_box" style="display: none;">
+                            <form>
+                                <label for="updateWord_${word.word}">Word</label>
+                                <input type="text" id="updateWord_${word.word}" value="${word.word}">
+                                <label for="updateTrans_${word.word}">Translation</label>
+                                <input type="text" id="updateTrans_${word.word}" value="${word.trans}">
+                                <label for="updateCategory_${word.word}">Category</label>
+                                <select id="updateCategory_${word.word}"></select>
+                                <button type="button" onclick="updateEnglishWord('${word.word}')">保存</button>
+                                <button type="button" onclick="deleteEnglishWord('${word.word}')">削除</button>
+                            </form>
+                        </div>
+                    `;
+                    englishWordsTable.appendChild(row);
+            });
+        }
+    });
+}
+
+
+
+    function fetchEnglishWords() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url "classmanager:get_english_words" %}',
+            success: function(data) {
+                const englishWordsTable = document.getElementById('englishWordsTable');
+                englishWordsTable.innerHTML = '';
+                data.forEach(function(word) {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <table class="item_table" style="border-collapse: collapse; border:none;">
+                            <tr>
+                                <td>${word.word}</td>
+                                <td>${word.trans}</td>
+                                <td>${word.category_title || 'なし'}</td>
+                            </tr>
+                        </table>
+                        <div class="active_box" style="display: none;">
+                            <form>
+                                <label for="updateWord_${word.word}">Word</label>
+                                <input type="text" id="updateWord_${word.word}" value="${word.word}">
+                                <label for="updateTrans_${word.word}">Translation</label>
+                                <input type="text" id="updateTrans_${word.word}" value="${word.trans}">
+                                <label for="updateCategory_${word.word}">Category</label>
+                                <select id="updateCategory_${word.word}"></select>
+                                <button type="button" onclick="updateEnglishWord('${word.word}')">保存</button>
+                                <button type="button" onclick="deleteEnglishWord('${word.word}')">削除</button>
+                            </form>
+                        </div>
+                    `;
+                    englishWordsTable.appendChild(row);
+                });
+            
+                
+            }
+        });
+    }
+
+  
+</script>
+
+{% endblock content %}
+

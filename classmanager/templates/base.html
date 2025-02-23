@@ -211,6 +211,23 @@
                             </ul>
                             
                         </li>
+                        <li class=" treeview">
+                            <a href="#">
+                                <i class="fa fa-gamepad"></i> <span>ゲーム</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            
+                            <ul class="treeview-menu">
+                                <!-- <li class="active"><a href="{% url 'classmanager:studentregistration' %}"><i class="fa fa-circle-o"></i> 生徒登録</a></li> -->
+                                <li class="active"><a href="{% url 'classmanager:studentlist' %}"> 生徒設定</a></li>
+                                {% if user.is_superuser %}
+                                <li class="active"><a href="{% url 'classmanager:superenglishlist' %}"> スーパー英単語</a></li>
+                                {% endif %} 
+                            </ul>
+                            
+                        </li>
                         
                     </ul>
                 </section>
