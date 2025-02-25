@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -24,9 +24,17 @@ class ReportCreateView(TemplateView):
     template_name='reportcreate.html'
 
 
-class TeacherSelectView(LoginRequiredMixin,TemplateView):
+class TeacherSelectView(TemplateView):
+    
     template_name='teacherselect.html'
-    login_url=reverse_lazy("accounts:login")
+    def get(self, request):
+        classroom_user = request.session.get('class_room_user')
+        if classroom_user is None:
+            print('direct')
+            return redirect("accountsclassroom:login_classroom")
+        return render(request, self.template_name)
+
+ 
 
 class TypingPracticeView(TemplateView):
     template_name='typingpractice.html'

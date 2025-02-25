@@ -65,6 +65,17 @@ urlpatterns = [
     path('get_parent_categories/', views.get_parent_categories, name='get_parent_categories'),
     path('get_categories/', views.get_categories, name='get_categories'),
     path('get_english_words/', views.get_english_words, name='get_english_words'),
+    path('upload_excel/', views.upload_excel, name='upload_excel'),
+    path('get_parent_categories/', views.get_parent_categories, name='get_parent_categories'),
+    path('get_categories/', views.get_categories, name='get_categories'),
+    path('get_english_words/', views.get_english_words, name='get_english_words'),
+    path('update_parent_category/', views.update_parent_category, name='update_parent_category'),
+    path('delete_parent_category/', views.delete_parent_category, name='delete_parent_category'),
+    path('update_category/', views.update_category, name='update_category'),
+    path('delete_category/', views.delete_category, name='delete_category'),
+    path('update_english_word/', views.update_english_word, name='update_english_word'),
+    path('delete_english_word/', views.delete_english_word, name='delete_english_word'),
+
 
    
 

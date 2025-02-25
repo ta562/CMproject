@@ -1,3 +1,4 @@
+import openpyxl
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import TemplateView,View,CreateView,ListView
@@ -1147,10 +1148,11 @@ def get_schools_by_stage(request):
 from .models import ParentCategory, Category, EnglishWords
 @csrf_exempt
 def register_parent_category(request):
+    user=request.user
     if request.method == 'POST':
         title = request.POST.get('title', None)
         if title:
-            ParentCategory.objects.create(title=title)
+            ParentCategory.objects.create(title=title,manageruser=user)
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -1159,9 +1161,10 @@ def register_category(request):
     if request.method == 'POST':
         title = request.POST.get('title', None)
         parent_id = request.POST.get('parent', None)
+        user=request.user
         parent = ParentCategory.objects.get(id=parent_id) if parent_id else None
         if title:
-            Category.objects.create(title=title, parent=parent)
+            Category.objects.create(title=title, parent=parent,manageruser=user)
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -1170,35 +1173,140 @@ def register_english_word(request):
     if request.method == 'POST':
         word = request.POST.get('word', None)
         trans = request.POST.get('trans', None)
+        user=request.user
         category_id = request.POST.get('category', None)
         category = Category.objects.get(id=category_id) if category_id else None
         if word and trans:
-            EnglishWords.objects.create(word=word, trans=trans, category=category)
+            EnglishWords.objects.create(word=word, trans=trans, category=category,manageruser=user)
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
 def get_parent_categories(request):
-    parent_categories = ParentCategory.objects.values()
+    user=request.user
+    parent_categories = ParentCategory.objects.values().filter(manageruser=user)
     return JsonResponse(list(parent_categories), safe=False)
 
 def get_categories(request):
+    user=request.user
     parent_id = request.GET.get('parent_id')
     
     if parent_id:
-        categories = Category.objects.filter(parent_id=parent_id)
+        categories = Category.objects.filter(parent_id=parent_id,manageruser=user)
     else:
-        categories = Category.objects.all()
+        categories = Category.objects.all().filter(manageruser=user)
         
     result = [{'id': c.id, 'title': c.title, 'parent_title': c.parent.title if c.parent else None} for c in categories]
     return JsonResponse(result, safe=False)
 
 def get_english_words(request):
+    user=request.user
     category_id = request.GET.get('category_id')
     
     if category_id:
-        english_words = EnglishWords.objects.filter(category_id=category_id)
+        english_words = EnglishWords.objects.filter(category_id=category_id,manageruser=user)
     else:
-        english_words = EnglishWords.objects.all()
+        english_words = EnglishWords.objects.all().filter(manageruser=user)
         
-    result = [{'word': w.word, 'trans': w.trans, 'category_title': w.category.title if w.category else None} for w in english_words]
+    result = [{'id':w.id,'word': w.word, 'trans': w.trans, 'category_title': w.category.title if w.category else None} for w in english_words]
     return JsonResponse(result, safe=False)
+
+@csrf_exempt
+def upload_excel(request):
+    user=request.user
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+        wb = openpyxl.load_workbook(excel_file)
+
+        # 親カテゴリの読み込み
+        parent_sheet = wb['ParentCategory']
+        for row in parent_sheet.iter_rows(min_row=2, values_only=True):
+            title = row[0]
+            if title:
+                ParentCategory.objects.get_or_create(title=title,manageruser=user)
+        
+        # カテゴリの読み込み
+        category_sheet = wb['Category']
+        for row in category_sheet.iter_rows(min_row=2, values_only=True):
+            title, parent_title = row
+            if title:
+                parent_category = ParentCategory.objects.filter(title=parent_title).first()
+                if parent_category:
+                    Category.objects.get_or_create(title=title, parent=parent_category,manageruser=user)
+        
+        # 英単語の読み込み
+        words_sheet = wb['EnglishWords']
+        for row in words_sheet.iter_rows(min_row=2, values_only=True):
+            word, trans, category_title, parent_category_title = row
+            if word and trans:
+                parent_category = ParentCategory.objects.filter(title=parent_category_title,manageruser=user).first()
+                if parent_category:
+                    category = Category.objects.filter(title=category_title, parent=parent_category,manageruser=user).first()
+                    if category:
+                        EnglishWords.objects.get_or_create(word=word, trans=trans, category=category,manageruser=user)
+
+        return JsonResponse({'success': True, 'message': 'エクセルファイルのデータを成功に追加しました。'})
+
+    return render(request, 'superenglishlist.html')
+
+@csrf_exempt
+def update_parent_category(request):
+    if request.method == 'POST':
+        parent_id = request.POST.get('id')
+        new_title = request.POST.get('title')
+        parent_category = ParentCategory.objects.filter(id=parent_id).first()
+        if parent_category:
+            parent_category.title = new_title
+            parent_category.save()
+            return JsonResponse({"success": True})
+        return JsonResponse({"error": "Parent category not found"}, status=404)
+
+@csrf_exempt
+def delete_parent_category(request):
+    if request.method == 'POST':
+        parent_id = request.POST.get('id')
+        ParentCategory.objects.filter(id=parent_id).delete()
+        return JsonResponse({"success": True})
+
+@csrf_exempt
+def update_category(request):
+    if request.method == 'POST':
+        category_id = request.POST.get('id')
+        new_title = request.POST.get('title')
+        new_parent_id = request.POST.get('parent')
+        category = Category.objects.filter(id=category_id).first()
+        if category:
+            category.title = new_title
+            category.parent_id = new_parent_id
+            category.save()
+            return JsonResponse({"success": True})
+        return JsonResponse({"error": "Category not found"}, status=404)
+
+@csrf_exempt
+def delete_category(request):
+    if request.method == 'POST':
+        category_id = request.POST.get('id')
+        Category.objects.filter(id=category_id).delete()
+        return JsonResponse({"success": True})
+
+@csrf_exempt
+def update_english_word(request):
+    if request.method == 'POST':
+        word_id = request.POST.get('id')
+        new_word = request.POST.get('word')
+        new_trans = request.POST.get('trans')
+        new_category_id = request.POST.get('category')
+        english_word = EnglishWords.objects.filter(id=word_id).first()
+        if english_word:
+            english_word.word = new_word
+            english_word.trans = new_trans
+            english_word.category_id = new_category_id
+            english_word.save()
+            return JsonResponse({"success": True})
+        return JsonResponse({"error": "English word not found"}, status=404)
+
+@csrf_exempt
+def delete_english_word(request):
+    if request.method == 'POST':
+        word_id = request.POST.get('id')
+        EnglishWords.objects.filter(id=word_id).delete()
+        return JsonResponse({"success": True})

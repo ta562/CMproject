@@ -222,9 +222,9 @@
                             <ul class="treeview-menu">
                                 <!-- <li class="active"><a href="{% url 'classmanager:studentregistration' %}"><i class="fa fa-circle-o"></i> 生徒登録</a></li> -->
                                 <li class="active"><a href="{% url 'classmanager:studentlist' %}"> 生徒設定</a></li>
-                                {% if user.is_superuser %}
-                                <li class="active"><a href="{% url 'classmanager:superenglishlist' %}"> スーパー英単語</a></li>
-                                {% endif %} 
+                         
+                                <li class="active"><a href="{% url 'classmanager:superenglishlist' %}"> 英単語</a></li>
+                                
                             </ul>
                             
                         </li>
@@ -236,12 +236,12 @@
             {% block content %}
             <!-- content -->
             {% endblock %}
-            <footer class="main-footer">
+            <!-- <footer class="main-footer">
                 <div class="pull-right hidden-xs">
                     <b>Version</b> 2.4.0
                 </div>
                 <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights reserved.
-            </footer>
+            </footer> -->
             <!-- Control Sidebar -->
             <aside class="control-sidebar control-sidebar-dark" style="display: none;">
                 <!-- Create the tabs -->
