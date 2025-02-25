@@ -593,9 +593,9 @@ function fetchFilteredEnglishWords(categoryId) {
                         <div class="active_box" style="display: none;">
                             <form>
                                 <label for="updateWord_${word.id}">Word</label>
-                                <input type="text" id="updateWord_${word.id}" value="${word.id}">
+                                <input type="text" id="updateWord_${word.id}" value="${word.word}">
                                 <label for="updateTrans_${word.id}">Translation</label>
-                                <input type="text" id="updateTrans_${word.id}" value="${word.id}">
+                                <input type="text" id="updateTrans_${word.id}" value="${word.trans}">
                                 <label for="updateCategory_${word.id}">Category</label>
                                 <select id="updateCategory_${word.id}"></select>
                                 <button type="button" onclick="updateEnglishWord('${word.id}')">保存</button>

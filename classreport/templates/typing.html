@@ -3,11 +3,11 @@
 {% block title %}ENtyping {% endblock %}
 {% block contents %}
 <style>
-
-.typing{
+    .typing{
     font-size: 4em;
     text-align: center;
 }
+
 form{
     font-size: 2em;
     text-align: center;
@@ -166,7 +166,145 @@ table{
     color: #5c5e82;
   }
 
-  #student-form {
+  
+
+
+body {
+  background-image: url(../image/back-img.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+}
+
+
+.anime {
+  position: relative;
+}
+
+.pandatensi{
+  width: 80px;    
+  position: absolute;
+  top: -290px;
+  right: 10%;
+
+}
+.pandaneru{
+  width: 400px;    
+  position: absolute;
+  top: -171px;
+  right: 5%;
+
+}
+/*shishimai image*/
+.shishimai img {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 440px;
+  left: 20%;
+}
+/*shishimai Animation*/
+.pandatensi {
+  animation: shishimai 20s linear infinite alternate;
+}
+@keyframes shishimai {
+	0% {
+    transform: rotate(0deg) translateX(-50px) rotate(0deg) scale(1.0, 1.0);
+	}
+
+    25%  { 
+    transform: rotate(360deg) translateX(-50px) rotate(-350deg) scale(1.04, 0.99);
+  }
+  50%  { 
+    transform: rotate(720deg) translateY(-40px) rotate(-720deg) scale(1.0, 1.0);
+  }
+  75%  { 
+    transform: rotate(360deg) translateX(-40px) rotate(-350deg) scale(1.03, 0.98);
+  }
+	100% {
+		transform: rotate(0deg) translateX(-50px) rotate(0deg) scale(1.0, 1.0);
+	}
+}
+
+.rightimg {
+    width: 260px;
+    height: 300px;
+  position: absolute;
+  top: -200px;
+  right: 15%;
+}
+/*hiyoko Animation*/
+.rightimg{
+  animation: hiyoko 2.5s infinite 0s;
+}
+@keyframes hiyoko {
+  0%   {
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+  10%  { 
+    transform: scale(1.04, 0.99) translate(0%, 0%);
+  } 
+  50%  { 
+    transform: scale(1.03, 0.98) translate(0%, 5%); 
+  }
+  100% { 
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+}
+/*hiyoko image*/
+.leftimg {
+  width: 260px;
+  height: 300px;
+  position: absolute;
+  top: -200px;
+  left: 15%;
+}
+/*hiyoko Animation*/
+.leftimg{
+  animation: hiyoko 2.5s infinite 0s;
+}
+@keyframes hiyoko {
+  0%   {
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+  10%  { 
+    transform: scale(1.04, 0.99) translate(0%, 0%);
+  } 
+  50%  { 
+    transform: scale(1.05, 0.95) translate(0%, 5%); 
+  }
+  100% { 
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+}
+
+
+/*black-cat image*/
+.leftimg1 img {
+  width: 300px;
+  height: 250px;
+  position: absolute;
+  top: 100px;
+  right: 10px;
+}
+/*black-cat Animation*/
+.leftimg1 {
+  animation: black-cat 5s infinite cubic-bezier(0.5,0,0.5,1);
+}
+@keyframes black-cat {
+  0%, 5% {
+    transform: translate(-12em);
+  }
+  45%, 55% {
+    transform: translate(12em);
+  }
+  95%, 100% {
+    transform: translate(-12em);
+  }
+}
+
+#student-form {
         background-color: #f9f9f9;
         padding: 10px;
         border-radius: 10px;
@@ -181,54 +319,62 @@ table{
         z-index: 1000; /* 他の要素の上に表示 */
     }
 
-    /* ラベルのスタイル */
-    #student-form label {
-        font-size: 16px;
-        font-weight: bold;
-        color: #4e4e4e;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    /* 入力フィールドのスタイル */
-    #student-form input[type="text"] {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        font-size: 16px;
-        outline: none;
-        transition: border-color 0.3s;
-    }
-
-    #student-form input[type="text"]:focus {
-        border-color: #ff8c00;  /* フォーカス時の色 */
-    }
-
-    /* ボタンのスタイル */
-    #btncheck {
-        width: 100%;
-        padding: 12px;
+    /* 共通のボタンスタイル */
+    .btn-custom {
         background-color: #faa63e; /* オレンジ色 */
         color: white;
         font-size: 16px;
         font-weight: bold;
         border: none;
         border-radius: 5px;
+        padding: 12px 20px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
+        margin-top: 10px;
+        text-align: center;
+        width: 180px;
     }
 
-    #btncheck:hover {
+    /* ボタンにホバーエフェクトを追加 */
+    .btn-custom:hover {
         background-color: #e07b00;
         transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
     }
 
-    #btncheck:active {
+    .btn-custom:active {
         background-color: #c76a00;  /* クリック時 */
         transform: translateY(1px);  /* クリック時に少し下げる */
     }
 
+    /* ボタンがフォーム内に並ぶように配置 */
+    #mypagelink, #practicelink {
+        display: block; /* ボタンを縦に並べる */
+        width: 100%; /* フォーム幅に合わせる */
+        margin-bottom: 10px; /* ボタン間のスペース */
+    }
+
+/*balloon image*/
+.balloon img {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 20px;
+  left: 20%;
+}
+/*balloon Animation*/
+.balloon {
+  animation: balloon-scoping 2s alternate infinite;
+
+  animation-timing-function: linear;
+}
+@-webkit-keyframes balloon-scoping {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(100px);
+  }
+}
 
 
 </style>
@@ -236,54 +382,58 @@ table{
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     
- 
 
 <audio id="id_audio1"    
-    src="{% static "audio/se1.mp3" %}">
+    src='{% static "audio/se1.mp3" %}'>
 </audio>
 <audio id="id_audio2"    
-    src="{% static "audio/se2.mp3" %}">
+    src='{% static "audio/se2.mp3" %}'>
 </audio>
 <audio id="id_audio3"    
-    src="{% static "audio/se3.mp3" %}">
+    src='{% static "audio/se3.mp3" %}'>
 </audio>
 <audio id="id_audio4"    
-    src="{% static "audio/se4.mp3" %}">
+    src='{% static "audio/se4.mp3" %}'>
 </audio>
-<div id="student-form">
-    <label for="student_id">生徒IDを入力</label>
-    <input type="text" id="student_id" name="student_id" required>
-    <button id="btncheck" class="btncheck">テストを開始する</button>
-</div>
-<div class='field'>
-    <h2 id='id_name' class='m-3'>タイピング練習</h2>
-    
-    </div>
-<div class='typing'>
-    <list class="limit" id='limit'>目標時間</list>
-    <list id="count" class="count"></list>
-    <list class="tani">秒</list>
-</div>
+<form id="student-form">
+  <button id='mypagelink' class="btn btn-custom m-3">成績を確認する</button>
+  <button id='practicelink' class="btn btn-custom m-3">練習に戻る</button>
+</form>
+        <div class='field'>
+        <h2 id='id_name' class='m-1'></h2>
+        
+        </div>
+        <div class='typing'>
+          <list class="limit" id='limit'>目標時間</list>
+          <list id="count" class="count"></list>
+          <list class="tani">秒</list>
+        </div>
         <div class=" py-3 bg-white">
         <div class='form'>
 
         <label for="id_parent"class='selectbox-2'>教材:
         <select name="parent_category" id="id_parent">
         <option value="" selected>---------</option>
-        </select></label>
+        </select>
+      </label>
         <label for="id_category" class='selectbox-2'>カテゴリ:
         <select name="parent_category" id="id_category">
         <option value="" selected>---------</option>
         </select></label>
         </div>
         <div class='typing'>
-            <div></div>
-            <button id="start" class="btnstart mt-3">スタート Enter↲ </button>
-
         
+            <button id="start" class="btnstart mt-3">スタート Enter↲ </button>
+        
+       
+    
             <div id="wrap" class="wrap">
-
+      <div class="anime">
+<img class='leftimg' id="id_leftimg" style="display: none" src='{% static "img/pandal.png"%}'>
+<img class='rightimg' id="id_rightimg" style="display:none" src='{% static "img/pandar.png"%}'>
+<img class='pandaneru' id="id_pandaneru" style="display: none" src='{% static "img/pandaneru.png"%}'>
+<img class='pandatensi' id="id_pandatensi" style="display: none" src='{% static "img/pandatensi.png"%}'>
+</div>  
 
                     <div>
                         <p id="trans" ></p>
@@ -302,76 +452,49 @@ table{
         </div>
     </div>
 
-    {% endblock %}
 
-    {% block extrajs %}
-    <script>
-let untyped='';
-        let typed='';
-        let score=0;
-        var textLists;
-        var transLists
-        var untypedfield=document.getElementById('untyped');
-        const typedfield=document.getElementById('typed');
-        const wrap = document.getElementById('wrap');
-        const start=document.getElementById('start')
-        const limit=document.getElementById('limit')
-        const count=document.getElementById('count')
-        const audio1=document.getElementById('id_audio1')
-        var audio2=document.getElementById('id_audio2')
-        const audio3=document.getElementById('id_audio3')
-        const audio4=document.getElementById('id_audio4')
-        const transfield=document.getElementById('trans');
-        const endfield=document.getElementById('end');
-        var select=document.getElementById('select');
-        const tbl=document.getElementById('tbl1');
-        var parentselect=document.getElementById('parentselect');
-        const studentnameElement = $('#id_name');
-        const parentCategoryElement = $('#id_parent');
-        const categoryElement = $('#id_category');
-        const wordvalueElement = $('#wordvalue');
-        const transvalueElement = $('#transvalue');
-        const mypagelink = $('#mypagelink')
+{% endblock %}
 
-    
+        {% block extrajs %}
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js"></script>
+        <script>
+            let untyped='';
+            let typed='';
+            let score=0;
+            var textLists;
+            var transLists
+            var untypedfield=document.getElementById('untyped');
+            const typedfield=document.getElementById('typed');
+            const wrap = document.getElementById('wrap');
+            const start=document.getElementById('start')
+            const limit=document.getElementById('limit')
+            const count=document.getElementById('count')
+            const audio1=document.getElementById('id_audio1')
+            var audio2=document.getElementById('id_audio2')
+            const audio3=document.getElementById('id_audio3')
+            const audio4=document.getElementById('id_audio4')
+            const transfield=document.getElementById('trans');
+            const endfield=document.getElementById('end');
+            var select=document.getElementById('select');
+            const tbl=document.getElementById('tbl1');
+            var parentselect=document.getElementById('parentselect');
+            const studentnameElement = $('#id_name');
+            const parentCategoryElement = $('#id_parent');
+            const categoryElement = $('#id_category');
+            const wordvalueElement = $('#wordvalue');
+            const transvalueElement = $('#transvalue');
+            const mypagelink = $('#mypagelink')
+            const leftimg=$('#id_leftimg')
+            const rightimg=$('#id_rightimg')
+            const pandatensi=$('#id_pandatensi')
+            const pandaneru=$('#id_pandaneru')
+        
 
+            studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+' テスト');
+            studentnameElement.val('{{pk}}');
+          
 
-        $(document).ready(function() {
-    
-    $('#btncheck').on('click', function() {
-        const studentId = $('#student_id').val();
-        if (!studentId) {
-            alert('Please enter a Student ID.');
-            return;
-        }
-
-        $.ajax({
-            url: '{% url "classreport:check_student_exists" %}', // Your API endpoint to check student existence
-            method: 'POST',
-            data: {
-                'student_id': studentId,
-                // Assuming you have a CSRF token setup in your project, include it here
-            },
-            success: function(response) {
-                if (response.exists) {
-                    // Hide form on game start
-                    window.location.href = `typing/${studentId}`; // Redirect to typing page
-                } else {
-                    alert('Student not found in the current class.');
-                }
-            }
-        });
-    });
-
-    // Function to show the form after the game ends
-    function showStudentForm() {
-        $('#student-form').show();
-    }
-
-    // Call showStudentForm() after the game ends in gameOver and gameClear functions
-});
-
-        const printselect=()=>{
+            const printselect=()=>{
               console.log('chans')
               var category_value=1;
               console.log(category_value)
@@ -398,7 +521,6 @@ let untyped='';
                   });
                 };
 
-        
 
                 const changeCategory = (select) => {
                     categoryElement.children().remove();
@@ -424,7 +546,6 @@ let untyped='';
                     });
                 };
 
-            
                 parentCategoryElement.on('change', () => {
                     changeCategory();
                     console.log('change');
@@ -453,6 +574,7 @@ let untyped='';
                         var resultDiv=document.getElementById('result');
                         textLists=response.message;
                         transLists=response.message2;
+                        var resultDiv=document.getElementById('result');         
                         console.log(textLists)
                         console.log(transLists)
                         let time=count.textContent;
@@ -478,13 +600,12 @@ let untyped='';
                             tr.appendChild(cell2);
                            tbl.appendChild(tr);
                         }
-                    } ) 
-                    
-                }
-            
+                    })
+                };
+             
             mistypetransLists=[];
             mistypetextLists=[];
-        
+
             const printmistypelist=()=>{
                 const tbl=document.getElementById('tbl1');
                 let tr=document.createElement('tr');
@@ -517,13 +638,18 @@ let untyped='';
                 transfield.textContent=transLists[counter];
                 untyped = textLists[counter];
 
-                
-                untypedfield.textContent= untyped
+                strHead=untyped.slice(0,1);
+                blank='';
+                for(i = 0; i<untyped.length-1; i++){
+                    blank+='-'
+                    console.log(blank)
+                }
+                untypedfield.textContent=strHead+blank;
 
 
             };}
 
-        
+
 
             const keyPress=e=>{
                 console.log(e.key);
@@ -532,6 +658,10 @@ let untyped='';
                     setTimeout(()=>{
                         wrap.classList.remove('mistyped')
                     },100)
+                    printmistypelist();
+                    counter++;
+                    createText();
+                    
                     new Audio('{% static "audio/se2.mp3" %}').play();
                     
                     return;
@@ -542,7 +672,12 @@ let untyped='';
                 untyped=untyped.substring(1);
                 typedfield.textContent=typed;
                 console.log(untyped.length)
-                untypedfield.textContent=untyped;
+                blank='';
+                for(i = 0; i<untyped.length; i++){
+                    blank+='-'
+                    console.log(blank)
+                }
+                untypedfield.textContent=blank;
                 if(untyped===''){
                     counter++;
                     audio1.play();
@@ -562,36 +697,83 @@ let untyped='';
             };
 
             const gameOver=id=>{
-                $('body').css('overflow', '');
                 counter=0;
                 gamestate=0;
-                gameinfo=0;
+                $('body').css('overflow', '');
+                $('.pandaneru').show();
+                $('.pandatensi').show();
+                $('.field').show();
+                categoryElement.css('visibility', 'visible');
+                parentCategoryElement.css('visibility', 'visible');
+                $("label[for='id_parent']").css('visibility', 'visible');
+                $("label[for='id_category']").css('visibility', 'visible');
+                untyped=[]
                 clearInterval(id);
                 audio4.play();
-                transfield.textContent='時間切れ';
+                transfield.textContent='時間切れです';
                 typedfield.textContent='';
-                untypedfield.textContent='もっと練習しよう！';
+                untypedfield.textContent='';
                 endfield.textContent='';
                 start.style.display = '';
                 limit.style.display = '';
                 start.textContent='再スタート Enter↲ '
                 printlist();
+
              };
 
 
              const gameClear=id=>{
+               
                 counter=0;
                 gamestate=0;
+
                 if(gameinfo==0){
                     clearInterval(id);
                     $('body').css('overflow', '');
-                $('.field').show();
-                categoryElement.show();
-                parentCategoryElement.show();
-                $("label[for='id_parent']").show();
-                $("label[for='id_category']").show(); 
-                $('#student-form').show();        
-                typedfield.textContent='よくできました！';
+                    $('.field').show();
+                    $('.leftimg').show();
+                    $('.rightimg').show();
+                    var countanime = 200;
+                    var defaults = {
+                    origin: { y: 0.7 }
+                    };
+
+            function fire(particleRatio, opts) {
+                confetti({
+                    ...defaults,
+                    ...opts,
+                    particleCount: Math.floor(countanime * particleRatio)
+                });
+                }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+            });
+            fire(0.2, {
+                spread: 60,
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+                categoryElement.css('visibility', 'visible');
+                parentCategoryElement.css('visibility', 'visible');
+                $("label[for='id_parent']").css('visibility', 'visible');
+                $("label[for='id_category']").css('visibility', 'visible');
+                // scoreSave();
+                typedfield.textContent='合格おめでとう！';
                 audio3.play();
                 untypedfield.textContent='';
                 endfield.textContent='';
@@ -611,22 +793,23 @@ let untyped='';
             }
             }
 
-            
+     
+
 
             const timer=()=>{
                 let time=count.textContent;
                 const id =setInterval(()=>{
-                    time--;
-                    count.textContent=time;
-                    if(time<=0 ){
-
-                        gameOver(id);
-                    }else if(counter==textLists.length ){
-                        if(mistypetextLists.length==0){
-                            gameinfo=0;
-                        }
-                        gameClear(id);
+                time--;
+                count.textContent=time;
+                if(time<=0 ){
+                    gameOver(id);
+                    gameinfo=0;
+                }else if(counter==textLists.length ){
+                    if(mistypetextLists.length==0){
+                        gameinfo=0;
                     }
+                    gameClear(id);
+                }
                 },1000);
             };
             var gamestate=0;
@@ -635,26 +818,57 @@ let untyped='';
 
 
             const startgame=()=>{
-                $('body').css('overflow', 'hidden');
+                $('.leftimg').hide();
+                $('.rightimg').hide();
+                $('.pandaneru').hide();
+                $('.pandatensi').hide();
+                if(gameinfo==1){
+                    textLists=mistypetextLists;
+                    transLists=mistypetransLists;
+                    mistypetextLists=[];
+                    mistypetransLists=[];
+                    let time=count.textContent;
+                    var wordcount=0;
+                    for(i=0;i<textLists.length;i++){
+                        wordcount+=textLists[i].length;
+                        }
+
+                        createText();
+                        categoryElement.css('visibility', 'hidden');
+                        parentCategoryElement.css('visibility', 'hidden');
+                        $("label[for='id_parent_category']").css('visibility', 'hidden');
+                        $("label[for='id_category']").css('visibility', 'hidden');
+                        start.style.display='none';
+                        limit.style.display='none';
+                        var table = document.getElementById("tbl1");  // 行の削除
+                                while (table.rows.length > 0) table.deleteRow(0);
+                        endfield.textContent='';
+
+                        document.addEventListener('keypress',keyPress);
+                        trans.style.display='';
+                        gamestate=1;
+                }else{
+                    $('body').css('overflow', 'hidden');
                 createText();
                 timer();
                 $('.field').hide();
-                categoryElement.hide();
-                parentCategoryElement.hide();
-                $("label[for='id_parent']").hide();
-                $("label[for='id_category']").hide();
-                $('#student-form').hide(); 
+                categoryElement.css('visibility', 'hidden');
+                parentCategoryElement.css('visibility', 'hidden');
+                $("label[for='id_parent']").css('visibility', 'hidden');
+                $("label[for='id_category']").css('visibility', 'hidden');
                 start.style.display='none';
                 limit.style.display='none';
                 var table = document.getElementById("tbl1");  // 行の削除
-                while (table.rows.length > 0) table.deleteRow(0);
+                        while (table.rows.length > 0) table.deleteRow(0);
                 endfield.textContent='';
+
                 document.addEventListener('keypress',keyPress);
                 trans.style.display='';
                 gamestate=1;
                 }
-
+            };
             untypedfield.textContent='';
+
             start.addEventListener('click',()=>{
                 startgame();
             });
@@ -668,9 +882,7 @@ let untyped='';
                 }
                 }
             }
+            </script>
 
-
-
-
-</script>
             {% endblock %}
+

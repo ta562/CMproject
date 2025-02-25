@@ -111,6 +111,8 @@ def ajax_get_createstudentlist(request):
         print('test')
         body = json.loads(request.body)
         print(body)
+        if Student.objects.filter(student_id=body['student_id']).exists():
+            return JsonResponse({'success': False, 'message': 'このIDは既に存在します'})
         school_id = School.objects.get(name=body['student_school'])
 
         # Studentを作成
@@ -118,6 +120,7 @@ def ajax_get_createstudentlist(request):
             manageruser=request.user,
             classroomuser_id=body['student_classroomuser'],
             name=body['student_name'],
+            student_id=body['student_id'],
             mail=body['student_mail'],
             post=body['student_post'],
             address=body['student_address'],
@@ -177,11 +180,18 @@ def ajax_get_updatastudentlist(request):
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         phone_data_json = request.POST.get('phone_data', '[]')
+        new_student_id = request.POST.get('studentgame_id') 
         phone_data = json.loads(phone_data_json)
+        student = Student.objects.get(pk=student_id) 
+            # Check if the new_student_id is different from the current one
+        if student.student_id != new_student_id:
+            if Student.objects.filter(student_id=new_student_id).exists():
+                return JsonResponse({'success': False, 'message': 'このIDは既に存在します'})
+
         
         try:
             student = Student.objects.get(pk=student_id)
-            
+            student.student_id=request.POST.get('studentgame_id')
             student.name = request.POST.get('student_name')
             student.classroomuser = ClassroomUser.objects.get(id=int(request.POST.get('student_classroomuser')))
             student.mail = request.POST.get('student_mail')
@@ -663,8 +673,15 @@ def ajax_get_update_teacher(request):
     if request.method == 'POST':
         classroomuser_id = request.POST.get('teacher_classroomuser')
         teacher_id = request.POST.get('teacher_id')
+        teacher = Teacher.objects.get(id=teacher_id)
+        newid=request.POST.get('teacher_teacher_id')
+        if teacher.teacher_id != newid:
+                if Teacher.objects.filter(teacher_id=newid).exists():
+                    return JsonResponse({'success': False, 'message': 'このIDは既に存在します'})
+
         try:
             teacher = Teacher.objects.get(id=teacher_id)
+            
             teacher.classroomuser = ClassroomUser.objects.get(id=int(classroomuser_id))
             
             teacher.teacher_id=request.POST.get('teacher_teacher_id')
@@ -1276,7 +1293,7 @@ def update_category(request):
         category = Category.objects.filter(id=category_id).first()
         if category:
             category.title = new_title
-            category.parent_id = new_parent_id
+           
             category.save()
             return JsonResponse({"success": True})
         return JsonResponse({"error": "Category not found"}, status=404)
@@ -1299,7 +1316,7 @@ def update_english_word(request):
         if english_word:
             english_word.word = new_word
             english_word.trans = new_trans
-            english_word.category_id = new_category_id
+            
             english_word.save()
             return JsonResponse({"success": True})
         return JsonResponse({"error": "English word not found"}, status=404)

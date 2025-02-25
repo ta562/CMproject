@@ -3,11 +3,11 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import TemplateView,View,CreateView,ListView
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from classmanager.models import School,StudentPhone,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
+from classmanager.models import EnglishWords,ParentCategory,Category,School,StudentPhone,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
 from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
@@ -18,7 +18,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.views.decorators.csrf import csrf_exempt
 
 class ReportCreateView(TemplateView):
     template_name='reportcreate.html'
@@ -288,3 +288,45 @@ def get_student_subjects(request, student_id):
         return JsonResponse({'subjects': []}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def ajax_get_printlist(request):
+        classroomuser_id = request.session['class_room_user']['id']
+        manager=ManagerClassroom.objects.get(classroom_id=classroomuser_id)
+        categorys = request.GET.get('pk')
+        english_id=list(EnglishWords.objects.filter(category=categorys,manageruser=manager.manager).values_list('id', flat=True))
+        english_text=list(EnglishWords.objects.filter(category=categorys,manageruser=manager.manager).values_list('word', flat=True))
+        trans_text=list(EnglishWords.objects.filter(category=categorys,manageruser=manager.manager).values_list('trans', flat=True))
+        category_text=list(Category.objects.filter(parent=categorys,manageruser=manager.manager).values_list('title',flat=True))
+        category_id=list(Category.objects.filter(parent=categorys,manageruser=manager.manager).values_list('id',flat=True))
+        parentcategory_text=list(ParentCategory.objects.filter(manageruser=manager.manager).values_list('title',flat=True))
+        parentcategory_id=list(ParentCategory.objects.filter(manageruser=manager.manager).values_list('id',flat=True))
+       
+      
+    # [ {'name': 'サッカー', 'pk': '3'}, {...}, {...} ] という感じのリストになる
+        data ={'message':english_text,'message2':trans_text,'message3':category_text,'message4':parentcategory_text,'message5':parentcategory_id,'message6':category_id,'message7':english_id,}
+    # JSONで返す
+        return JsonResponse(data)
+
+
+
+class TypingView(TemplateView):
+    template_name='typing.html'
+    def get(self, request, **kwargs):
+        name=Student.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
+        context = {
+            'pk': kwargs['pk'], 
+            'name':name,        
+        }
+        return self.render_to_response(context)
+
+@csrf_exempt 
+def check_student_exists(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id', None)
+        current_user = request.session['class_room_user']['id'] # Adjust based on your auth setup
+        try:
+            student = Student.objects.get(student_id=student_id, classroomuser_id=current_user)
+            return JsonResponse({'exists': True})
+        except Student.DoesNotExist:
+            return JsonResponse({'exists': False})
+    return HttpResponseBadRequest('Invalid Request')

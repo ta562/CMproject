@@ -14,6 +14,9 @@ urlpatterns = [
     path('get_student_subjects/<int:student_id>/', views.get_student_subjects, name='get_student_subjects'),
     path('typingpractice',views.TypingPracticeView.as_view(),name='typingpractice'),
     path('gameselect',views.GameSelectView.as_view(),name='gameselect'),
+    path('api/printlist/get/', views.ajax_get_printlist, name='ajax_get_printlist'),
+    path('typing/<str:pk>',views.TypingView.as_view(), name='typing'),
+    path('check_student/', views.check_student_exists, name='check_student_exists'),
 
 
     

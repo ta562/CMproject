@@ -98,6 +98,11 @@ td{
     position: relative;
     text-align: left;
 }
+.student_id{
+    width: 10%;
+    min-width: 50px;
+   
+}
 
 .teacher_text{
     width: 60%;
@@ -263,22 +268,29 @@ td{
            
 <form method="POST">
     <div class="input-row">
+        
         <div>
             <label for="form_student_name">名前 <span class="text-sm text-danger">必須</span></label>
             <input type="text" required name="form_student_name" id="form_student_name">
         </div>
+        
         <div>
             <label for="form_student_classroomuser">所属教室 <span class="text-sm text-danger">必須</span></label>
             <select required name="form_student_classroomuser" id="form_student_classroomuser">
             </select>
         </div>
         <div>
-            <label for="form_student_mail">配信用メールアドレス <span class="text-sm text-danger">必須</span></label>
-            <input type="email" required name="form_student_mail" id="form_student_mail">
+            <label for="form_student_id">ゲームID </label>
+            <input type="text"  name="form_student_id" id="form_student_id">
         </div>
+        
     </div>
 
     <div class="input-row">
+        <div>
+            <label for="form_student_mail">配信用メールアドレス <span class="text-sm text-danger">必須</span></label>
+            <input type="email" required name="form_student_mail" id="form_student_mail">
+        </div>
         <div>
             <label for="form_student_post">郵便番号</label>
             <input pattern="\d+" placeholder="数字" type="text" name="form_student_post" id="form_student_post">
@@ -372,6 +384,9 @@ td{
                     </td>
                     <td class="student_th student_classroomuser">
                         教室
+                    </td>
+                    <td class="student_th student_id">
+                        ゲームID
                     </td>
                     <td class="student_th student_mail"> 
                         配信用メールアドレス
@@ -656,6 +671,9 @@ row.innerHTML = `
             <td class="student_td  student_classroomuser">
                 ${studentFields.classroomusername}
             </td>
+            <td class="student_td student_id">
+                ${studentFields.student_id}
+            </td>
             <td class="student_td student_mail">
                 ${studentFields.mail}
             </td>
@@ -686,12 +704,17 @@ row.innerHTML = `
                                     ${classroomUserSelectHtml}
                                 </select>
                             </div>
-                        <div>
+                            <div >
+                            <label for="form_student_id">ゲームID </label>
+                            <input type="text" required value="${studentFields.student_id}" name="form_student_id" id="form_student_id">
+                        </div>
+                       
+                        </div>
+                        <div class="input-row">
+                             <div>
                             <label for="form_student_mail">配信用メールアドレス<span class="text-sm text-danger ">必須</span></label>
                             <input type="email" required value="${studentFields.mail}" name="form_student_mail" id="form_student_mail">
                         </div>
-                        </div>
-                        <div class="input-row">
                         <div>
                             <label for="form_student_post">郵便番号</label>
                             <input type="text" value="${studentFields.post}" name="form_student_post" id="form_student_post">
@@ -759,6 +782,7 @@ function createStudent() {
     }));
     const studentClassroomUser = document.getElementById('form_student_classroomuser').value;
     const studentName = document.getElementById('form_student_name').value;
+    const studentId = document.getElementById('form_student_id').value;
     const studentMail = document.getElementById('form_student_mail').value;
     const studentPost = document.getElementById('form_student_post').value;
     const studentAddress = document.getElementById('form_student_address').value;
@@ -778,6 +802,7 @@ function createStudent() {
     const postBody = {
             student_classroomuser : studentClassroomUser,
             student_name: studentName,
+            student_id:studentId,
             student_mail: studentMail,
             student_post: studentPost,
             student_address: studentAddress,
@@ -803,7 +828,7 @@ function createStudent() {
                 location.reload();
 
             } else {
-                alert("保存に失敗しました。");
+                alert(response.message);
             }
         },
         error: function(error) {
@@ -821,6 +846,7 @@ function updateStudent(studentId) {
     }
 
     const name = form.querySelector(`#form_student_name`).value;
+    const studentgame_id = form.querySelector(`#form_student_id`).value;
     const classroomuser = form.querySelector(`#form_student_classroomuser`).value;
     const mail = form.querySelector(`#form_student_mail`).value;
     const post = form.querySelector(`#form_student_post`).value;
@@ -841,6 +867,7 @@ function updateStudent(studentId) {
         type: 'POST', // POSTの使用を検討
         data: {
             'student_id': studentId,
+            'studentgame_id':studentgame_id,
             'student_classroomuser': classroomuser,
             'student_name': name,
             'student_mail': mail,
@@ -852,7 +879,7 @@ function updateStudent(studentId) {
             if (response.success) {
                 printList();
             } else {
-                alert("更新に失敗しました。");
+                alert(response.message);
             }
         },
         error: function() {
