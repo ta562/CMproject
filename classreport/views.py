@@ -4,10 +4,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import TemplateView,View,CreateView,ListView
 from django.http import JsonResponse,HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from classmanager.models import EnglishWords,ParentCategory,Category,School,StudentPhone,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
+from classmanager.models import TransGameScore,EnglishScore,EnglishWords,ParentCategory,Category,School,StudentPhone,Student, StudentSchool,Subject,SchoolSubject,Teacher,ClassSchedule,Period,Report
 from accounts.models import ManagerClassroom
 from accountsclassroom.models import ClassroomUser
 from django.views.decorators.http import require_GET
@@ -30,7 +31,6 @@ class TeacherSelectView(TemplateView):
     def get(self, request):
         classroom_user = request.session.get('class_room_user')
         if classroom_user is None:
-            print('direct')
             return redirect("accountsclassroom:login_classroom")
         return render(request, self.template_name)
 
@@ -38,10 +38,26 @@ class TeacherSelectView(TemplateView):
 
 class TypingPracticeView(TemplateView):
     template_name='typingpractice.html'
-
+    def get(self, request):
+        classroom_user = request.session.get('class_room_user')
+        if classroom_user is None:
+            return redirect("accountsclassroom:login_classroom_game")
+        return render(request, self.template_name)
+class TransPracticeView(TemplateView):
+    template_name='transpractice.html'
+    def get(self, request):
+        classroom_user = request.session.get('class_room_user')
+        if classroom_user is None:
+            return redirect("accountsclassroom:login_classroom_game")
+        return render(request, self.template_name)
 
 class GameSelectView(TemplateView):
     template_name='gameselect.html'
+    def get(self, request):
+        classroom_user = request.session.get('class_room_user')
+        if classroom_user is None:
+            return redirect("accountsclassroom:login_classroom_game")
+        return render(request, self.template_name)
 
 @csrf_exempt
 def check_teacher_id(request):
@@ -292,6 +308,7 @@ def get_student_subjects(request, student_id):
 def ajax_get_printlist(request):
         classroomuser_id = request.session['class_room_user']['id']
         manager=ManagerClassroom.objects.get(classroom_id=classroomuser_id)
+        print(manager.manager)
         categorys = request.GET.get('pk')
         english_id=list(EnglishWords.objects.filter(category=categorys,manageruser=manager.manager).values_list('id', flat=True))
         english_text=list(EnglishWords.objects.filter(category=categorys,manageruser=manager.manager).values_list('word', flat=True))
@@ -319,6 +336,38 @@ class TypingView(TemplateView):
         }
         return self.render_to_response(context)
 
+
+class TransquizView(TemplateView):
+    template_name='transquiz.html'
+    def get(self, request, **kwargs):
+        name=Student.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
+        context = {
+            'pk': kwargs['pk'], 
+            'name':name,        
+        }
+        return self.render_to_response(context)
+    
+class MypageTypingView(TemplateView):
+    template_name='mypagetyping.html'
+    def get(self, request, **kwargs):
+        name=Student.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
+        context = {
+            'pk': kwargs['pk'], 
+            'name':name,        
+        }
+        return self.render_to_response(context)
+
+
+class MypageTransView(TemplateView):
+    template_name='mypagetrans.html'
+    def get(self, request, **kwargs):
+        name=Student.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
+        context = {
+            'pk': kwargs['pk'], 
+            'name':name,        
+        }
+        return self.render_to_response(context)
+
 @csrf_exempt 
 def check_student_exists(request):
     if request.method == 'POST':
@@ -330,3 +379,193 @@ def check_student_exists(request):
         except Student.DoesNotExist:
             return JsonResponse({'exists': False})
     return HttpResponseBadRequest('Invalid Request')
+
+    
+@csrf_exempt
+def game_clear(request):
+    if request.method == "POST":
+        try:
+            category_id = request.POST.get("category_id")  # フロントエンドからカテゴリIDを受け取る
+            clear_time = request.POST.get("clear_time") 
+            studentid = request.POST.get("student_id")  # クリアタイムを受け取る
+
+            print(category_id)
+            print(clear_time)
+            print(studentid)
+
+            # Student の取得
+            student = Student.objects.filter(student_id=studentid).first()
+            if not student:
+                return JsonResponse({"error": "Student not found"}, status=400)
+
+            # Category の取得
+            category = Category.objects.filter(pk=category_id).first()
+            if not category:
+                return JsonResponse({"error": "Category not found"}, status=400)
+
+            # 既存のスコアデータがあるか確認
+            score_entry = EnglishScore.objects.filter(student=student, category=category).first()
+            clear_time_value = float(clear_time)
+            current_cleartime_value = float(score_entry.cleartime)
+            message = f"クリアおめでとう！クリアタイム: {clear_time}秒！"
+            
+            if score_entry:
+                print('アップデート')
+            
+                # すでに存在する場合、score を +1 し、cleartime を更新
+                print(score_entry.cleartime+'and'+clear_time)
+                if current_cleartime_value > clear_time_value:
+                    score_entry.cleartime = clear_time  # クリアタイムを更新
+                    print('タイム更新')
+                    score_entry.score += 1
+                    score_entry.save()
+                    message = f"おめでとう！自己ベスト更新！🎉 新しいクリアタイム: {clear_time}秒"
+                else:
+                    score_entry.score += 1
+                    score_entry.save()
+                
+            else:
+                # 存在しない場合は新規作成
+                score_entry = EnglishScore.objects.create(
+                    student=student,
+                    category=category,
+                    score=1,
+                    cleartime=clear_time
+                )
+                message =f"初クリアおめでとう！🎉クリアタイム: {clear_time}秒"
+
+            return JsonResponse({'success': True,"message": message, "score": score_entry.score, "cleartime": score_entry.cleartime}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def get_parent_categories_game(request):
+        classroomuser_id = request.session['class_room_user']['id']
+        manager=ManagerClassroom.objects.get(classroom_id=classroomuser_id)
+        parent_categories = ParentCategory.objects.filter(manageruser=manager.manager)
+   
+        data = [{"id": p.id, "title": p.title} for p in parent_categories]
+        return JsonResponse({"parent_categories": data})
+
+
+def get_categories_game(request):
+        classroomuser_id = request.session['class_room_user']['id']
+        manager=ManagerClassroom.objects.get(classroom_id=classroomuser_id)
+        parent_id = request.GET.get("parent_id")
+        categories = Category.objects.filter(parent_id=parent_id , manageruser=manager.manager)
+    
+        data = [{"id": c.id, "title": c.title} for c in categories]
+        print(data)
+        return JsonResponse({"categories": data})
+
+
+def get_english_words_game(request):
+    """ 選択された Category に紐づく EnglishWords を取得 """
+    category_id = request.GET.get("category_id")
+    words = EnglishWords.objects.filter(category_id=category_id)
+    
+    data = [{"word": w.word, "trans": w.trans} for w in words]
+    return JsonResponse({"words": data})
+
+def get_random_wrong_trans(request):
+    """ Obtain three random incorrect translations. """
+    category_id = request.GET.get("category_id")
+    current_word_id = request.GET.get("current_word_id")
+
+    # Exclude the current word and category to ensure wrong translations are incorrect
+    wrong_translations = (
+        EnglishWords.objects
+        .exclude(category_id=category_id)
+        .exclude(id=current_word_id)
+        .order_by('?')[:3]  # Get three random incorrect translations
+    )
+
+    # If fewer than 3 wrong translations are available, add default option
+    wrong_trans_list = [wt.trans for wt in wrong_translations]
+    while len(wrong_trans_list) < 3:
+        wrong_trans_list.append("誤訳")
+
+    return JsonResponse({"trans": wrong_trans_list})
+
+@csrf_exempt
+def trans_game_clear(request):
+    if request.method == "POST":
+        try:
+            student_id = request.POST.get("student_id")
+            category_id = request.POST.get("category_id")
+            new_cleartime = int(request.POST.get("cleartime"))
+
+            # Student と Category の取得
+            student = Student.objects.get(student_id=student_id)
+            category = Category.objects.get(id=category_id)
+            score_entry = TransGameScore.objects.filter(student=student, category=category).first()
+            if score_entry:
+                if int(score_entry.cleartime) > new_cleartime:
+                    score_entry.cleartime=new_cleartime
+                    score_entry.score += 1
+                    score_entry.save()
+                    message = "クリア回数が更新されました！"
+                else:
+                    score_entry.score += 1
+                    score_entry.save()
+                    message = "クリア回数が更新されました！"
+
+
+            else:
+                # 存在しない場合は新規作成
+                TransGameScore.objects.create(
+                    student=student,
+                    category=category,
+                    score=1,
+                    cleartime=new_cleartime
+                )
+                message = "クリアデータが保存されました！"
+
+            return JsonResponse({'success': True, 'message': message}, status=200)
+
+        except Student.DoesNotExist:
+            return JsonResponse({"error": "生徒が見つかりません"}, status=400)
+        except Category.DoesNotExist:
+            return JsonResponse({"error": "カテゴリが見つかりません"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "不正なリクエストです"}, status=400)
+
+def student_scores_view(request, student_id):
+    # EnglishScoreを取得
+    english_scores = EnglishScore.objects.filter(student__student_id=student_id)
+    
+    # カテゴリごとにグループ化して辞書に整理
+    english_data = {}
+    for score in english_scores:
+        parent_title = score.category.parent.title if score.category.parent else 'No Parent'
+        if parent_title not in english_data:
+            english_data[parent_title] = []
+        english_data[parent_title].append({
+            'category_title': score.category.title,
+            'score': score.score,
+            'cleartime': score.cleartime
+        })
+
+    return JsonResponse({'english_data': english_data})
+
+def student_scores_trans_view(request, student_id):
+    # EnglishScoreを取得
+    english_scores = TransGameScore.objects.filter(student__student_id=student_id)
+    
+    # カテゴリごとにグループ化して辞書に整理
+    english_data = {}
+    for score in english_scores:
+        parent_title = score.category.parent.title if score.category.parent else 'No Parent'
+        if parent_title not in english_data:
+            english_data[parent_title] = []
+        english_data[parent_title].append({
+            'category_title': score.category.title,
+            'score': score.score,
+            'cleartime': score.cleartime
+        })
+
+    return JsonResponse({'english_data': english_data})

@@ -1,0 +1,330 @@
+{% extends 'basetyping.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    /* ベースのスタイル */
+    body {
+        
+        background-color: #f9f5e7;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+   
+    .card {
+        background-color: #ffd6a5;
+        border-radius: 8px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 15px;
+    }
+    .card-header {
+        background-color: #e5989b;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+        font-weight: bold;
+        color: #fff;
+    }
+    .score-row {
+        display: flex;
+        justify-content: space-between;
+        background-color: #ffb4b4;
+        border-bottom: 1px solid #fff;
+        padding: 10px;
+        color: #634531;
+    }
+    .score-row:last-child {
+        border-bottom: none;
+    }
+    .button {
+        background-color: #c08552;
+        color: white;
+        padding: 10px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .button:hover {
+        background-color: #b06c5f;
+    }
+    
+#CMbox{
+    position: absolute;  /* 画面の特定位置に固定 */
+    left: 0px;         /* 右端に寄せる */
+    top: 60px;           /* 上からの位置調整 */
+    width: 250px;        /* 広告エリアの幅 */
+    background-color: #f8f8f8; /* 背景色 */
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc; /* 枠線 */
+}
+
+#typing-ad img {
+    width: 100%;
+    height: auto;
+}
+.field{
+    text-align: center;
+    margin: 0 auto;
+}
+
+#typing-ad a {
+    display: block;
+    margin-top: 5px;
+    color: blue;
+    text-decoration: underline;
+}
+#typing-ad {
+    position: relative;  /* 親要素に相対位置を指定 */
+}
+
+.typing-message {
+    position: absolute;  /* 画像に重なるように配置 */
+    bottom: 1px;  /* 画像の下部から10pxの距離 */
+    left: 50%;  /* 画像の中央に配置 */
+    transform: translateX(-50%);  /* 左右の中心に揃える */
+    font-size: 14px;
+    color: #fff;  /* 文字色を白に */
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);  /* 半透明の黒背景 */
+    padding: 5px 10px;
+    border-radius: 5px;  /* 角を丸くする */
+    width: 150px;
+}
+.typing-message2 {
+    position: absolute;  /* 画像に重なるように配置 */
+    bottom: 230px;  /* 画像の下部から10pxの距離 */
+    left: 50%;  /* 画像の中央に配置 */
+    transform: translateX(-50%);  /* 左右の中心に揃える */
+    font-size: 14px;
+    color: #fff;  /* 文字色を白に */
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);  /* 半透明の黒背景 */
+    padding: 5px 10px;
+    border-radius: 5px;  /* 角を丸くする */
+    width: 150px;
+}
+#home-button {
+        width: 100%;
+        padding: 12px;
+        background-color: #ab693a; /* オレンジ色 */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #home-button a{
+        color: white;
+        text-decoration: none;
+    }
+
+    #home-button:hover {
+        background-color: #361c0a;
+        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
+    }
+
+    #home-button:active {
+        background-color: #3e1f09;  /* クリック時 */
+        transform: translateY(1px);  /* クリック時に少し下げる */
+    }
+    .containergame{
+        max-width: 500px;
+    margin: 0 auto; /* 中央配置 */
+    text-align: center; 
+        
+    }
+    .active-button {
+    background-color: #b06c5f; /* 選択時の色 */
+    color: #fff;
+    font-weight: bold;
+    border: 2px solid #41ad3a; /* 境界線を強調 */
+}
+
+
+#student-form {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    width: 200px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    position: absolute;
+    top: 70px;
+    right: 0px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* ボタンを中央揃え */
+}
+    /* 共通のボタンスタイル */
+    .btn-custom {
+        background-color: #74be4d; /* オレンジ色 */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        margin: 10px;
+        text-align: center;
+        width: 180px;
+    }
+
+    /* ボタンにホバーエフェクトを追加 */
+    .btn-custom:hover {
+        background-color: #59913c;
+        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
+    }
+
+    .btn-custom:active {
+        background-color: #59913c;  /* クリック時 */
+        transform: translateY(1px);  /* クリック時に少し下げる */
+    }
+
+    /* ボタンがフォーム内に並ぶように配置 */
+    #mypagelink, #practicelink {
+        display: block; /* ボタンを縦に並べる */
+        width: 100%; /* フォーム幅に合わせる */
+        margin-bottom: 10px; /* ボタン間のスペース */
+    }
+
+    /* ボタンのスタイル */
+    #btncheck {
+        width: 100%;
+        padding: 12px;
+        background-color: #74be4d; /* オレンジ色 */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #btncheck:hover {
+        background-color: #59913c;
+        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
+    }
+
+    #btncheck:active {
+        background-color: #59913c;  /* クリック時 */
+        transform: translateY(1px);  /* クリック時に少し下げる */
+    }
+   
+</style>
+
+<form id="student-form">
+    <button id='mypagelink' type="button" class="btn btn-custom m-2" onclick="history.back();">テストに戻る</button>
+</form>
+
+  <div id="CMbox">
+    <div id="home-button">
+        <a href="{% url 'classreport:gameselect' %}">ホーム画面に戻る</a>
+    </div>
+    <div id="typing-ad">
+      <a href="{% url 'classreport:typingpractice' %}">
+          <img src="{% static 'img/pandatyping.png' %}" alt="パンダタイピング">
+          <p class="typing-message2">タイピングゲーム！</p>
+      </a>
+      <a href="{% url 'classreport:transpractice' %}">
+        <img src="{% static 'img/pandatitle.png' %}" alt="パンダタイピング">
+        <p class="typing-message">リンガクイズ！</p>
+    </a>
+  </div>
+</div>
+<div class='field'>
+    <h2 id='id_name' class='m-1'></h2>
+    
+    </div>
+<div class="containergame">
+   
+        <button class="button active-button" onclick="toggleScores('english')">タイピングゲーム</button>
+        <button class="button" onclick="toggleScores('trans')">リンガクイズ</button>
+<div id="english-scores" class="score-container">
+    <!-- English Scores Cards Will Be Rendered Here -->
+</div>
+<div id="trans-scores" class="score-container" style="display:none;">
+    <!-- TransGame Scores Cards Will Be Rendered Here -->
+</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+const studentnameElement = $('#id_name');
+const studentId = "{{ pk }}";  // Djangoテンプレートから直接値を取得
+studentnameElement.text(' タイピングゲームの成績　'+'ID'+'{{pk}}'+' : '+'{{name}}');
+            studentnameElement.val('{{pk}}');
+function fetchAndRenderScores() {
+    $.get('/student_scores_view/' + studentId + '/', function(data) {
+        renderScores(data.english_data, '#english-scores');
+        renderScores(data.trans_data, '#trans-scores');
+    });
+}
+
+function renderScores(data, containerId) {
+    for (let parentTitle in data) {
+        const card = $('<div class="card"></div>');
+        card.append('<div class="card-header">' + parentTitle + '</div>');
+
+        data[parentTitle].forEach(function(score) {
+            const scoreRow = $(`<div class="score-row"></div>`);
+            scoreRow.append(`<div> ${score.category_title}</div>`);
+            scoreRow.append(`<div> クリア回数${score.score}回 </div>`);
+            scoreRow.append(`<div> 最速クリアタイム${score.cleartime}秒</div>`);
+            card.append(scoreRow);
+        });
+
+        $(containerId).append(card);
+    }
+}
+
+function toggleScores(type) {
+    document.getElementById('english-scores').style.display = type === 'english' ? 'block' : 'none';
+    document.getElementById('trans-scores').style.display = type === 'trans' ? 'block' : 'none';
+}
+
+// ページロード時にデータをフェッチしてレンダリング
+fetchAndRenderScores();
+function toggleScores(type) {
+    // スコア表示の切り替え
+    document.getElementById('english-scores').style.display = type === 'english' ? 'block' : 'none';
+    document.getElementById('trans-scores').style.display = type === 'trans' ? 'block' : 'none';
+
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.button').forEach(btn => {
+        btn.classList.remove('active-button');
+    });
+
+    // 押されたボタンにアクティブクラスを追加
+    if (type === 'english') {
+        document.querySelector("button[onclick=\"toggleScores('english')\"]").classList.add('active-button');
+    } else {
+        document.querySelector("button[onclick=\"toggleScores('trans')\"]").classList.add('active-button');
+    }
+}
+function toggleScores(type) {
+    if (type === 'trans') {
+        // リンガクイズボタンがクリックされた場合、新しいページに移動
+        window.location.href = '/mypagetrans/' + studentId;
+    }
+    // タイピングゲームボタンの場合は何もしない
+}
+</script>
+
+{% endblock %}

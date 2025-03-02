@@ -1,0 +1,317 @@
+{% extends 'basetyping.html' %}
+{% load static %}
+
+{% block contents %}
+<style>
+    .typing{
+    font-size: 4em;
+    text-align: center;
+}
+form{
+    font-size: 2em;
+    text-align: center;
+}
+
+.count {
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+.limit,.tani{
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+    font-size: 3rem
+}
+.wrap{
+    margin-top: 20px;
+    padding: 20px 40px;
+    background-color: #ffebd4;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+.start{
+    font-size: 4em;
+    text-align: center;
+    margin: 20px
+}
+.typed{
+    color: lightgreen;
+}
+
+.mistyped{
+    background-color: #ed958a;
+}
+.tables{
+    text-align: center;
+}
+
+table{
+    margin: auto;
+    font-size: 1rem;
+    width: 50%;
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+
+
+  table th{
+    
+    border-bottom: solid 4px #d4d6d6;
+    color: #778ca3
+  }
+
+  table td{
+    
+    border-bottom: solid 1px #d4d6d6;
+  }
+
+  .btnstart {
+	display: block;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	font-size:3rem;
+	margin: auto;
+	padding: 1rem 4rem;
+	font-weight: bold;
+	background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
+	border-radius: 100vh;
+	color: #333;
+	border: 1px solid #999;
+	text-shadow: 0 1px #fff;
+	box-shadow: 0 3px 2px 1px #fcfcfc, 0 4px 6px #cecfd1, 0 -2px 2px #cecfd1, 0 -4px 2px #eee, inset 0 0 2px 2px #cecfd1;
+	transition: 0.5s;
+}
+
+.form{ 
+    color: #5c5e82;
+      font-size: 2rem;
+     
+      text-align-last: center;
+     }
+  
+  .selectbox-2 {
+    position: relative;
+    margin-left:20px;
+  }
+  
+  .selectbox-2::before,
+  .selectbox-2::after {
+    position: absolute;
+    content: '';
+    pointer-events: none;
+  }
+  
+  .selectbox-2::before {
+    right: 0;
+    display: inline-block;
+    width: 2.8em;
+    height: 2em;
+    border-radius: 0 3px 3px 0;
+    background-color: #faa63e;
+    content: '';
+  }
+  
+  .selectbox-2::after {
+    position: absolute;
+    top: 50%;
+    right: 1.4em;
+    transform: translate(50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-bottom: 3px solid #fff;
+    border-right: 3px solid #fff;
+    content: '';
+  }
+  
+  .selectbox-2 select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 230px;
+    height: 2em;
+    padding: 0.1em 4em .4em .8em;
+    border: 2px solid #faa63e;
+    border-radius: 3px;
+    color: #5c5e82;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  
+  .selectbox-2 select:focus {
+    outline: 1px solid #f2d673;
+  }
+  .field {
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    }
+  .btn-custom{
+    background-color: #faa63e;
+    color: white;
+  }
+  .btn-custom:hover {
+    background-color: #faa80e;
+    color: #ffffff;
+  } #id_name{
+    color: #5c5e82;
+  }
+{% comment %}
+  .field {
+    display: flex;
+    justify-content: space-around;
+    }
+
+{% endcomment %}
+
+
+
+
+</style>
+
+        <meta charset="utf-8">
+        <meta name="description" content="簡易的なタイピング">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <div class='field'>
+        <h2 id='id_name' class='m-3'></h2> 
+        
+        <button id='mypagelink' class="btn btn-custom m-3">テストをはじめる</button>
+        </div>
+        <div class="album py-5 bg-light">
+            <div class="container">
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id='id_card'>
+                
+              </div>
+            </div>
+        </div>	
+
+
+
+
+{% endblock %}
+
+        {% block extrajs %}
+        <script>
+            let untyped='';
+            let typed='';
+            let score=0;
+
+            var textLists;
+            var transLists
+            var untypedfield=document.getElementById('untyped');
+            const typedfield=document.getElementById('typed');
+            const wrap = document.getElementById('wrap');
+            const start=document.getElementById('start')
+            const limit=document.getElementById('limit')
+            const count=document.getElementById('count')
+            const card=document.getElementById('id_card')
+            const transfield=document.getElementById('trans');
+            const endfield=document.getElementById('end');
+            var select=document.getElementById('select');
+            const tbl=document.getElementById('tbl1');
+            var parentselect=document.getElementById('parentselect');
+            const studentnameElement = $('#id_name');
+            const parentCategoryElement = $('#id_parent');
+            const categoryElement = $('#id_category');
+            const wordvalueElement = $('#wordvalue');  
+            const transvalueElement = $('#transvalue');  
+            const mypagelink = $('#mypagelink')
+            
+            
+            studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+' 成績');
+            studentnameElement.val('{{pk}}');
+            mypagelink.click(function(){
+                pk=studentnameElement.val()
+                console.log(pk);
+                window.location.assign("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
+
+              });
+           
+              const printcard=()=>{
+                console.log('chanf')        
+                var pk=studentnameElement.val();
+                console.log(pk);
+                $.ajax({
+                  url: '{% url 'photo:ajax_get_mypagelist' %}',
+                  
+                  type: 'GET',
+                  async: false,
+                  data: {
+                    'pk': pk,
+                   
+                        }
+                }).done(response => {
+                  parentcategorylist=response.category
+                 
+                  for(let i=0; i<parentcategorylist.length;i++){
+                  let div=document.createElement('div');
+                  div.setAttribute('class','col');
+                  let div2=document.createElement('div');
+                  div2.setAttribute('class','card shadow-sm');
+                  let div3=document.createElement('table');
+                  div3.setAttribute('class','card-body table');
+                    let p=document.createElement('p');
+                    p.setAttribute('class','card-title');
+                    let text=document.createTextNode(parentcategorylist[i]);
+
+                  card.appendChild(div);
+                  div.appendChild(div2);
+                  div2.appendChild(div3);
+                  div3.appendChild(p);
+                    p.appendChild(text);
+                    
+                  $.ajax({
+                    url: '{% url 'photo:ajax_get_mypagecategorylist' %}',
+                    
+                    type: 'GET',
+                    async: false,
+                    data: {
+                      'category': parentcategorylist[i],
+                      'pk': pk,
+                          }
+                  }).done(response => {
+                    categorylist=response.category;
+                    numberlist=response.number;
+                    for(let n=0;n<categorylist.length;n++){
+                        console.log(categorylist)
+                        var tr=document.createElement('tr');
+                        var td=document.createElement('td');
+                        var td2=document.createElement('td');
+                        var text2=document.createTextNode(categorylist[n]);
+                        var text3=document.createTextNode('合格回数'+numberlist[n]);
+                        div3.appendChild(tr);
+                        tr.appendChild(td);
+                        tr.appendChild(td2);
+                        td.appendChild(text2);
+                        td2.appendChild(text3);
+                     
+                    }
+                    })
+                    
+                    
+                  }
+                });
+              };
+              
+              printcard();
+
+     
+
+               
+            </script>
+
+            {% endblock %}
+
+<!-- {% for product in object_list %}
+<tr>
+<td>{{ product.word }}</td>
+<td>{{ product.trans }} 円</td>
+</tr>
+{% endfor %} -->

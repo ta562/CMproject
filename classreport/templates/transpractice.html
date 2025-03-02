@@ -1,0 +1,969 @@
+{% extends 'basetyping.html' %}
+{% load static %}
+
+{% block contents %}
+<style>
+
+.typing{
+    font-size: 4em;
+    text-align: center;
+}
+form{
+    font-size: 2em;
+    text-align: center;
+}
+
+.count {
+    margin: 0;
+    font-weight: bold;
+    color: #634531;
+}
+
+.limit,.tani{
+    margin: 0;
+    font-weight: bold;
+    color: #634531;
+    font-size: 3rem
+}
+.wrap{
+    margin-top: 20px;
+    padding: 20px 40px;
+    background-color: #ffebd4;
+    font-weight: bold;
+    color: #634531;
+}
+
+.start{
+    font-size: 4em;
+    text-align: center;
+    margin: 20px
+}
+
+
+.mistyped{
+    background-color: #ed958a;
+}
+.tables{
+    text-align: center;
+    
+}
+
+table{
+    margin: auto;
+    font-size: 1rem;
+    width: 50%;
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+    color: #623f26;
+  }
+
+
+
+  table th{
+    padding: 10px;
+    border-bottom: solid 4px #634531;
+    color: #623f26
+  }
+
+  table td{
+    padding: 10px;
+    border-bottom: solid 1px #624530;
+  }
+
+  .btnstart {
+    display: inline-block;
+    padding: 15px 40px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    background: linear-gradient(45deg, #faa63e, #f57c00);
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(250, 166, 62, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ホバーでふんわり光る */
+.btnstart:hover {
+    background: linear-gradient(45deg, #f57c00, #faa63e);
+    box-shadow: 0 8px 20px rgba(250, 166, 62, 0.6);
+    transform: scale(1.05);
+}
+
+/* クリック時のエフェクト */
+.btnstart:active {
+    transform: scale(0.98);
+    box-shadow: 0 3px 10px rgba(250, 166, 62, 0.3);
+}
+
+/* 光のエフェクト */
+.btnstart::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* ホバー時に光る */
+.btnstart:hover::before {
+    opacity: 1;
+}
+
+.form{
+    color: #634531;
+      font-size: 2rem;
+
+      text-align-last: center;
+     }
+
+  .selectbox-2 {
+    position: relative;
+    margin-left:20px;
+  }
+
+  .selectbox-2::before,
+  .selectbox-2::after {
+    position: absolute;
+    content: '';
+    pointer-events: none;
+  }
+
+  .selectbox-2::before {
+    right: 0;
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    border-radius: 0 3px 3px 0;
+    background-color: #faa63e;
+    content: '';
+  }
+
+  .selectbox-2::after {
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translate(50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-bottom: 3px solid #fff;
+    border-right: 3px solid #fff;
+    content: '';
+  }
+
+  .selectbox-2 select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 230px;
+    height: 2em;
+    padding: 0.1em 2em .4em .1em;
+    border: 2px solid #faa63e;
+    border-radius: 3px;
+    color: #634531;
+    font-size: 1em;
+    cursor: pointer;
+  }
+
+  .selectbox-2 select:focus {
+    outline: 1px solid #f2d673;
+  }
+  .field {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+   
+    }
+
+
+  .btn-custom{
+    background-color: #faa63e;
+    color: white;
+    margin: 20px;
+    border: none;
+  }
+  .btn-custom:hover {
+    background-color: #a67314;
+    color: #ffffff;
+  }
+
+  #game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 30vh;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+}
+
+#typed {
+    font-size: 80px;
+    
+    position: relative;
+    z-index: 9999; 
+}
+
+#choice {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+.choice-btn {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, #faa63e, #f57c00);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.choice-btn.correct {
+    animation: OK 0.7s forwards ease-out;
+}
+
+
+/* Incorrect answer animation - button bounces back */
+.choice-btn.incorrect  {
+    animation: bounce-back 0.5s forwards;
+    cursor: pointer;
+  display: inline-block;
+  background: #f44336; /* 赤色で「間違い」を強調 */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 30px;
+  text-align: center;
+  position: relative;
+}
+
+/* Word shattering animation for correct answer */
+#typed.correct  {
+    animation: word-explode 0.5s forwards;
+}
+
+@keyframes OK {
+  0% {
+    transform: scale(1);
+    background-color: green;
+    color: white;
+  }
+  50% {
+    transform: scale(1.2);
+    background-color: darkgreen;
+    color: white;
+  }
+  100% {
+    transform: scale(1);
+    background-color: green;
+    color: white;
+  }
+}
+
+
+
+
+
+@keyframes explode {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1.5) rotate(45deg);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(2) rotate(90deg);
+    opacity: 0.8;
+  }
+  60% {
+    transform: scale(3) rotate(180deg);
+    opacity: 0.5;
+  }
+  80% {
+    transform: scale(1.2) rotate(360deg);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-back {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1.2) rotate(-15deg); /* ボタンが反発して大きくなり、少し傾く */
+    opacity: 1;
+  }
+  40% {
+    transform: scale(0.9) rotate(20deg); /* 小さくなり、ひっくり返るように回転 */
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.1) rotate(-10deg); /* さらに反発して拡大し、再び回転 */
+    opacity: 0.8;
+  }
+  80% {
+    transform: scale(0.8) rotate(5deg); /* さらに縮み、ひっくり返る */
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1) rotate(0deg); /* 最終的に元に戻る */
+    opacity: 1;
+  }
+}
+  #id_name{
+    color: #624530;
+  }
+
+  #student-form {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 10px;
+        width: 200px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Arial', sans-serif;
+
+        /* 画面の右上に固定 */
+        position: fixed;
+        top: 65px;  /* 上からの距離 */
+        right: 20px; /* 右からの距離 */
+        z-index: 1000; /* 他の要素の上に表示 */
+    }
+
+    /* ラベルのスタイル */
+    #student-form label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #4e4e4e;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    /* 入力フィールドのスタイル */
+    #student-form input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    #student-form input[type="text"]:focus {
+        border-color: #ff8c00;  /* フォーカス時の色 */
+    }
+
+    /* ボタンのスタイル */
+    #btncheck {
+        width: 100%;
+        padding: 12px;
+        background-color: #74be4d; /* オレンジ色 */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #btncheck:hover {
+        background-color: #59913c;
+        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
+    }
+
+    #btncheck:active {
+        background-color: #59913c;  /* クリック時 */
+        transform: translateY(1px);  /* クリック時に少し下げる */
+    }
+    body {
+  background-image: url(../image/back-img.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+}
+
+
+.anime {
+  position: relative;
+}
+
+    .rightimg {
+    width: 260px;
+    height: 300px;
+  position: absolute;
+  top: -100px;
+  right: 10%;
+  z-index: 9998; 
+}
+/*hiyoko Animation*/
+.rightimg{
+  animation: hiyoko 2.5s infinite 0s;
+}
+@keyframes hiyoko {
+  0%   {
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+  10%  { 
+    transform: scale(1.04, 0.99) translate(0%, 0%);
+  } 
+  50%  { 
+    transform: scale(1.03, 0.98) translate(0%, 5%); 
+  }
+  100% { 
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+}
+/*hiyoko image*/
+.leftimg {
+  width: 260px;
+  height: 300px;
+  position: absolute;
+  top: -100px;
+  left: 10%;
+  z-index: 9998; 
+}
+/*hiyoko Animation*/
+.leftimg{
+  animation: hiyoko 2.5s infinite 0s;
+}
+@keyframes hiyoko {
+  0%   {
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+  10%  { 
+    transform: scale(1.04, 0.99) translate(0%, 0%);
+  } 
+  50%  { 
+    transform: scale(1.05, 0.95) translate(0%, 5%); 
+  }
+  100% { 
+    transform: scale(1.0, 1.0) translate(0%, 0%); 
+  }
+}
+
+
+#CMbox{
+    position: absolute;  /* 画面の特定位置に固定 */
+    left: 0px;         /* 右端に寄せる */
+    top: 60px;           /* 上からの位置調整 */
+    width: 200px;        /* 広告エリアの幅 */
+    background-color: #f8f8f8; /* 背景色 */
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc; /* 枠線 */
+}
+
+#typing-ad img {
+    width: 100%;
+    height: auto;
+}
+
+#typing-ad a {
+    display: block;
+    margin-top: 5px;
+    color: blue;
+    text-decoration: underline;
+}
+#typing-ad {
+    position: relative;  /* 親要素に相対位置を指定 */
+}
+
+.typing-message {
+    position: absolute;  /* 画像に重なるように配置 */
+    bottom: 1px;  /* 画像の下部から10pxの距離 */
+    left: 50%;  /* 画像の中央に配置 */
+    transform: translateX(-50%);  /* 左右の中心に揃える */
+    font-size: 14px;
+    color: #fff;  /* 文字色を白に */
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);  /* 半透明の黒背景 */
+    padding: 5px 10px;
+    border-radius: 5px;  /* 角を丸くする */
+    width: 150px;
+}
+#home-button {
+        width: 100%;
+        padding: 12px;
+        background-color: #ab693a; /* オレンジ色 */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #home-button a{
+        color: white;
+        text-decoration: none;
+    }
+
+    #home-button:hover {
+        background-color: #361c0a;
+        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
+    }
+
+    #home-button:active {
+        background-color: #3e1f09;  /* クリック時 */
+        transform: translateY(1px);  /* クリック時に少し下げる */
+    }
+   
+
+</style>
+
+
+<div id="CMbox">
+    <div id="home-button">
+        <a href="{% url 'classreport:gameselect' %}">ホーム画面に戻る</a>
+    </div>
+    <div id="typing-ad">
+      <a href="{% url 'classreport:typingpractice' %}">
+          <img src="{% static 'img/pandatyping.png' %}" alt="パンダタイピング">
+          <p class="typing-message">タイピングゲーム！</p>
+      </a>
+  </div>
+</div>
+
+
+
+
+        <meta charset="utf-8">
+        <meta name="description" content="簡易的なタイピング">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     
+ 
+
+<audio id="id_audio1"    
+    src="{% static "audio/se1.mp3" %}">
+</audio>
+<audio id="id_audio2"    
+    src="{% static "audio/se2.mp3" %}">
+</audio>
+<audio id="id_audio3"    
+    src="{% static "audio/se3.mp3" %}">
+</audio>
+<audio id="id_audio4"    
+    src="{% static "audio/se4.mp3" %}">
+</audio>
+<audio id="id_audio5"    
+    src="{% static "audio/se5.mp3" %}">
+</audio>
+<div id="student-form">
+    <label for="student_id">生徒IDを入力</label>
+    <input type="text" id="student_id" name="student_id" required>
+    <button id="btncheck" class="btncheck">テストする</button>
+</div>
+<div class='field'>
+    <h2 id='id_name' class='m-3'>リンガクイズ練習</h2>
+</div>
+<div class='typing'>
+    <list class="limit" id='limit'></list>
+    <list id="count" class="count"></list>
+    <list class="tani" id="tani" style="display: none">秒</list>
+</div>
+        <div class=" py-3 ">
+        <div class='form'>
+
+        <label for="id_parent"class='selectbox-2'>教材:
+        <select name="parent_category" id="id_parent">
+        <option value="" selected>---------</option>
+        </select></label>
+        <label for="id_category" class='selectbox-2'>カテゴリ:
+        <select name="parent_category" id="id_category">
+        <option value="" selected>---------</option>
+        </select></label>
+        </div>
+        <div class='typing'>
+            <div></div>
+            <button id="start" class="btnstart mt-3">スタート Enter↲ </button>
+
+            <div class="anime">
+                <img class='leftimg' id="id_leftimg" style="display: none" src='{% static "img/pandal.png"%}'>
+                <img class='rightimg' id="id_rightimg" style="display:none" src='{% static "img/pandar.png"%}'>
+                <img class='pandaneru' id="id_pandaneru" style="display: none" src='{% static "img/pandaneru.png"%}'>
+                <img class='pandatensi' id="id_pandatensi" style="display: none" src='{% static "img/pandatensi.png"%}'>
+                </div>  
+            <div id="wrap" class="wrap">
+
+                <span id="untyped" class="untyped"></span>
+                    
+                        <div class="tables">
+                            <table id="tbl1">
+                                <thead>
+                                    <tr>
+                                        <th>英単語</th>
+                                        <th>翻訳</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ここに単語が追加される -->
+                                </tbody>
+                            </table>
+                    </div>
+
+
+            </div>
+            <div id="game-container">
+                <span id="typed" class="typed"></span>
+               
+            </div>
+            <div id="choice">
+               
+            </div>
+        </div>
+    </div>
+
+   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const choiceBtns = document.querySelectorAll('.choice-btn');
+const typed = document.getElementById('typed');
+
+        const audio1=document.getElementById('id_audio1')
+            var audio2=document.getElementById('id_audio2')
+            const audio3=document.getElementById('id_audio3')
+            const audio4=document.getElementById('id_audio4')
+            const audio5=document.getElementById('id_audio5')
+            const leftimg=$('#id_leftimg')
+            const rightimg=$('#id_rightimg')
+            const pandatensi=$('#id_pandatensi')
+            const pandaneru=$('#id_pandaneru')
+    $(document).ready(function () {
+     
+    // ページロード時に ParentCategory を取得
+    $.ajax({
+        url: '{% url "classreport:get_parent_categories_game" %}',  // Djangoのエンドポイント
+        method: "GET",
+        success: function (data) {
+            let parentSelect = $("#id_parent");
+            parentSelect.empty().append('<option value="">選択してください</option>');
+            
+            data.parent_categories.forEach(function (item) {
+                parentSelect.append(`<option value="${item.id}">${item.title}</option>`);
+            });
+        }
+    });
+
+    // id_parent が変更されたら id_category を更新
+    $("#id_parent").change(function () {
+        let parentId = $(this).val();
+        if (!parentId) return;
+
+        $.ajax({
+            url: '{% url "classreport:get_categories_game" %}',
+            method: "GET",
+            data: { parent_id: parentId },
+            success: function (data) {
+                let categorySelect = $("#id_category");
+                categorySelect.empty().append('<option value="">選択してください</option>');
+
+                data.categories.forEach(function (item) {
+                    categorySelect.append(`<option value="${item.id}">${item.title}</option>`);
+                });
+            }
+        });
+    });
+
+    // id_category が変更されたら tbl1 に EnglishWords を表示
+    $("#id_category").change(function () {
+        let categoryId = $(this).val();
+        if (!categoryId) return;
+
+        $.ajax({
+            url: '{% url "classreport:get_english_words_game" %}',
+            method: "GET",
+            data: { category_id: categoryId },
+            success: function (data) {
+                let table = $("#tbl1");
+                table.empty();
+                table.append(` <thead>
+                                    <tr>
+                                        <th>英単語</th>
+                                        <th>翻訳</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbody1">
+                                   
+                                </tbody>`);
+                
+                let tbody = $(".tbody1");
+                data.words.forEach(function (item) {
+                    tbody.append(`
+                    <tr><td>${item.word}</td><td>${item.trans}</td></tr>`);
+                });
+            }
+        });
+    });
+
+    let words = [];  // 出題単語リスト
+    let currentWordIndex = 0;
+    let mistakes = [];  // 間違えた単語
+    let timer;
+
+    $("#start").click(function() {  // btnstart → start に修正
+     // <tbody> の中身をクリア
+        fetchWords();
+    });
+
+
+    function fetchWords() {
+        let categoryId = $("#id_category").val();
+        if (!categoryId) {
+            alert("カテゴリを選択してください！");
+            return;
+        }
+        $(".wrap,#start, #id_category, #id_parent,label[for='id_parent'], label[for='id_category']").hide();  // ボタンとセレクトボックスを非表示
+        $("#tbl1").empty();  
+        $.get("/get_english_words_game", { category_id: categoryId }, function(data) {
+            console.log("取得したデータ:", data); // デバッグ用
+            words = data.words;
+            if (words.length > 0) {
+                currentWordIndex = 0;
+                mistakes = [];
+                startGame();
+            } else {
+                alert("単語がありません！");
+            }
+        });
+    }
+
+    function fetchWrongTranslation(currentWordId, callback) {
+    $.get("/get_random_wrong_trans", {
+        category_id: $("#id_category").val(),
+        current_word_id: currentWordId // これによって現在の単語を除外
+    }, function (data) {
+        if (callback) callback(data.trans);
+    });
+}
+
+// startGame関数内で現在の単語 ID を送るように修正
+function startGame() {
+    if (currentWordIndex >= words.length) {
+        endGame();
+        return;
+    }
+
+    let wordData = words[currentWordIndex];
+    $('.leftimg').hide();
+    $('.rightimg').hide();
+    $(".untyped").text("");
+    
+    $("#typed").css("transition", "none").text(wordData.word).css("font-size", "80px");
+
+    // 誤訳候補を取得し、選択肢を準備
+    fetchWrongTranslation(wordData.id, function (wrongTranslation) {
+        let choices = [
+            { text: wordData.trans, correct: true },
+            { text: wrongTranslation || "誤訳", correct: false }
+        ];
+        choices.sort(() => Math.random() - 0.5); // シャッフル
+
+        $("#choice").empty();
+        choices.forEach(choice => {
+            let btn = $("<button>")
+                .addClass("choice-btn btn-custom")
+                .text(choice.text)
+                .data("answer", choice.correct);
+            $("#choice").append(btn);
+        });
+
+        setTimeout(() => {
+            $("#typed").css("transition", "font-size 1s linear");
+        }, 0);
+        
+        startTimer();
+    });
+}
+function startTimer() {
+    let timeLeft = 7; // Total time allowed per word
+    $("#count").text(timeLeft);
+    $("#tani").show();
+    let Size=90
+    $("#typed").css("font-size", Size + "px");
+    clearInterval(timer);
+    timer = setInterval(() => {
+        timeLeft--;
+        $("#count").text(timeLeft);
+
+        // Gradually increase the font size over time
+        let newFontSize = 90 + (7 - timeLeft) * 15; // Increase by 3px per second
+        $("#typed").css("font-size", newFontSize + "px");
+        if (timeLeft <= 5) {audio5.currentTime = 0; // 音を巻き戻す
+            audio5.play();}
+
+        if (timeLeft <= 0) {
+            audio2.play();
+            clearInterval(timer);
+            
+            mistakes.push(words[currentWordIndex].word);
+            currentWordIndex++;
+            startGame();
+        }
+    }, 1000);
+}
+
+$(document).on("click", ".choice-btn", function() {
+    clearInterval(timer);
+    let isCorrect = $(this).data("answer");
+
+    if (isCorrect) {
+        $(this).addClass('correct');
+        $('#typed').addClass('correct');
+        audio1.play();
+    } else {
+        $(this).addClass('incorrect');
+        audio2.play();
+        mistakes.push({ word: words[currentWordIndex].word, trans: words[currentWordIndex].trans });
+    }
+
+    setTimeout(() => {
+    // ボタンを無効化
+    $('button').prop('disabled', true); 
+
+    $(this).removeClass('correct incorrect');
+    $('#typed').removeClass('correct');
+    currentWordIndex++;
+
+    startGame(); // 次の単語へ
+
+    // アニメーション終了後にボタンを有効化
+    setTimeout(() => {
+        $('button').prop('disabled', false);
+    }, 700);
+}, 700);
+});
+
+function endGame() {
+    $("#start").show();
+    $("#tani").hide();
+    $("#typed,#choice").empty();
+    $("#count").text("");
+    $(".wrap,#start, #id_category, #id_parent,label[for='id_parent'], label[for='id_category']").show();
+
+    if (mistakes.length > 0) {
+        $("#tbl1").append(`
+        <thead>
+        <tr><th>間違えた単語</th><th>正しい訳</th></tr>
+        </thead>
+        <tbody class="tbody">
+                                </tbody>
+        `);
+        mistakes.forEach(item => {
+            $(".tbody").append(`<tr><td>${item.word}</td><td>${item.trans}</td></tr>`);
+        });
+        $(".untyped").text("もう一度チャレンジしよう！")
+    } else {
+        $(".untyped").text("全問正解です！おめでとう！！")
+        audio3.play();
+        $('.leftimg').show();
+                    $('.rightimg').show();
+                    var countanime = 200;
+                    var defaults = {
+                    origin: { y: 0.7 }
+                    };
+
+            function fire(particleRatio, opts) {
+                confetti({
+                    ...defaults,
+                    ...opts,
+                    particleCount: Math.floor(countanime * particleRatio)
+                });
+                }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+            });
+            fire(0.2, {
+                spread: 60,
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+    }
+}
+
+
+
+
+$('#btncheck').on('click', function() {
+        const studentId = $('#student_id').val();
+        if (!studentId) {
+            alert('Please enter a Student ID.');
+            return;
+        }
+
+        $.ajax({
+            url: '{% url "classreport:check_student_exists" %}', // Your API endpoint to check student existence
+            method: 'POST',
+            data: {
+                'student_id': studentId,
+                // Assuming you have a CSRF token setup in your project, include it here
+            },
+            success: function(response) {
+                if (response.exists) {
+                    // Hide form on game start
+                    window.location.href = `transquiz/${studentId}`; // Redirect to typing page
+                } else {
+                    alert('Student not found in the current class.');
+                }
+            }
+        });
+    });
+
+
+});
+
+    </script>
+     {% endblock %}
+
+     {% block extrajs %}
+            {% endblock %}

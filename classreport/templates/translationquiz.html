@@ -16,13 +16,13 @@ form{
 .count {
     margin: 0;
     font-weight: bold;
-    color: #634531;
+    color: #5c5e82;
 }
 
 .limit,.tani{
     margin: 0;
     font-weight: bold;
-    color: #634531;
+    color: #5c5e82;
     font-size: 3rem
 }
 .wrap{
@@ -30,7 +30,7 @@ form{
     padding: 20px 40px;
     background-color: #ffebd4;
     font-weight: bold;
-    color: #634531;
+    color: #5c5e82;
 }
 
 .start{
@@ -59,24 +59,20 @@ table{
     text-align: center;
     border-collapse: collapse;
     border-spacing: 0;
-    color: #623f26;
   }
 
 
 
-  
-
   table th{
     padding: 10px;
-    border-bottom: solid 4px #634531;
-    color: #623f26
+    border-bottom: solid 4px #d4d6d6;
+    color: #778ca3
   }
 
   table td{
     padding: 10px;
-    border-bottom: solid 1px #624530;
+    border-bottom: solid 1px #d4d6d6;
   }
-
 
   .btnstart {
     display: inline-block;
@@ -127,13 +123,13 @@ table{
 }
 
 .form{
-    color: #634531;
+    color: #5c5e82;
       font-size: 2rem;
 
       text-align-last: center;
      }
 
-     .selectbox-2 {
+  .selectbox-2 {
     position: relative;
     margin-left:20px;
   }
@@ -148,7 +144,7 @@ table{
   .selectbox-2::before {
     right: 0;
     display: inline-block;
-    width: 2em;
+    width: 2.8em;
     height: 2em;
     border-radius: 0 3px 3px 0;
     background-color: #faa63e;
@@ -158,7 +154,7 @@ table{
   .selectbox-2::after {
     position: absolute;
     top: 50%;
-    right: 1em;
+    right: 1.4em;
     transform: translate(50%, -50%) rotate(45deg);
     width: 6px;
     height: 6px;
@@ -173,10 +169,10 @@ table{
     -moz-appearance: none;
     min-width: 230px;
     height: 2em;
-    padding: 0.1em 2em .4em .1em;
+    padding: 0.1em 4em .4em .1em;
     border: 2px solid #faa63e;
     border-radius: 3px;
-    color: #634531;
+    color: #5c5e82;
     font-size: 1em;
     cursor: pointer;
   }
@@ -200,7 +196,7 @@ table{
     color: #ffffff;
   }
   #id_name{
-    color: #634531;
+    color: #5c5e82;
   }
 
   
@@ -348,47 +344,45 @@ main {
     position: relative; /* `#student-form` の基準点にする */
 }
 
-
 #student-form {
     background-color: #f9f9f9;
+    padding: 10px;
     border-radius: 10px;
-    width: 200px;
+    width: 300px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 20px;
+    font-family: 'Arial', sans-serif; 
+
+    /* main を基準に右上に配置 */
     position: absolute;
-    top: 0px;
-    right: 0px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;  /* ボタンを中央揃え */
+    top: 20px;  /* main の上からの距離 */
+    right: 20px; /* main の右からの距離 */
+    z-index: 1000; /* 他の要素の上に表示 */
 }
+
     /* 共通のボタンスタイル */
     .btn-custom {
-        background-color: #74be4d; /* オレンジ色 */
+        background-color: #faa63e; /* オレンジ色 */
         color: white;
         font-size: 16px;
         font-weight: bold;
         border: none;
         border-radius: 5px;
-        padding: 12px;
+        padding: 12px 20px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
-        margin: 10px;
+        margin-top: 10px;
         text-align: center;
         width: 180px;
     }
 
     /* ボタンにホバーエフェクトを追加 */
     .btn-custom:hover {
-        background-color: #59913c;
+        background-color: #e07b00;
         transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
     }
 
     .btn-custom:active {
-        background-color: #59913c;  /* クリック時 */
+        background-color: #c76a00;  /* クリック時 */
         transform: translateY(1px);  /* クリック時に少し下げる */
     }
 
@@ -397,30 +391,6 @@ main {
         display: block; /* ボタンを縦に並べる */
         width: 100%; /* フォーム幅に合わせる */
         margin-bottom: 10px; /* ボタン間のスペース */
-    }
-
-    /* ボタンのスタイル */
-    #btncheck {
-        width: 100%;
-        padding: 12px;
-        background-color: #74be4d; /* オレンジ色 */
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-
-    #btncheck:hover {
-        background-color: #59913c;
-        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
-    }
-
-    #btncheck:active {
-        background-color: #59913c;  /* クリック時 */
-        transform: translateY(1px);  /* クリック時に少し下げる */
     }
 
 /*balloon image*/
@@ -449,86 +419,8 @@ main {
   }
 }
 
-#CMbox{
-    position: absolute;  /* 画面の特定位置に固定 */
-    left: 0px;         /* 右端に寄せる */
-    top: 0px;           /* 上からの位置調整 */
-    width: 200px;        /* 広告エリアの幅 */
-    background-color: #f8f8f8; /* 背景色 */
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ccc; /* 枠線 */
-}
-
-#typing-ad img {
-    width: 100%;
-    height: auto;
-}
-
-#typing-ad a {
-    display: block;
-    margin-top: 5px;
-    color: blue;
-    text-decoration: underline;
-}
-#typing-ad {
-    position: relative;  /* 親要素に相対位置を指定 */
-}
-
-.typing-message {
-    position: absolute;  /* 画像に重なるように配置 */
-    bottom: 1px;  /* 画像の下部から10pxの距離 */
-    left: 50%;  /* 画像の中央に配置 */
-    transform: translateX(-50%);  /* 左右の中心に揃える */
-    font-size: 14px;
-    color: #fff;  /* 文字色を白に */
-    font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.5);  /* 半透明の黒背景 */
-    padding: 5px 10px;
-    border-radius: 5px;  /* 角を丸くする */
-    width: 150px;
-}
-#home-button {
-        width: 100%;
-        padding: 12px;
-        background-color: #ab693a; /* オレンジ色 */
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-
-    #home-button a{
-        color: white;
-        text-decoration: none;
-    }
-
-    #home-button:hover {
-        background-color: #361c0a;
-        transform: translateY(-3px); /* ホバー時にボタンを少し持ち上げる */
-    }
-
-    #home-button:active {
-        background-color: #3e1f09;  /* クリック時 */
-        transform: translateY(1px);  /* クリック時に少し下げる */
-    }
-
 
 </style>
-<div id="CMbox">
-  <div id="home-button">
-      <a href="{% url 'classreport:gameselect' %}">ホーム画面に戻る</a>
-  </div>
-  <div id="typing-ad">
-    <a href="{% url 'classreport:transpractice' %}">
-        <img src="{% static 'img/pandatitle.png' %}" alt="パンダタイピング">
-        <p class="typing-message">リンガクイズ！</p>
-    </a>
-</div>
-</div>
 
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
@@ -547,7 +439,7 @@ main {
     src='{% static "audio/se4.mp3" %}'>
 </audio>
 <form id="student-form">
-  <button id='mypagelink' type="button" class="btn btn-custom m-2">成績を確認する</button>
+  <button id='mypagelink' class="btn btn-custom m-2">成績を確認する</button>
   <button id='practicelink' type="button" class="btn btn-custom m-2" >練習に戻る</button>
   
 </form>
@@ -645,10 +537,7 @@ main {
 
             studentnameElement.text(' タイピングテスト　'+'ID'+'{{pk}}'+' : '+'{{name}}');
             studentnameElement.val('{{pk}}');
-            $('#mypagelink').on('click', function() {
-              const studentId="{{ pk }}";
-              window.location.href = `/mypagetyping/${studentId}`;  
-            });
+   
 
          
         $('#practicelink').on('click', function() {
@@ -1087,8 +976,6 @@ main {
                 }
                 }
             }
-
-          
             </script>
 
             {% endblock %}

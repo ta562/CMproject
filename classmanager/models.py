@@ -381,10 +381,11 @@ class EnglishScore(models.Model):
         verbose_name='カテゴリ',
         on_delete=models.PROTECT, blank=True, null=True
         )
-    score=models.CharField(
-        verbose_name='翻訳',
-        max_length=200, blank=True, null=True
-    )
+    score = models.IntegerField(
+        verbose_name='スコア',
+        default=0,
+        blank=True, null=True
+        ) 
     cleartime=models.CharField(
         verbose_name='翻訳',
         max_length=200, blank=True, null=True
@@ -393,4 +394,30 @@ class EnglishScore(models.Model):
         verbose_name='投稿日時',
         auto_now_add=True,blank=True,null=True
         )
+
+class TransGameScore(models.Model):
+    student=models.ForeignKey(
+        Student,
+        verbose_name='生徒',
+        on_delete=models.CASCADE, blank=True, null=True
+        )
     
+ 
+    category=models.ForeignKey(
+        Category,
+        verbose_name='カテゴリ',
+        on_delete=models.PROTECT, blank=True, null=True
+        )
+    score = models.IntegerField(
+        verbose_name='スコア',
+        default=0,
+        blank=True, null=True
+        ) 
+    cleartime=models.CharField(
+        verbose_name='翻訳',
+        max_length=200, blank=True, null=True
+    )
+    posted_at=models.DateTimeField(
+        verbose_name='投稿日時',
+        auto_now_add=True,blank=True,null=True
+        )
