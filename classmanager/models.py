@@ -379,7 +379,7 @@ class EnglishScore(models.Model):
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
-        on_delete=models.PROTECT, blank=True, null=True
+        on_delete=models.CASCADE, blank=True, null=True
         )
     score = models.IntegerField(
         verbose_name='スコア',
@@ -406,7 +406,7 @@ class TransGameScore(models.Model):
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
-        on_delete=models.PROTECT, blank=True, null=True
+        on_delete=models.CASCADE, blank=True, null=True
         )
     score = models.IntegerField(
         verbose_name='スコア',

@@ -82,8 +82,12 @@ WSGI_APPLICATION = "CMproject.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": 'CMproject',
+        'USER': 'root',
+        'PASSWORD': 'Htomo0927',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
